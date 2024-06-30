@@ -21,4 +21,8 @@
         <Using Include="Xunit"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\dotResult\dotResult.csproj" />
+    </ItemGroup>
+
 </Project>
