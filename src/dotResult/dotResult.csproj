@@ -5,6 +5,25 @@
         <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        
+        <RootNamespace>Frognar.DotResult</RootNamespace>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>Frognar.dotResult</PackageId>
+        <Version>0.0.1</Version>
+        <Title>dotResult</Title>
+        <Description>dotResult is a lightweight and intuitive implementation of the Result monad for the .NET platform. It simplifies error handling and value propagation in a functional way, improving code readability and safety.</Description>
+        <Copyright>Frognar 2024</Copyright>
+        <PackageProjectUrl>https://github.com/Frognar/dotResult</PackageProjectUrl>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseFile>LICENS</PackageLicenseFile>
+        <RepositoryUrl>https://github.com/Frognar/dotResult</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>Result, Monad, Monads, C#, Try, Results, Error handling, Error, Errors</PackageTags>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\..\README.md" Pack="true" PackagePath=""/>
+        <None Include="..\..\LICENSE" Pack="true" PackagePath=""/>
+    </ItemGroup>
 
 </Project>
