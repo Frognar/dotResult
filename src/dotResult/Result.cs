@@ -4,27 +4,36 @@ namespace Frognar.DotResult;
 
 public readonly record struct Result<T>
 {
-    private readonly T _value;
-    private readonly Failure? _failure;
+    private readonly IResult _result;
 
-    private Result(T value)
+    private Result(IResult result)
     {
-        _value = value;
-        _failure = null;
-    }
-
-    private Result(Failure failure)
-    {
-        _value = default!;
-        _failure = failure;
+        _result = result;
     }
 
     public TResult Match<TResult>(Func<Failure, TResult> failure, Func<T, TResult> success)
     {
-        return _failure is not null ? failure(_failure.Value) : success(_value);
+        return _result switch
+        {
+            SuccessType successType => success(successType.Value),
+            FailureType failureType => failure(failureType.Value),
+            _ => throw new InvalidOperationException("Reached an invalid state in Match.")
+        };
     }
 
-    internal static Result<T> Success(T value) => new(value);
+    internal static Result<T> Success(T value) => new(new SuccessType(value));
 
-    internal static Result<T> Failure(Failure failure) => new(failure);
+    internal static Result<T> Failure(Failure failure) => new(new FailureType(failure));
+
+    private interface IResult;
+
+    private readonly record struct SuccessType(T Value) : IResult
+    {
+        public T Value { get; } = Value;
+    }
+
+    private readonly record struct FailureType(Failure Value) : IResult
+    {
+        public Failure Value { get; } = Value;
+    }
 }
