@@ -15,4 +15,13 @@ public class ResultMatchingTests
             .Should()
             .Be(value.Item);
     }
+
+    [Property]
+    public void CanTransformValueUsingFailureMatch(NonEmptyString value)
+    {
+        Fail.OfType<int>(Failure.Fatal(message: value.Item))
+            .Match(f => f.Message.Length, _ => -1)
+            .Should()
+            .Be(value.Item.Length);
+    }
 }
