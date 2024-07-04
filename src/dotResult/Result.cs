@@ -26,6 +26,11 @@ public readonly record struct Result<T>
         return Match(Result<TResult>.Failure, v => Result<TResult>.Success(map(v)));
     }
 
+    public Result<TResult> FlatMap<TResult>(Func<T, Result<TResult>> map)
+    {
+        return Match(Result<TResult>.Failure, map);
+    }
+
     internal static Result<T> Success(T value) => new(new SuccessType(value));
 
     internal static Result<T> Failure(Failure failure) => new(new FailureType(failure));
