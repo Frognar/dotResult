@@ -27,6 +27,18 @@ public readonly record struct Failure(
             new ReadOnlyDictionary<string, object>(metadata ?? new Dictionary<string, object>()));
     }
 
+    public static Failure NotFound(
+        string code = "General.NotFound",
+        string message = "A not found failure has occurred.",
+        IDictionary<string, object>? metadata = null)
+    {
+        return new Failure(
+            code,
+            message,
+            "NotFound",
+            new ReadOnlyDictionary<string, object>(metadata ?? new Dictionary<string, object>()));
+    }
+
     public bool Equals(Failure other)
     {
         if (Code != other.Code || Message != other.Message || Type != other.Type)

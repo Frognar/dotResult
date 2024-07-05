@@ -23,4 +23,15 @@ public class FailureTests
         failure.Type.Should().Be("Fatal");
         failure.Metadata.Should().BeEquivalentTo(Metadata);
     }
+
+    [Fact]
+    public void CanCreateNotFoundFailure()
+    {
+        Failure failure = Failure.NotFound(ErrorCode, ErrorMessage, Metadata);
+
+        failure.Code.Should().Be(ErrorCode);
+        failure.Message.Should().Be(ErrorMessage);
+        failure.Type.Should().Be("NotFound");
+        failure.Metadata.Should().BeEquivalentTo(Metadata);
+    }
 }

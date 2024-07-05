@@ -34,6 +34,14 @@ public class FailureEqualityTests
             .NotBe(Failure.Fatal(message: otherMessage.Item.ToString()));
     }
 
+    [Fact]
+    public void TwoFailuresAreNotEqualIfContainsDifferentTypes()
+    {
+        Failure.Fatal()
+            .Should()
+            .NotBe(Failure.NotFound());
+    }
+
     [Property(Arbitrary = [typeof(DictionaryGenerator)])]
     public void TwoFailuresAreNotEqualIfContainsDifferentMetadata(
         Dictionary<string, NegativeInt> metadata,
