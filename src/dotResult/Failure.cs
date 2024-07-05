@@ -23,7 +23,7 @@ public readonly record struct Failure(
         return new Failure(
             code,
             message,
-            "Fatal",
+            FailureType.Fatal,
             new ReadOnlyDictionary<string, object>(metadata ?? new Dictionary<string, object>()));
     }
 
@@ -35,7 +35,7 @@ public readonly record struct Failure(
         return new Failure(
             code,
             message,
-            "NotFound",
+            FailureType.NotFound,
             new ReadOnlyDictionary<string, object>(metadata ?? new Dictionary<string, object>()));
     }
 

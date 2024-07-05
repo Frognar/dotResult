@@ -18,7 +18,7 @@ public class FailureTests
     {
         Failure failure = Failure.Fatal(ErrorCode, ErrorMessage, Metadata);
 
-        AssertFailure(failure, expectedErrorType: "Fatal");
+        AssertFailure(failure, expectedErrorType: FailureType.Fatal);
     }
 
     [Fact]
@@ -26,7 +26,7 @@ public class FailureTests
     {
         Failure failure = Failure.NotFound(ErrorCode, ErrorMessage, Metadata);
 
-        AssertFailure(failure, expectedErrorType: "NotFound");
+        AssertFailure(failure, expectedErrorType: FailureType.NotFound);
     }
 
     [Fact]
