@@ -1,6 +1,6 @@
-﻿using FluentAssertions;
+﻿using DotResult;
+using FluentAssertions;
 using FsCheck.Xunit;
-using Frognar.DotResult;
 using FsCheck;
 
 namespace dotResult.Tests.Unit;

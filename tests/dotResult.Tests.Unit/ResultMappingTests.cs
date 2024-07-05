@@ -1,5 +1,5 @@
-﻿using FluentAssertions;
-using Frognar.DotResult;
+﻿using DotResult;
+using FluentAssertions;
 using FsCheck;
 using FsCheck.Xunit;
 

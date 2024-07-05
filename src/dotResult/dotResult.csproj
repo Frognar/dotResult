@@ -6,9 +6,9 @@
         <Nullable>enable</Nullable>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
-        <RootNamespace>Frognar.DotResult</RootNamespace>
+        <RootNamespace>DotResult</RootNamespace>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageId>Frognar.dotResult</PackageId>
+        <PackageId>dotResult</PackageId>
         <Version>0.0.1</Version>
         <Title>dotResult</Title>
         <Description>dotResult is a lightweight and intuitive implementation of the Result monad for the .NET platform. It simplifies error handling and value propagation in a functional way, improving code readability and safety.</Description>

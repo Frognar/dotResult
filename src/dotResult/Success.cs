@@ -1,4 +1,4 @@
-namespace Frognar.DotResult;
+namespace DotResult;
 
 public static class Success
 {

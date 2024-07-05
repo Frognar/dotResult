@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace Frognar.DotResult;
+namespace DotResult;
 
 public readonly record struct Failure(
     string Code,

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Frognar.DotResult;
+namespace DotResult;
 
 public readonly record struct Result<T>
 {
