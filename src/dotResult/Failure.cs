@@ -39,6 +39,19 @@ public readonly record struct Failure(
             new ReadOnlyDictionary<string, object>(metadata ?? new Dictionary<string, object>()));
     }
 
+    public static Failure Custom(
+        string code,
+        string message,
+        string type,
+        IDictionary<string, object>? metadata = null)
+    {
+        return new Failure(
+            code,
+            message,
+            type,
+            new ReadOnlyDictionary<string, object>(metadata ?? new Dictionary<string, object>()));
+    }
+
     public bool Equals(Failure other)
     {
         if (Code != other.Code || Message != other.Message || Type != other.Type)

@@ -18,10 +18,7 @@ public class FailureTests
     {
         Failure failure = Failure.Fatal(ErrorCode, ErrorMessage, Metadata);
 
-        failure.Code.Should().Be(ErrorCode);
-        failure.Message.Should().Be(ErrorMessage);
-        failure.Type.Should().Be("Fatal");
-        failure.Metadata.Should().BeEquivalentTo(Metadata);
+        AssertFailure(failure, expectedErrorType: "Fatal");
     }
 
     [Fact]
@@ -29,9 +26,22 @@ public class FailureTests
     {
         Failure failure = Failure.NotFound(ErrorCode, ErrorMessage, Metadata);
 
+        AssertFailure(failure, expectedErrorType: "NotFound");
+    }
+
+    [Fact]
+    public void CanCreateCustomFailure()
+    {
+        Failure failure = Failure.Custom(ErrorCode, ErrorMessage, "Custom", Metadata);
+
+        AssertFailure(failure, expectedErrorType: "Custom");
+    }
+
+    private static void AssertFailure(Failure failure, string expectedErrorType)
+    {
         failure.Code.Should().Be(ErrorCode);
         failure.Message.Should().Be(ErrorMessage);
-        failure.Type.Should().Be("NotFound");
+        failure.Type.Should().Be(expectedErrorType);
         failure.Metadata.Should().BeEquivalentTo(Metadata);
     }
 }
