@@ -12,6 +12,15 @@ indent_style = space
 indent_size = 4
 trim_trailing_whitespace = true
 
+# SA1101: Prefix local calls with this.
+dotnet_diagnostic.SA1101.severity = none
+
+# SA1309: Field names must not begin with underscore
+dotnet_diagnostic.SA1309.severity = none
+
+# SA1633: File must have header.
+dotnet_diagnostic.SA1633.severity = none
+
 [project.json]
 indent_size = 2
 
