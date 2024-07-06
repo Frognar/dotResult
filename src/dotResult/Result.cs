@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace DotResult;
 
@@ -33,6 +34,23 @@ public readonly record struct Result<T>
         {
             SuccessType successType => success(successType.Value),
             FailureType failureType => failure(failureType.Value),
+            _ => throw new InvalidOperationException("Reached an invalid state in Match."),
+        };
+    }
+
+    /// <summary>
+    /// Asynchronously matches the result and executes the appropriate asynchronous function based on whether the result is a success or a failure.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the return value.</typeparam>
+    /// <param name="failure">Asynchronous function to execute if the result is a failure.</param>
+    /// <param name="success">Asynchronous function to execute if the result is a success.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the result of the executed function.</returns>
+    public async Task<TResult> MatchAsync<TResult>(Func<Failure, Task<TResult>> failure, Func<T, Task<TResult>> success)
+    {
+        return _result switch
+        {
+            SuccessType successType => await success(successType.Value),
+            FailureType failureType => await failure(failureType.Value),
             _ => throw new InvalidOperationException("Reached an invalid state in Match."),
         };
     }
