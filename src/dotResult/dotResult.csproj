@@ -10,7 +10,7 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <PackageId>dotResult</PackageId>
-        <Version>0.1.0</Version>
+        <Version>0.2.0</Version>
         <Title>dotResult</Title>
         <Description>dotResult is a lightweight and intuitive implementation of the Result monad for the .NET platform. It simplifies error handling and value propagation in a functional way, improving code readability and safety.</Description>
         <Copyright>Frognar 2024</Copyright>
@@ -23,7 +23,11 @@
         <PackageReleaseNotes>
           v0.1.0:
           - support for sync Query Syntax in Result
-          - validation failure type
+          - validation failure
+          v0.2.0:
+          - async matching (MatchAsync)
+          - async mapping (MapAsync)
+          - async binding (FlatMapAsync)
         </PackageReleaseNotes>
     </PropertyGroup>
 
