@@ -60,6 +60,34 @@ public readonly record struct Result<T>
     }
 
     /// <summary>
+    /// Applies a selector function to the value of a successful result, returning a new result with the transformed value.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the value in the resulting Result.</typeparam>
+    /// <param name="selector">The function to transform the value.</param>
+    /// <returns>A new Result with the transformed value if the original result was a success; otherwise, a failure.</returns>
+    /// <remarks>This method enables query syntax for the Result type.</remarks>
+    public Result<TResult> Select<TResult>(Func<T, TResult> selector)
+    {
+        return Map(selector);
+    }
+
+    /// <summary>
+    /// Projects the value of a successful result into a new result, flattens the result, and applies a final projection.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the value in the resulting Result.</typeparam>
+    /// <typeparam name="TIntermediate">The intermediate type used in the projection.</typeparam>
+    /// <param name="selector">The function to project the value into another Result.</param>
+    /// <param name="projector">The function to transform the original value and the intermediate value into the final value.</param>
+    /// <returns>A new Result with the final projected value if the original and intermediate results were successful; otherwise, a failure.</returns>
+    /// <remarks>This method enables query syntax for the Result type.</remarks>
+    public Result<TResult> SelectMany<TResult, TIntermediate>(
+        Func<T, Result<TIntermediate>> selector,
+        Func<T, TIntermediate, TResult> projector)
+    {
+        return FlatMap(x => selector(x).Map(y => projector(x, y)));
+    }
+
+    /// <summary>
     /// Creates a new success result.
     /// </summary>
     /// <param name="value">The value of the success result.</param>
