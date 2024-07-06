@@ -4,17 +4,46 @@ using System.Linq;
 
 namespace DotResult;
 
-public readonly record struct Failure(
-    string Code,
-    string Message,
-    string Type,
-    IReadOnlyDictionary<string, object> Metadata)
+/// <summary>
+/// Represents a failure with associated information.
+/// </summary>
+public readonly record struct Failure
 {
-    public string Code { get; } = Code;
-    public string Message { get; } = Message;
-    public string Type { get; } = Type;
-    public IReadOnlyDictionary<string, object> Metadata { get; } = Metadata;
+    private Failure(string code, string message, string type, IReadOnlyDictionary<string, object> metadata)
+    {
+        Code = code;
+        Message = message;
+        Type = type;
+        Metadata = metadata;
+    }
 
+    /// <summary>
+    /// Gets the code of the failure.
+    /// </summary>
+    public string Code { get; }
+
+    /// <summary>
+    /// Gets the message of the failure.
+    /// </summary>
+    public string Message { get; }
+
+    /// <summary>
+    /// Gets the type of the failure.
+    /// </summary>
+    public string Type { get; }
+
+    /// <summary>
+    /// Gets the metadata associated with the failure.
+    /// </summary>
+    public IReadOnlyDictionary<string, object> Metadata { get; }
+
+    /// <summary>
+    /// Creates a fatal failure with optional code, message, and metadata.
+    /// </summary>
+    /// <param name="code">The code of the failure.</param>
+    /// <param name="message">The message of the failure.</param>
+    /// <param name="metadata">The metadata associated with the failure.</param>
+    /// <returns>A fatal failure instance.</returns>
     public static Failure Fatal(
         string code = "General.Fatal",
         string message = "A fatal failure has occurred.",
@@ -27,6 +56,13 @@ public readonly record struct Failure(
             new ReadOnlyDictionary<string, object>(metadata ?? new Dictionary<string, object>()));
     }
 
+    /// <summary>
+    /// Creates a not found failure with optional code, message, and metadata.
+    /// </summary>
+    /// <param name="code">The code of the failure.</param>
+    /// <param name="message">The message of the failure.</param>
+    /// <param name="metadata">The metadata associated with the failure.</param>
+    /// <returns>A not found failure instance.</returns>
     public static Failure NotFound(
         string code = "General.NotFound",
         string message = "A not found failure has occurred.",
@@ -39,6 +75,14 @@ public readonly record struct Failure(
             new ReadOnlyDictionary<string, object>(metadata ?? new Dictionary<string, object>()));
     }
 
+    /// <summary>
+    /// Creates a custom failure with the specified code, message, type, and optional metadata.
+    /// </summary>
+    /// <param name="code">The code of the failure.</param>
+    /// <param name="message">The message of the failure.</param>
+    /// <param name="type">The type of the failure.</param>
+    /// <param name="metadata">The metadata associated with the failure.</param>
+    /// <returns>A custom failure instance.</returns>
     public static Failure Custom(
         string code,
         string message,
@@ -52,6 +96,11 @@ public readonly record struct Failure(
             new ReadOnlyDictionary<string, object>(metadata ?? new Dictionary<string, object>()));
     }
 
+    /// <summary>
+    /// Determines whether the specified Failure is equal to the current Failure.
+    /// </summary>
+    /// <param name="other">The Failure to compare with the current Failure.</param>
+    /// <returns><c>true</c> if the specified Failure is equal to the current Failure; otherwise, <c>false</c>.</returns>
     public bool Equals(Failure other)
     {
         if (Code != other.Code || Message != other.Message || Type != other.Type)
@@ -64,6 +113,10 @@ public readonly record struct Failure(
                                         && otherValue == entry.Value);
     }
 
+    /// <summary>
+    /// Serves as the default hash function.
+    /// </summary>
+    /// <returns>A hash code for the current Failure.</returns>
     public override int GetHashCode()
     {
         unchecked
