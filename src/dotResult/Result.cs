@@ -60,6 +60,18 @@ public readonly record struct Result<T>
     }
 
     /// <summary>
+    /// Applies a selector function to the value of a successful result, returning a new result with the transformed value.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the value in the resulting Result.</typeparam>
+    /// <param name="selector">The function to transform the value.</param>
+    /// <returns>A new Result with the transformed value if the original result was a success; otherwise, a failure.</returns>
+    /// <remarks>This method enables query syntax for the Result type.</remarks>
+    public Result<TResult> Select<TResult>(Func<T, TResult> selector)
+    {
+        return Map(selector);
+    }
+
+    /// <summary>
     /// Creates a new success result.
     /// </summary>
     /// <param name="value">The value of the success result.</param>
