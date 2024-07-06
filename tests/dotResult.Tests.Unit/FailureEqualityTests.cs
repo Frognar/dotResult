@@ -1,6 +1,7 @@
 ﻿using DotResult;
 using FluentAssertions;
 using FsCheck;
+using FsCheck.Fluent;
 using FsCheck.Xunit;
 
 namespace dotResult.Tests.Unit;
@@ -55,18 +56,18 @@ public class FailureEqualityTests
     private static class DictionaryGenerator
     {
         private static Gen<KeyValuePair<string, T>> Gen<T>() =>
-            from key in Arb.Generate<NonEmptyString>()
-            from value in Arb.Generate<T>()
+            from key in ArbMap.Default.GeneratorFor<NonEmptyString>()
+            from value in ArbMap.Default.GeneratorFor<T>()
             select new KeyValuePair<string, T>(key.Item, value);
 
         public static Arbitrary<Dictionary<string, NegativeInt>> NegativeIntValueDictionary() =>
-            (from count in FsCheck.Gen.Choose(1, 10)
-                from kvps in FsCheck.Gen.ArrayOf(count, Gen<NegativeInt>())
+            (from count in FsCheck.FSharp.Gen.Choose(1, 10)
+                from kvps in FsCheck.FSharp.Gen.ArrayOf(count, Gen<NegativeInt>())
                 select kvps.DistinctBy(kvp => kvp.Key).ToDictionary(kvp => kvp.Key, kvp => kvp.Value)).ToArbitrary();
 
         public static Arbitrary<Dictionary<string, NonNegativeInt>> NonNegativeIntValueDictionary() =>
-            (from count in FsCheck.Gen.Choose(1, 10)
-                from kvps in FsCheck.Gen.ArrayOf(count, Gen<NonNegativeInt>())
+            (from count in FsCheck.FSharp.Gen.Choose(1, 10)
+                from kvps in FsCheck.FSharp.Gen.ArrayOf(count, Gen<NonNegativeInt>())
                 select kvps.DistinctBy(kvp => kvp.Key).ToDictionary(kvp => kvp.Key, kvp => kvp.Value)).ToArbitrary();
     }
 }
