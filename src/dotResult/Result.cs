@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace DotResult;
 
@@ -38,6 +39,23 @@ public readonly record struct Result<T>
     }
 
     /// <summary>
+    /// Asynchronously matches the result and executes the appropriate asynchronous function based on whether the result is a success or a failure.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the return value.</typeparam>
+    /// <param name="failure">Asynchronous function to execute if the result is a failure.</param>
+    /// <param name="success">Asynchronous function to execute if the result is a success.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the result of the executed function.</returns>
+    public async Task<TResult> MatchAsync<TResult>(Func<Failure, Task<TResult>> failure, Func<T, Task<TResult>> success)
+    {
+        return _result switch
+        {
+            SuccessType successType => await success(successType.Value),
+            FailureType failureType => await failure(failureType.Value),
+            _ => throw new InvalidOperationException("Reached an invalid state in Match."),
+        };
+    }
+
+    /// <summary>
     /// Transforms the value of a successful result using the provided mapping function.
     /// </summary>
     /// <typeparam name="TResult">The type of the value after the mapping.</typeparam>
@@ -49,6 +67,19 @@ public readonly record struct Result<T>
     }
 
     /// <summary>
+    /// Asynchronously transforms the value of a successful result using the provided asynchronous mapping function.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the value after the mapping.</typeparam>
+    /// <param name="map">Asynchronous function to transform the value.</param>
+    /// <returns>A task that represents the asynchronous operation, containing a new Result with the transformed value if the original result was a success; otherwise, a failure.</returns>
+    public async Task<Result<TResult>> MapAsync<TResult>(Func<T, Task<TResult>> map)
+    {
+        return await MatchAsync(
+            async f => await Task.FromResult(Result<TResult>.Failure(f)),
+            async v => Result<TResult>.Success(await map(v)));
+    }
+
+    /// <summary>
     /// Transforms the value of a successful result using the provided mapping function that returns another Result.
     /// </summary>
     /// <typeparam name="TResult">The type of the value in the resulting Result.</typeparam>
@@ -57,6 +88,19 @@ public readonly record struct Result<T>
     public Result<TResult> FlatMap<TResult>(Func<T, Result<TResult>> map)
     {
         return Match(Result<TResult>.Failure, map);
+    }
+
+    /// <summary>
+    /// Asynchronously transforms the value of a successful result using the provided asynchronous mapping function that returns another Result.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the value in the resulting Result.</typeparam>
+    /// <param name="map">Asynchronous function to transform the value into another Result.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the Result returned by the mapping function if the original result was a success; otherwise, a failure.</returns>
+    public async Task<Result<TResult>> FlatMapAsync<TResult>(Func<T, Task<Result<TResult>>> map)
+    {
+        return await MatchAsync(
+            async f => await Task.FromResult(Result<TResult>.Failure(f)),
+            async v => await map(v));
     }
 
     /// <summary>
