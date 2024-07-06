@@ -67,6 +67,19 @@ public readonly record struct Result<T>
     }
 
     /// <summary>
+    /// Asynchronously transforms the value of a successful result using the provided asynchronous mapping function.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the value after the mapping.</typeparam>
+    /// <param name="map">Asynchronous function to transform the value.</param>
+    /// <returns>A task that represents the asynchronous operation, containing a new Result with the transformed value if the original result was a success; otherwise, a failure.</returns>
+    public async Task<Result<TResult>> MapAsync<TResult>(Func<T, Task<TResult>> map)
+    {
+        return await MatchAsync(
+            async f => await Task.FromResult(Result<TResult>.Failure(f)),
+            async v => Result<TResult>.Success(await map(v)));
+    }
+
+    /// <summary>
     /// Transforms the value of a successful result using the provided mapping function that returns another Result.
     /// </summary>
     /// <typeparam name="TResult">The type of the value in the resulting Result.</typeparam>
