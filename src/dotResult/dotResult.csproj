@@ -8,6 +8,7 @@
 
         <RootNamespace>DotResult</RootNamespace>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <PackageId>dotResult</PackageId>
         <Version>0.0.1</Version>
         <Title>dotResult</Title>
@@ -24,6 +25,14 @@
     <ItemGroup>
         <None Include="..\..\README.md" Pack="true" PackagePath=""/>
         <None Include="..\..\LICENSE" Pack="true" PackagePath=""/>
+        <AdditionalFiles Include="Stylecop.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
 
 </Project>
