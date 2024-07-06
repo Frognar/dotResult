@@ -76,6 +76,25 @@ public readonly record struct Failure
     }
 
     /// <summary>
+    /// Creates a validation failure with optional code, message, and metadata.
+    /// </summary>
+    /// <param name="code">The code of the failure.</param>
+    /// <param name="message">The message of the failure.</param>
+    /// <param name="metadata">The metadata associated with the failure.</param>
+    /// <returns>A validation failure instance.</returns>
+    public static Failure Validation(
+        string code = "General.Validation",
+        string message = "A validation failure has occurred.",
+        IDictionary<string, object>? metadata = null)
+    {
+        return new Failure(
+            code,
+            message,
+            FailureType.Validation,
+            new ReadOnlyDictionary<string, object>(metadata ?? new Dictionary<string, object>()));
+    }
+
+    /// <summary>
     /// Creates a custom failure with the specified code, message, type, and optional metadata.
     /// </summary>
     /// <param name="code">The code of the failure.</param>

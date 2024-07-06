@@ -14,4 +14,9 @@ public static class FailureType
     /// Represents a not found failure type.
     /// </summary>
     public const string NotFound = "NotFound";
+
+    /// <summary>
+    /// Represents a validation failure type.
+    /// </summary>
+    public const string Validation = "Validation";
 }

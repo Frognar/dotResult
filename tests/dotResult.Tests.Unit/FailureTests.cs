@@ -30,6 +30,14 @@ public class FailureTests
     }
 
     [Fact]
+    public void CanCreateValidationFailure()
+    {
+        Failure failure = Failure.Validation(ErrorCode, ErrorMessage, Metadata);
+
+        AssertFailure(failure, expectedErrorType: FailureType.Validation);
+    }
+
+    [Fact]
     public void CanCreateCustomFailure()
     {
         Failure failure = Failure.Custom(ErrorCode, ErrorMessage, "Custom", Metadata);
