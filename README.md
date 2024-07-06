@@ -161,6 +161,18 @@ static void HandleResult(Result<int> result)
 }
 ```
 
+## Query syntax
+
+```csharp
+var result =
+    from fileData in ReadFile("config.txt")
+    from config in ParseConfig(fileData)
+    from calculatedResult in CalculateResult(config)
+    select calculatedResult;
+
+HandleResult(result);
+```
+
 # Contribution
 
 If you would like to contribute to this project, check out [CONTRIBUTING](https://github.com/Frognar/dotResult/blob/main/CONTRIBUTING.md) file.
