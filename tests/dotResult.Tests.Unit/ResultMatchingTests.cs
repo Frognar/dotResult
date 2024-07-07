@@ -42,4 +42,22 @@ public class ResultMatchingTests
             .Should()
             .Be(value.Item.Length);
     }
+
+    [Property]
+    public async Task CanAsynchronouslyTransformValueUsingMatchAsync(NonNegativeInt value)
+    {
+        (await Success.From(value.Item)
+                .MatchAsync(_ => -1, async v => await Task.FromResult(v)))
+            .Should()
+            .Be(value.Item);
+    }
+
+    [Property]
+    public async Task CanSynchronouslyTransformFailureUsingMatchAsync(NonEmptyString value)
+    {
+        (await Fail.OfType<int>(Failure.Fatal(message: value.Item))
+                .MatchAsync(f => f.Message.Length, _ => Task.FromResult(-1)))
+            .Should()
+            .Be(value.Item.Length);
+    }
 }
