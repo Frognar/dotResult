@@ -49,8 +49,8 @@ public readonly record struct Result<T>
     {
         return _result switch
         {
-            SuccessType successType => await success(successType.Value),
-            FailureType failureType => await failure(failureType.Value),
+            SuccessType successType => await success(successType.Value).ConfigureAwait(false),
+            FailureType failureType => await failure(failureType.Value).ConfigureAwait(false),
             _ => throw new InvalidOperationException("Reached an invalid state in Match."),
         };
     }
