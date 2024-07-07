@@ -92,8 +92,8 @@ public readonly record struct Result<T>
     public async Task<Result<TResult>> MapAsync<TResult>(Func<T, Task<TResult>> map)
     {
         return await MatchAsync(
-            async f => await Task.FromResult(Result<TResult>.Failure(f)),
-            async v => Result<TResult>.Success(await map(v)));
+            f => Result<TResult>.Failure(f),
+            async v => Result<TResult>.Success(await map(v).ConfigureAwait(false)));
     }
 
     /// <summary>
@@ -116,8 +116,8 @@ public readonly record struct Result<T>
     public async Task<Result<TResult>> FlatMapAsync<TResult>(Func<T, Task<Result<TResult>>> map)
     {
         return await MatchAsync(
-            async f => await Task.FromResult(Result<TResult>.Failure(f)),
-            async v => await map(v));
+            f => Result<TResult>.Failure(f),
+            async v => await map(v).ConfigureAwait(false));
     }
 
     /// <summary>
