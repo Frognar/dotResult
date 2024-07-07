@@ -133,6 +133,18 @@ public readonly record struct Result<T>
     }
 
     /// <summary>
+    /// Asynchronously applies a selector function to the value of a successful result, returning a new result with the transformed value.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the value in the resulting Result.</typeparam>
+    /// <param name="selector">The asynchronous function to transform the value.</param>
+    /// <returns>A task that represents the asynchronous operation, containing a new Result with the transformed value if the original result was a success; otherwise, a failure.</returns>
+    /// <remarks>This method enables query syntax for the Result type.</remarks>
+    public async Task<Result<TResult>> Select<TResult>(Func<T, Task<TResult>> selector)
+    {
+        return await MapAsync(selector).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Projects the value of a successful result into a new result, flattens the result, and applies a final projection.
     /// </summary>
     /// <typeparam name="TResult">The type of the value in the resulting Result.</typeparam>

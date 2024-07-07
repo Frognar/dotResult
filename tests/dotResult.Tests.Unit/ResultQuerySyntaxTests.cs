@@ -18,6 +18,39 @@ public class ResultQuerySyntaxTests
     }
 
     [Property]
+    public async Task CanUseQuerySyntaxToMapValueWithFunctionReturningTask(int value)
+    {
+        var result = await (
+            from v in Validate(value)
+            select Task.FromResult(v + 2));
+
+        result.Should()
+            .Be(Validate(value).Map(v => v + 2));
+    }
+
+    [Property]
+    public async Task CanUseQuerySyntaxToMapValueInTaskResult(int value)
+    {
+        var result = await (
+            from v in Task.FromResult(Validate(value))
+            select v + 2);
+
+        result.Should()
+            .Be(Validate(value).Map(v => v + 2));
+    }
+
+    [Property]
+    public async Task CanUseQuerySyntaxToMapValueInTaskResultWithFunctionReturningTask(int value)
+    {
+        var result = await (
+            from v in Task.FromResult(Validate(value))
+            select Task.FromResult(v + 2));
+
+        result.Should()
+            .Be(Validate(value).Map(v => v + 2));
+    }
+
+    [Property]
     public void CanUseQuerySyntaxToFlatMapValue(int value, int otherValue)
     {
         var result =
