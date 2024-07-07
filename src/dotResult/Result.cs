@@ -49,8 +49,25 @@ public readonly record struct Result<T>
     {
         return _result switch
         {
-            SuccessType successType => await success(successType.Value),
-            FailureType failureType => await failure(failureType.Value),
+            SuccessType successType => await success(successType.Value).ConfigureAwait(false),
+            FailureType failureType => await failure(failureType.Value).ConfigureAwait(false),
+            _ => throw new InvalidOperationException("Reached an invalid state in Match."),
+        };
+    }
+
+    /// <summary>
+    /// Asynchronously matches the result and executes the appropriate function based on whether the result is a success or a failure.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the return value.</typeparam>
+    /// <param name="failure">Function to execute if the result is a failure.</param>
+    /// <param name="success">Asynchronous function to execute if the result is a success.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the result of the executed function.</returns>
+    public async Task<TResult> MatchAsync<TResult>(Func<Failure, TResult> failure, Func<T, Task<TResult>> success)
+    {
+        return _result switch
+        {
+            SuccessType successType => await success(successType.Value).ConfigureAwait(false),
+            FailureType failureType => failure(failureType.Value),
             _ => throw new InvalidOperationException("Reached an invalid state in Match."),
         };
     }
@@ -75,8 +92,8 @@ public readonly record struct Result<T>
     public async Task<Result<TResult>> MapAsync<TResult>(Func<T, Task<TResult>> map)
     {
         return await MatchAsync(
-            async f => await Task.FromResult(Result<TResult>.Failure(f)),
-            async v => Result<TResult>.Success(await map(v)));
+            f => Result<TResult>.Failure(f),
+            async v => Result<TResult>.Success(await map(v).ConfigureAwait(false)));
     }
 
     /// <summary>
@@ -99,8 +116,8 @@ public readonly record struct Result<T>
     public async Task<Result<TResult>> FlatMapAsync<TResult>(Func<T, Task<Result<TResult>>> map)
     {
         return await MatchAsync(
-            async f => await Task.FromResult(Result<TResult>.Failure(f)),
-            async v => await map(v));
+            f => Result<TResult>.Failure(f),
+            async v => await map(v).ConfigureAwait(false));
     }
 
     /// <summary>
