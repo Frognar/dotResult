@@ -51,7 +51,7 @@ public class ResultQuerySyntaxTests
     }
 
     [Property]
-    public void CanUseQuerySyntaxToFlatMapValue(int value, int otherValue)
+    public void CanUseQuerySyntaxToBindValue(int value, int otherValue)
     {
         var result =
             from v1 in Validate(value)
@@ -59,11 +59,11 @@ public class ResultQuerySyntaxTests
             select v1 + v2;
 
         result.Should()
-            .Be(Validate(value).FlatMap(v1 => Validate(otherValue).Map(v2 => v1 + v2)));
+            .Be(Validate(value).Bind(v1 => Validate(otherValue).Map(v2 => v1 + v2)));
     }
 
     [Property]
-    public async Task CanUseQuerySyntaxToFlatMapValueWithFinalFunctionReturningTask(int value, int otherValue)
+    public async Task CanUseQuerySyntaxToBindValueWithFinalFunctionReturningTask(int value, int otherValue)
     {
         var result = await (
             from v1 in Validate(value)
@@ -71,11 +71,11 @@ public class ResultQuerySyntaxTests
             select Task.FromResult(v1 + v2));
 
         result.Should()
-            .Be(Validate(value).FlatMap(v1 => Validate(otherValue).Map(v2 => v1 + v2)));
+            .Be(Validate(value).Bind(v1 => Validate(otherValue).Map(v2 => v1 + v2)));
     }
 
     [Property]
-    public async Task CanUseQuerySyntaxToFlatMapValueWithIntermediateFunctionReturningTask(int value, int otherValue)
+    public async Task CanUseQuerySyntaxToBindValueWithIntermediateFunctionReturningTask(int value, int otherValue)
     {
         var result = await (
             from v1 in Validate(value)
@@ -83,11 +83,11 @@ public class ResultQuerySyntaxTests
             select v1 + v2);
 
         result.Should()
-            .Be(Validate(value).FlatMap(v1 => Validate(otherValue).Map(v2 => v1 + v2)));
+            .Be(Validate(value).Bind(v1 => Validate(otherValue).Map(v2 => v1 + v2)));
     }
 
     [Property]
-    public async Task CanUseQuerySyntaxToFlatMapValueWithBothFunctionsReturningTask(int value, int otherValue)
+    public async Task CanUseQuerySyntaxToBindValueWithBothFunctionsReturningTask(int value, int otherValue)
     {
         var result = await (
             from v1 in Validate(value)
@@ -95,11 +95,11 @@ public class ResultQuerySyntaxTests
             select Task.FromResult(v1 + v2));
 
         result.Should()
-            .Be(Validate(value).FlatMap(v1 => Validate(otherValue).Map(v2 => v1 + v2)));
+            .Be(Validate(value).Bind(v1 => Validate(otherValue).Map(v2 => v1 + v2)));
     }
 
     [Property]
-    public async Task CanUseQuerySyntaxToFlatMapValueInTaskResult(int value, int otherValue)
+    public async Task CanUseQuerySyntaxToBindValueInTaskResult(int value, int otherValue)
     {
         var result = await (
             from v1 in Task.FromResult(Validate(value))
@@ -107,11 +107,11 @@ public class ResultQuerySyntaxTests
             select v1 + v2);
 
         result.Should()
-            .Be(Validate(value).FlatMap(v1 => Validate(otherValue).Map(v2 => v1 + v2)));
+            .Be(Validate(value).Bind(v1 => Validate(otherValue).Map(v2 => v1 + v2)));
     }
 
     [Property]
-    public async Task CanUseQuerySyntaxToFlatMapValueWithFinalFunctionReturningTaskInTaskResult(
+    public async Task CanUseQuerySyntaxToBindValueWithFinalFunctionReturningTaskInTaskResult(
         int value,
         int otherValue)
     {
@@ -121,11 +121,11 @@ public class ResultQuerySyntaxTests
             select Task.FromResult(v1 + v2));
 
         result.Should()
-            .Be(Validate(value).FlatMap(v1 => Validate(otherValue).Map(v2 => v1 + v2)));
+            .Be(Validate(value).Bind(v1 => Validate(otherValue).Map(v2 => v1 + v2)));
     }
 
     [Property]
-    public async Task CanUseQuerySyntaxToFlatMapValueWithIntermediateFunctionReturningTaskInTaskResult(
+    public async Task CanUseQuerySyntaxToBindValueWithIntermediateFunctionReturningTaskInTaskResult(
         int value,
         int otherValue)
     {
@@ -135,11 +135,11 @@ public class ResultQuerySyntaxTests
             select v1 + v2);
 
         result.Should()
-            .Be(Validate(value).FlatMap(v1 => Validate(otherValue).Map(v2 => v1 + v2)));
+            .Be(Validate(value).Bind(v1 => Validate(otherValue).Map(v2 => v1 + v2)));
     }
 
     [Property]
-    public async Task CanUseQuerySyntaxToFlatMapValueWithBothFunctionsReturningTaskInTaskResult(
+    public async Task CanUseQuerySyntaxToBindValueWithBothFunctionsReturningTaskInTaskResult(
         int value,
         int otherValue)
     {
@@ -149,7 +149,7 @@ public class ResultQuerySyntaxTests
             select Task.FromResult(v1 + v2));
 
         result.Should()
-            .Be(Validate(value).FlatMap(v1 => Validate(otherValue).Map(v2 => v1 + v2)));
+            .Be(Validate(value).Bind(v1 => Validate(otherValue).Map(v2 => v1 + v2)));
     }
 
     private static Result<int> Validate(int value) => value > 0

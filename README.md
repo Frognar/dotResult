@@ -33,8 +33,8 @@ static void HandleResult(Result<int> result)
 ## Chaining operations
 ```csharp
 var result = ReadFile("config.txt")
-    .FlatMap(ParseConfig)
-    .FlatMap(CalculateResult);
+    .Bind(ParseConfig)
+    .Bind(CalculateResult);
 
 HandleResult(result);
 

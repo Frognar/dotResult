@@ -59,7 +59,7 @@ public static class ResultExtensions
         Func<T, TIntermediate, TResult> projector)
     {
         var result = await source.ConfigureAwait(false);
-        return result.FlatMap(x => selector(x).Map(y => projector(x, y)));
+        return result.Bind(x => selector(x).Map(y => projector(x, y)));
     }
 
     /// <summary>
@@ -79,7 +79,7 @@ public static class ResultExtensions
         Func<T, TIntermediate, Task<TResult>> projector)
     {
         var result = await source.ConfigureAwait(false);
-        return await result.FlatMapAsync(x => selector(x).MapAsync(y => projector(x, y))).ConfigureAwait(false);
+        return await result.BindAsync(x => selector(x).MapAsync(y => projector(x, y))).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ public static class ResultExtensions
         Func<T, TIntermediate, TResult> projector)
     {
         var result = await source.ConfigureAwait(false);
-        return await result.FlatMapAsync(async x => (await selector(x).ConfigureAwait(false)).Map(y => projector(x, y)));
+        return await result.BindAsync(async x => (await selector(x).ConfigureAwait(false)).Map(y => projector(x, y)));
     }
 
     /// <summary>
@@ -119,7 +119,7 @@ public static class ResultExtensions
         Func<T, TIntermediate, Task<TResult>> projector)
     {
         var result = await source.ConfigureAwait(false);
-        return await result.FlatMapAsync(
+        return await result.BindAsync(
                 async x => await (await selector(x).ConfigureAwait(false))
                     .MapAsync(y => projector(x, y)))
             .ConfigureAwait(false);
