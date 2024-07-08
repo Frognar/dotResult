@@ -10,7 +10,7 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <PackageId>dotResult</PackageId>
-        <Version>0.3.0</Version>
+        <Version>0.4.0</Version>
         <Title>dotResult</Title>
         <Description>dotResult is a lightweight and intuitive implementation of the Result monad for the .NET platform. It simplifies error handling and value propagation in a functional way, improving code readability and safety.</Description>
         <Copyright>Frognar 2024</Copyright>
@@ -29,7 +29,13 @@
           - async mapping (MapAsync)
           - async binding (FlatMapAsync)
           v0.3.0
-          - support for async Query Syntax in Resulyt
+          - support for async Query Syntax in Result
+          v0.4.0
+          - add IsSuccess and IsFailure properties
+          - add Map2 function
+          - add Map3 function
+          Breaking changes:
+          - rename FlatMap to Bind
         </PackageReleaseNotes>
     </PropertyGroup>
 
