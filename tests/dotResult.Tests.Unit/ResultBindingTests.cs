@@ -5,42 +5,42 @@ using FsCheck.Xunit;
 
 namespace dotResult.Tests.Unit;
 
-public class ResultFlatMappingTests
+public class ResultBindingTests
 {
     [Property]
-    public void CanTransformValueUsingFlatMap(int value, int value2)
+    public void CanTransformValueUsingBind(int value, int value2)
     {
         Success.From(value)
-            .FlatMap(v => Divide(v, value2))
+            .Bind(v => Divide(v, value2))
             .Should()
             .Be(Divide(value, value2));
     }
 
     [Property]
-    public void CanPropagateFailureUsingFlatMap(NonEmptyString value)
+    public void CanPropagateFailureUsingBind(NonEmptyString value)
     {
         var failure = Failure.Fatal(message: value.Item);
         Fail.OfType<string>(failure)
-            .FlatMap(v => Success.From(v.Length))
+            .Bind(v => Success.From(v.Length))
             .Should()
             .Be(Fail.OfType<int>(failure));
     }
 
     [Property]
-    public async Task CanTransformValueUsingFlatMapAsync(int value, int value2)
+    public async Task CanTransformValueUsingBindAsync(int value, int value2)
     {
         (await Success.From(value)
-                .FlatMapAsync(async v => await Task.FromResult(Divide(v, value2))))
+                .BindAsync(async v => await Task.FromResult(Divide(v, value2))))
             .Should()
             .Be(Divide(value, value2));
     }
 
     [Property]
-    public async Task CanPropagateFailureUsingFlatMapAsync(NonEmptyString value)
+    public async Task CanPropagateFailureUsingBindAsync(NonEmptyString value)
     {
         var failure = Failure.Fatal(message: value.Item);
         (await Fail.OfType<string>(failure)
-                .FlatMapAsync(async v => await Task.FromResult(Success.From(v.Length))))
+                .BindAsync(async v => await Task.FromResult(Success.From(v.Length))))
             .Should()
             .Be(Fail.OfType<int>(failure));
     }

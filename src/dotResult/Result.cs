@@ -102,7 +102,7 @@ public readonly record struct Result<T>
     /// <typeparam name="TResult">The type of the value in the resulting Result.</typeparam>
     /// <param name="map">Function to transform the value into another Result.</param>
     /// <returns>The Result returned by the mapping function if the original result was a success; otherwise, a failure.</returns>
-    public Result<TResult> FlatMap<TResult>(Func<T, Result<TResult>> map)
+    public Result<TResult> Bind<TResult>(Func<T, Result<TResult>> map)
     {
         return Match(Result<TResult>.Failure, map);
     }
@@ -113,7 +113,7 @@ public readonly record struct Result<T>
     /// <typeparam name="TResult">The type of the value in the resulting Result.</typeparam>
     /// <param name="map">Asynchronous function to transform the value into another Result.</param>
     /// <returns>A task that represents the asynchronous operation, containing the Result returned by the mapping function if the original result was a success; otherwise, a failure.</returns>
-    public async Task<Result<TResult>> FlatMapAsync<TResult>(Func<T, Task<Result<TResult>>> map)
+    public async Task<Result<TResult>> BindAsync<TResult>(Func<T, Task<Result<TResult>>> map)
     {
         return await MatchAsync(
             f => Result<TResult>.Failure(f),
@@ -157,7 +157,7 @@ public readonly record struct Result<T>
         Func<T, Result<TIntermediate>> selector,
         Func<T, TIntermediate, TResult> projector)
     {
-        return FlatMap(x => selector(x).Map(y => projector(x, y)));
+        return Bind(x => selector(x).Map(y => projector(x, y)));
     }
 
     /// <summary>
@@ -173,7 +173,7 @@ public readonly record struct Result<T>
         Func<T, Result<TIntermediate>> selector,
         Func<T, TIntermediate, Task<TResult>> projector)
     {
-        return await FlatMapAsync(x => selector(x).MapAsync(y => projector(x, y))).ConfigureAwait(false);
+        return await BindAsync(x => selector(x).MapAsync(y => projector(x, y))).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -189,7 +189,7 @@ public readonly record struct Result<T>
         Func<T, Task<Result<TIntermediate>>> selector,
         Func<T, TIntermediate, TResult> projector)
     {
-        return await FlatMapAsync(async x => (await selector(x).ConfigureAwait(false)).Map(y => projector(x, y)))
+        return await BindAsync(async x => (await selector(x).ConfigureAwait(false)).Map(y => projector(x, y)))
             .ConfigureAwait(false);
     }
 
@@ -206,7 +206,7 @@ public readonly record struct Result<T>
         Func<T, Task<Result<TIntermediate>>> selector,
         Func<T, TIntermediate, Task<TResult>> projector)
     {
-        return await FlatMapAsync(
+        return await BindAsync(
                 async x => await (await selector(x).ConfigureAwait(false))
                     .MapAsync(y => projector(x, y))
                     .ConfigureAwait(false))
