@@ -22,6 +22,16 @@ public readonly record struct Result<T>
     private interface IResult;
 
     /// <summary>
+    /// Gets a value indicating whether the result represents a success.
+    /// </summary>
+    public bool IsSuccess => _result is SuccessType;
+
+    /// <summary>
+    /// Gets a value indicating whether the result represents a failure.
+    /// </summary>
+    public bool IsFailure => _result is FailureType;
+
+    /// <summary>
     /// Matches the result and executes the appropriate function based on whether the result is a success or a failure.
     /// </summary>
     /// <typeparam name="TResult">The type of the return value.</typeparam>
