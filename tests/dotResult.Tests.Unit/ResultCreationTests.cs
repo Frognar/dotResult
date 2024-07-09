@@ -23,4 +23,26 @@ public class ResultCreationTests
             .Should()
             .Be(Fail.OfType<int>(failure));
     }
+
+    [Property]
+    public void CanImplicitlyConvertTToResultOfT(int value)
+    {
+        Result<int> result = value;
+
+        result
+            .Should()
+            .Be(Success.From(value));
+    }
+
+    [Property]
+    public void CanImplicitlyConvertFailureToResultOfT(NonEmptyString message)
+    {
+        var failure = Failure.Fatal(message: message.Item);
+
+        Result<int> result = failure;
+
+        result
+            .Should()
+            .Be(Fail.OfType<int>(failure));
+    }
 }
