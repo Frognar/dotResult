@@ -39,7 +39,7 @@
           - rename FlatMap to Bind
           v0.5.0
           - add implicit conversion from T to Result of T
-          - add implicit conversion from Failute to Result of T
+          - add implicit conversion from Failure to Result of T
           - make metadata printable in Failure ToString method
         </PackageReleaseNotes>
     </PropertyGroup>
