@@ -32,6 +32,13 @@ public readonly record struct Result<T>
     public bool IsFailure => _result is FailureType;
 
     /// <summary>
+    /// Creates a new success result.
+    /// </summary>
+    /// <param name="value">The value of the success result.</param>
+    /// <returns>A new success result containing the provided value.</returns>
+    public static implicit operator Result<T>(T value) => Success(value);
+
+    /// <summary>
     /// Matches the result and executes the appropriate function based on whether the result is a success or a failure.
     /// </summary>
     /// <typeparam name="TResult">The type of the return value.</typeparam>
