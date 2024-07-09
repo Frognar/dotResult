@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 
 namespace DotResult;
 
@@ -146,5 +147,20 @@ public readonly record struct Failure
             hashCode = (hashCode * 397) ^ Metadata.GetHashCode();
             return hashCode;
         }
+    }
+
+    private bool PrintMembers(StringBuilder builder)
+    {
+        builder.Append("Code = ");
+        builder.Append(Code);
+        builder.Append(", Message = ");
+        builder.Append(Message);
+        builder.Append(", Type = ");
+        builder.Append(Type);
+        builder.Append(", Metadata = ");
+        builder.Append("{ ");
+        builder.Append(string.Join(", ", Metadata.Select(kvp => $"{kvp.Key} = {kvp.Value}")));
+        builder.Append(" }");
+        return true;
     }
 }
