@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace DotResult;
 
@@ -49,11 +47,7 @@ public readonly record struct Failure
         string message = "A fatal failure has occurred.",
         IDictionary<string, object>? metadata = null)
     {
-        return new Failure(
-            code,
-            message,
-            FailureType.Fatal,
-            new ReadOnlyDictionary<string, object>(metadata ?? new Dictionary<string, object>()));
+        return new Failure(code, message, FailureType.Fatal, MetadataDictionary.Create(metadata));
     }
 
     /// <summary>
@@ -68,11 +62,7 @@ public readonly record struct Failure
         string message = "A not found failure has occurred.",
         IDictionary<string, object>? metadata = null)
     {
-        return new Failure(
-            code,
-            message,
-            FailureType.NotFound,
-            new ReadOnlyDictionary<string, object>(metadata ?? new Dictionary<string, object>()));
+        return new Failure(code, message, FailureType.NotFound, MetadataDictionary.Create(metadata));
     }
 
     /// <summary>
@@ -87,11 +77,7 @@ public readonly record struct Failure
         string message = "A validation failure has occurred.",
         IDictionary<string, object>? metadata = null)
     {
-        return new Failure(
-            code,
-            message,
-            FailureType.Validation,
-            new ReadOnlyDictionary<string, object>(metadata ?? new Dictionary<string, object>()));
+        return new Failure(code, message, FailureType.Validation, MetadataDictionary.Create(metadata));
     }
 
     /// <summary>
@@ -108,43 +94,6 @@ public readonly record struct Failure
         string type,
         IDictionary<string, object>? metadata = null)
     {
-        return new Failure(
-            code,
-            message,
-            type,
-            new ReadOnlyDictionary<string, object>(metadata ?? new Dictionary<string, object>()));
-    }
-
-    /// <summary>
-    /// Determines whether the specified Failure is equal to the current Failure.
-    /// </summary>
-    /// <param name="other">The Failure to compare with the current Failure.</param>
-    /// <returns><c>true</c> if the specified Failure is equal to the current Failure; otherwise, <c>false</c>.</returns>
-    public bool Equals(Failure other)
-    {
-        if (Code != other.Code || Message != other.Message || Type != other.Type)
-        {
-            return false;
-        }
-
-        return Metadata.Count == other.Metadata.Count
-               && Metadata.All(entry => other.Metadata.TryGetValue(entry.Key, out object? otherValue)
-                                        && otherValue == entry.Value);
-    }
-
-    /// <summary>
-    /// Serves as the default hash function.
-    /// </summary>
-    /// <returns>A hash code for the current Failure.</returns>
-    public override int GetHashCode()
-    {
-        unchecked
-        {
-            int hashCode = Code.GetHashCode();
-            hashCode = (hashCode * 397) ^ Message.GetHashCode();
-            hashCode = (hashCode * 397) ^ Type.GetHashCode();
-            hashCode = (hashCode * 397) ^ Metadata.GetHashCode();
-            return hashCode;
-        }
+        return new Failure(code, message, type, MetadataDictionary.Create(metadata));
     }
 }
