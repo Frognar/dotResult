@@ -10,7 +10,7 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <PackageId>dotResult</PackageId>
-        <Version>0.4.0</Version>
+        <Version>0.5.0</Version>
         <Title>dotResult</Title>
         <Description>dotResult is a lightweight and intuitive implementation of the Result monad for the .NET platform. It simplifies error handling and value propagation in a functional way, improving code readability and safety.</Description>
         <Copyright>Frognar 2024</Copyright>
@@ -21,6 +21,7 @@
         <RepositoryType>git</RepositoryType>
         <PackageTags>Result, Monad, Monads, C#, Try, Results, ErrorHandling, Error, Errors</PackageTags>
         <PackageReleaseNotes>
+
           v0.1.0:
           - support for sync Query Syntax in Result
           - validation failure
@@ -36,6 +37,10 @@
           - add Map3 function
           Breaking changes:
           - rename FlatMap to Bind
+          v0.5.0
+          - add implicit conversion from T to Result of T
+          - add implicit conversion from Failute to Result of T
+          - make metadata printable in Failure ToString method
         </PackageReleaseNotes>
     </PropertyGroup>
 
