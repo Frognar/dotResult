@@ -145,6 +145,16 @@ public readonly record struct Result<T>
     }
 
     /// <summary>
+    /// Returns the value of the result if it is a success; otherwise, returns the specified default value.
+    /// </summary>
+    /// <param name="defaultValue">The default value to return if the result is a failure.</param>
+    /// <returns>The value of the result if it is a success; otherwise, the specified default value.</returns>
+    public T OrDefault(T defaultValue)
+    {
+        return Match(_ => defaultValue, v => v);
+    }
+
+    /// <summary>
     /// Applies a selector function to the value of a successful result, returning a new result with the transformed value.
     /// </summary>
     /// <typeparam name="TResult">The type of the value in the resulting Result.</typeparam>
