@@ -155,6 +155,16 @@ public readonly record struct Result<T>
     }
 
     /// <summary>
+    /// Returns the value of the result if it is a success; otherwise, returns the value provided by the specified default value factory.
+    /// </summary>
+    /// <param name="defaultFactory">The function to provide the default value if the result is a failure.</param>
+    /// <returns>The value of the result if it is a success; otherwise, the value provided by the specified default value factory.</returns>
+    public T OrDefault(Func<T> defaultFactory)
+    {
+        return Match(_ => defaultFactory(), v => v);
+    }
+
+    /// <summary>
     /// Applies a selector function to the value of a successful result, returning a new result with the transformed value.
     /// </summary>
     /// <typeparam name="TResult">The type of the value in the resulting Result.</typeparam>
