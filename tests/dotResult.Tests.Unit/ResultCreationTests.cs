@@ -45,4 +45,21 @@ public class ResultCreationTests
             .Should()
             .Be(Fail.OfType<int>(failure));
     }
+
+    [Property]
+    public void CanConvertTToResultOfT(int value)
+    {
+        value.ToResult()
+            .Should()
+            .Be(Success.From(value));
+    }
+
+    [Property]
+    public void CanConvertFailureToResultOfT(NonEmptyString value)
+    {
+        var failure = Failure.Fatal(message: value.Item);
+        failure.ToResult<string>()
+            .Should()
+            .Be(Fail.OfType<string>(failure));
+    }
 }
