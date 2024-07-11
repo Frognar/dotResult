@@ -10,167 +10,95 @@ If you find this project valuable, please consider giving it a star! Your suppor
 
 # How to use
 
-## Basic usage
+## Creation
 
 ```csharp
 Result<string> successResult = Success.From("Hello, World!");
 Result<string> failureResult = Fail.OfType<string>(Failure.NotFound());
 
-HandleResult(successResult); // Operation succeeded with result: Hello, World!
-HandleResult(failureResult); // Operation failed with error: A not found failure has occurred.
+Result<string> otherSuccessResult = "Hello, World!";
+Result<string> otherFailureResult = Failure.NotFound();
 
-static void HandleResult(Result<int> result)
+Result<string> yetAnotherSuccessResult = "Hello, World!".ToResult();
+Result<string> yetAnotherFailureResult = Failure.NotFound().ToResult<string>();
+```
+
+## Retrieving value
+```csharp
+int successValue = successResult.Match(failure => failure.Code.Length, success: v => v.Length); // 13
+int failureValue = failureResult.Match(failure => failure.Code.Length, success: v => v.Length); // 16 (default not found code is "General.NotFound")
+
+string otherSuccessValue  = otherSuccessResult.OrDefault("default"); // "Hello, World!"
+string otherFailureValue = otherFailureResult.OrDefault("default"); // "default"
+
+string yetAnotherSuccessValue = yetAnotherSuccessResult.OrDefault(() => "default"); // "Hello, World!"
+string yetAnotherFailureValue = yetAnotherFailureResult.OrDefault(() => "default"); // "default"
+```
+
+## Checking result state
+```csharp
+if (successResult.IsSuccess)
 {
-    var message = result.Match(
-        failure => $"Operation failed with error: {failure.Message}",
-        success => $"Operation succeeded with result: {success}"
-    );
+    // some logic
+}
 
-    Console.WriteLine(message);
+if (failureResult.IsFailure)
+{
+    // some logic
 }
 ```
 
 ## Chaining operations
 ```csharp
-var result = ReadFile("config.txt")
-    .Bind(ParseConfig)
-    .Bind(CalculateResult);
 
-HandleResult(result);
+otherSuccessResult
+    .Map(v => v.Length) // Result<int> of 13
+    .Bind(v => v > 20 ? Success.From(v) : Fail.OfType<int>(Failure.Validation())); // Result<int> of Failure.Validation
 
-private static Result<string> ReadFile(string path)
-{
-    try
-    {
-        var content = File.ReadAllText(path);
-        return Success.From(content);
-    }
-    catch (Exception ex)
-    {
-        return Fail.OfType<string>(Failure.Custom(
-            code: "File.ReadError",
-            message: ex.Message,
-            type: "IO"
-        ));
-    }
-}
-
-private static Result<Config> ParseConfig(string content)
-{
-    try
-    {
-        var lines = content.Split(Environment.NewLine);
-        var config = new Config
-        {
-            Value = int.Parse(lines[0]) // Assuming the first line is an integer
-        };
-        return Success.From(config);
-    }
-    catch (Exception ex)
-    {
-        return Fail.OfType<Config>(Failure.Custom(
-            code: "Config.ParseError",
-            message: "Failed to parse configuration: " + ex.Message,
-            type: "Parsing"
-        ));
-    }
-}
-
-private static Result<int> CalculateResult(Config config)
-{
-    if (config.Value < 0)
-    {
-        return Fail.OfType<int>(Failure.Custom(
-            code: "Calculation.Error",
-            message: "Configuration value must be non-negative",
-            type: "Validation"
-        ));
-    }
-
-    // Perform some calculation
-    return Success.From(config.Value * 2);
-}
-
-private static void HandleResult(Result<int> result)
-{
-    var message = result.Match(
-        failure => $"Operation failed with error: {failure.Message}",
-        success => $"Operation succeeded with result: {success}"
-    );
-
-    Console.WriteLine(message);
-}
-
-public class Config
-{
-    public int Value { get; set; }
-}
-```
-
-## Replacing Exceptions
-
-### Without Result Monad (Using Exceptions)
-```csharp
-try
-{
-    var result = PerformOperation(5);
-    Console.WriteLine($"Operation succeeded with result: {result}");
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"Operation failed with error: {ex.Message}");
-}
-
-static int PerformOperation(int input)
-{
-    if (input < 0)
-    {
-        throw new ArgumentException("Input must be non-negative");
-    }
-
-    // Simulate some operation
-    return input * 2;
-}
-```
-
-### With Result
-
-```csharp
-var result = PerformOperation(5);
-HandleResult(result);
-
-static Result<int> PerformOperation(int input)
-{
-    if (input < 0)
-    {
-        return Fail.OfType<int>(Failure.Fatal(message: "Input must be non-negative"));
-    }
-
-    // Simulate some operation
-    return Success.From(input * 2);
-}
-
-static void HandleResult(Result<int> result)
-{
-    var message = result.Match(
-        failure => $"Operation failed with error: {failure.Message}",
-        success => $"Operation succeeded with result: {success}"
-    );
-
-    Console.WriteLine(message);
-}
+otherFailureResult
+    .Map(v => v.Length) // Result<int> of Failure.NotFound
+    .Bind(v => v > 20 ? Success.From(v) : Fail.OfType<int>(Failure.Validation())); // Result<int> of Failure.NotFound
 ```
 
 ## Query syntax
 
 ```csharp
-var result =
-    from fileData in ReadFile("config.txt")
-    from config in ParseConfig(fileData)
-    from calculatedResult in CalculateResult(config)
-    select calculatedResult;
+// Execute function if all results are in success state
+Result<int> finalSuccessResult =
+    from v1 in successResult
+    from v2 in otherSuccessResult
+    from v3 in yetAnotherSuccessResult
+    let v4 = "Hello, World!"
+    select v1.Length + v2.Length + v3.Length + v4.Length; // Result<int> of 52
 
-HandleResult(result);
+// Returns failure from first result in failure state
+Result<int> finalFailureResult =
+    from v1 in failureResult
+    from v2 in otherFailureResult
+    from v3 in yetAnotherFailureResult
+    let v4 = "Hello, World!"
+    select v1.Length + v2.Length + v3.Length + v4.Length; // Result<int> of Failure.NotFound
+```
+
+## Query syntax alternative
+
+```csharp
+
+// Execute function if all results are in success state
+Result<int> otherFinalSuccessResult =
+    Result.Map2(successResult, otherSuccessResult, (v1, v2) => v1.Length + v2.Length); // Result<int> of 26
+
+// Returns failure from first result in failure state
+Result<int> otherFinalFailureResult =
+    Result.Map2(failureResult, otherFailureResult, (v1, v2) => v1.Length + v2.Length); // Result<int> of Failure.NotFound
+
+// Execute function if all results are in success state
+Result<int> yetAnotherFinalSuccessResult =
+    Result.Map3(successResult, otherSuccessResult, yetAnotherFailureResult, (v1, v2, v3) => v1.Length + v2.Length + v3.Length); // Result<int> of 39
+
+// Returns failure from first result in failure state
+Result<int> yetAnotherFinalFailureResult =
+    Result.Map3(failureResult, otherFailureResult, yetAnotherFailureResult, (v1, v2, v3) => v1.Length + v2.Length + v3.Length); // Result<int> of Failure.NotFound
 ```
 
 # Contribution
