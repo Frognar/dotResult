@@ -323,4 +323,26 @@ public static class Result
     {
         return nested.Bind(v => v);
     }
+
+    /// <summary>
+    /// Converts a value to a successful <see cref="Result{T}"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="value">The value to convert.</param>
+    /// <returns>A successful result containing the specified value.</returns>
+    public static Result<T> ToResult<T>(this T value)
+    {
+        return Success.From(value);
+    }
+
+    /// <summary>
+    /// Converts a <see cref="Failure"/> to a failure <see cref="Result{T}"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the value in the resulting result.</typeparam>
+    /// <param name="failure">The failure to convert.</param>
+    /// <returns>A failure result containing the specified failure.</returns>
+    public static Result<T> ToResult<T>(this Failure failure)
+    {
+        return Fail.OfType<T>(failure);
+    }
 }
