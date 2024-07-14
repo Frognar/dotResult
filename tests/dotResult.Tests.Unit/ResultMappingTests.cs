@@ -28,7 +28,7 @@ public class ResultMappingTests
     }
 
     [Property]
-    public async Task CanTransformValueUsingMapAsync(NonEmptyString value)
+    public async Task CanAsynchronouslyTransformValueUsingMapAsync(NonEmptyString value)
     {
         (await Success.From(value.Item)
                 .MapAsync(async v => await Task.FromResult(v.Length)))
@@ -37,10 +37,48 @@ public class ResultMappingTests
     }
 
     [Property]
-    public async Task CanPropagateFailureUsingMapAsync(NonEmptyString value)
+    public async Task CanAsynchronouslyPropagateFailureUsingMapAsync(NonEmptyString value)
     {
         var failure = Failure.Fatal(message: value.Item);
         (await Fail.OfType<string>(failure)
+                .MapAsync(async v => await Task.FromResult(v.Length)))
+            .Should()
+            .Be(Fail.OfType<int>(failure));
+    }
+
+    [Property]
+    public async Task CanTransformValueUsingMapAsyncWhenResultIsTask(NonEmptyString value)
+    {
+        (await Task.FromResult(Success.From(value.Item))
+                .MapAsync(v => v.Length))
+            .Should()
+            .Be(Success.From(value.Item.Length));
+    }
+
+    [Property]
+    public async Task CanPropagateFailureUsingMapAsyncWhenResultIsTask(NonEmptyString value)
+    {
+        var failure = Failure.Fatal(message: value.Item);
+        (await Task.FromResult(Fail.OfType<string>(failure))
+                .MapAsync(v => v.Length))
+            .Should()
+            .Be(Fail.OfType<int>(failure));
+    }
+
+    [Property]
+    public async Task CanAsynchronouslyTransformValueUsingMapAsyncWhenResultIsTask(NonEmptyString value)
+    {
+        (await Task.FromResult(Success.From(value.Item))
+                .MapAsync(async v => await Task.FromResult(v.Length)))
+            .Should()
+            .Be(Success.From(value.Item.Length));
+    }
+
+    [Property]
+    public async Task CanAsynchronouslyPropagateFailureUsingMapAsyncWhenResultIsTask(NonEmptyString value)
+    {
+        var failure = Failure.Fatal(message: value.Item);
+        (await Task.FromResult(Fail.OfType<string>(failure))
                 .MapAsync(async v => await Task.FromResult(v.Length)))
             .Should()
             .Be(Fail.OfType<int>(failure));
