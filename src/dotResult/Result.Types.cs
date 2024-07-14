@@ -1,9 +1,5 @@
 ﻿namespace DotResult;
 
-/// <summary>
-/// Represents a result of an operation that can be either a success or a failure.
-/// </summary>
-/// <typeparam name="T">The type of the value in case of a success.</typeparam>
 public readonly partial record struct Result<T>
 {
     /// <summary>
