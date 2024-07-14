@@ -27,7 +27,7 @@ public class ResultBindingTests
     }
 
     [Property]
-    public async Task CanTransformValueUsingBindAsync(int value, int value2)
+    public async Task CanAsynchronouslyTransformValueUsingBindAsync(int value, int value2)
     {
         (await Success.From(value)
                 .BindAsync(async v => await Task.FromResult(Divide(v, value2))))
@@ -36,10 +36,48 @@ public class ResultBindingTests
     }
 
     [Property]
-    public async Task CanPropagateFailureUsingBindAsync(NonEmptyString value)
+    public async Task CanAsynchronouslyPropagateFailureUsingBindAsync(NonEmptyString value)
     {
         var failure = Failure.Fatal(message: value.Item);
         (await Fail.OfType<string>(failure)
+                .BindAsync(async v => await Task.FromResult(Success.From(v.Length))))
+            .Should()
+            .Be(Fail.OfType<int>(failure));
+    }
+
+    [Property]
+    public async Task CanTransformValueUsingBindAsyncWhenResultIsTask(int value, int value2)
+    {
+        (await Task.FromResult(Success.From(value))
+                .BindAsync(v => Divide(v, value2)))
+            .Should()
+            .Be(Divide(value, value2));
+    }
+
+    [Property]
+    public async Task CanPropagateFailureUsingBindAsyncWhenResultIsTask(NonEmptyString value)
+    {
+        var failure = Failure.Fatal(message: value.Item);
+        (await Task.FromResult(Fail.OfType<string>(failure))
+                .BindAsync(v => Success.From(v.Length)))
+            .Should()
+            .Be(Fail.OfType<int>(failure));
+    }
+
+    [Property]
+    public async Task CanAsynchronouslyTransformValueUsingBindAsyncWhenResultIsTask(int value, int value2)
+    {
+        (await Task.FromResult(Success.From(value))
+                .BindAsync(v => Divide(v, value2)))
+            .Should()
+            .Be(Divide(value, value2));
+    }
+
+    [Property]
+    public async Task CanAsynchronouslyPropagateFailureUsingBindAsyncWhenResultIsTask(NonEmptyString value)
+    {
+        var failure = Failure.Fatal(message: value.Item);
+        (await Task.FromResult(Fail.OfType<string>(failure))
                 .BindAsync(async v => await Task.FromResult(Success.From(v.Length))))
             .Should()
             .Be(Fail.OfType<int>(failure));
