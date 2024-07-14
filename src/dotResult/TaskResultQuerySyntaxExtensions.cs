@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 namespace DotResult;
 
 /// <summary>
-/// Provides extension methods for working with asynchronous operations on Result types.
+/// Provides extension methods for working with query syntax on Task of Result of T.
 /// </summary>
-public static class ResultExtensions
+public static class TaskResultQuerySyntaxExtensions
 {
     /// <summary>
     /// Asynchronously applies a selector function to the value of a successful result, returning a new result with the transformed value.
