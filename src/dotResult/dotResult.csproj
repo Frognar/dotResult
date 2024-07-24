@@ -22,12 +22,7 @@
         <RepositoryType>git</RepositoryType>
         <PackageTags>Result, Monad, Monads, C#, Try, Results, ErrorHandling, Error, Errors</PackageTags>
         <PackageReleaseNotes>
-          v1.0.0
-          - add Flatten method (Result of Result of T -> Result of T)
-          - add ToResult extension method for T
-          - add ToResult extension method for Failure
-          - add OrDefault method with default value
-          - add OrDefault method with default factory
+          - add Fold method
         </PackageReleaseNotes>
     </PropertyGroup>
 
