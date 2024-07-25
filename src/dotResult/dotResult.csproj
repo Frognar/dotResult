@@ -11,7 +11,7 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <PackageId>dotResult</PackageId>
         <Authors>Frognar</Authors>
-        <Version>1.0.0</Version>
+        <Version>1.1.0</Version>
         <Title>dotResult</Title>
         <Description>dotResult is a lightweight and intuitive implementation of the Result monad for the .NET platform. It simplifies error handling and value propagation in a functional way, improving code readability and safety.</Description>
         <Copyright>Frognar 2024</Copyright>
