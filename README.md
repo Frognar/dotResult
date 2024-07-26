@@ -194,7 +194,7 @@ var value = result.OrDefault(100);
 Console.WriteLine(value); // Outputs: 100
 ```
 ```csharp
-var result = Some.From(42);
+var result = Success.From(42);
 var value = result.OrDefault(100);
 Console.WriteLine(value); // Outputs: 42
 ```
@@ -212,7 +212,7 @@ var value = result.OrDefault(() => 100);
 Console.WriteLine(value); // Outputs: 100
 ```
 ```csharp
-var result = Some.From(42);
+var result = Success.From(42);
 var value = result.OrDefault(() => 100);
 Console.WriteLine(value); // Outputs: 42
 ```
