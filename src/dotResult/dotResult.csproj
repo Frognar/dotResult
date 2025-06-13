@@ -11,7 +11,7 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <PackageId>dotResult</PackageId>
         <Authors>Frognar</Authors>
-        <Version>1.1.0</Version>
+        <Version>1.2.0</Version>
         <Title>dotResult</Title>
         <Description>dotResult is a lightweight and intuitive implementation of the Result monad for the .NET platform. It simplifies error handling and value propagation in a functional way, improving code readability and safety.</Description>
         <Copyright>Frognar 2024</Copyright>
@@ -22,7 +22,7 @@
         <RepositoryType>git</RepositoryType>
         <PackageTags>Result, Monad, Monads, C#, Try, Results, ErrorHandling, Error, Errors</PackageTags>
         <PackageReleaseNotes>
-          - add Fold method
+          - add support for Result with multiple failures
         </PackageReleaseNotes>
     </PropertyGroup>
 
