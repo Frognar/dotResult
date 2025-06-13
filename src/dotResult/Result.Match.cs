@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DotResult;
@@ -12,7 +14,7 @@ public readonly partial record struct Result<T>
     /// <param name="failure">Function to execute if the result is a failure.</param>
     /// <param name="success">Function to execute if the result is a success.</param>
     /// <returns>The result of the executed function.</returns>
-    public TResult Match<TResult>(Func<Failure, TResult> failure, Func<T, TResult> success)
+    public TResult Match<TResult>(Func<IEnumerable<Failure>, TResult> failure, Func<T, TResult> success)
     {
         return _result switch
         {
@@ -29,7 +31,7 @@ public readonly partial record struct Result<T>
     /// <param name="failure">Asynchronous function to execute if the result is a failure.</param>
     /// <param name="success">Asynchronous function to execute if the result is a success.</param>
     /// <returns>A task that represents the asynchronous operation, containing the result of the executed function.</returns>
-    public async Task<TResult> MatchAsync<TResult>(Func<Failure, Task<TResult>> failure, Func<T, Task<TResult>> success)
+    public async Task<TResult> MatchAsync<TResult>(Func<IEnumerable<Failure>, Task<TResult>> failure, Func<T, Task<TResult>> success)
     {
         return _result switch
         {
@@ -46,7 +48,7 @@ public readonly partial record struct Result<T>
     /// <param name="failure">Function to execute if the result is a failure.</param>
     /// <param name="success">Asynchronous function to execute if the result is a success.</param>
     /// <returns>A task that represents the asynchronous operation, containing the result of the executed function.</returns>
-    public async Task<TResult> MatchAsync<TResult>(Func<Failure, TResult> failure, Func<T, Task<TResult>> success)
+    public async Task<TResult> MatchAsync<TResult>(Func<IEnumerable<Failure>, TResult> failure, Func<T, Task<TResult>> success)
     {
         return _result switch
         {

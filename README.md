@@ -55,7 +55,7 @@ if (result.IsFailure)
 
 #### Match
 ```csharp
-public TResult Match<TResult>(Func<Failure, TResult> failure, Func<T, TResult> success)
+public TResult Match<TResult>(Func<IEnumerable<Failure>, TResult> failure, Func<T, TResult> success)
 ```
 Matches the result and executes the appropriate function based on whether the result is a success or a failure.
 
@@ -63,14 +63,14 @@ Example:
 ```csharp
 var result = Success.From(42);
 var message = result.Match(
-    failure => "Failed: " + failure.Message,
+    failures => "Failed: " + failures.First().Message,
     success => "Success: " + success);
 Console.WriteLine(message);
 ```
 
 #### MatchAsync
 ```csharp
-public async Task<TResult> MatchAsync<TResult>(Func<Failure, Task<TResult>> failure, Func<T, Task<TResult>> success)
+public async Task<TResult> MatchAsync<TResult>(Func<IEnumerable<Failure>, Task<TResult>> failure, Func<T, Task<TResult>> success)
 ```
 Asynchronously matches the result and executes the appropriate asynchronous function based on whether the result is a success or a failure.
 
@@ -78,14 +78,14 @@ Example:
 ```csharp
 var result = Success.From(42);
 var message = await result.MatchAsync(
-    async failure => await Task.FromResult("Failed: " + failure.Message),
+    async failures => await Task.FromResult("Failed: " + failures.First().Message),
     async success => await Task.FromResult("Success: " + success));
 Console.WriteLine(message);
 ```
 
 #### MatchAsync
 ```csharp
-public async Task<TResult> MatchAsync<TResult>(Func<Failure, TResult> failure, Func<T, Task<TResult>> success)
+public async Task<TResult> MatchAsync<TResult>(Func<IEnumerable<Failure>, TResult> failure, Func<T, Task<TResult>> success)
 ```
 Asynchronously matches the result and executes the appropriate function based on whether the result is a success or a failure.
 
@@ -93,7 +93,7 @@ Example:
 ```csharp
 var result = Success.From(42);
 var message = await result.MatchAsync(
-    failure => "Failed: " + failure.Message,
+    failures => "Failed: " + failures.First().Message,
     async success => await Task.FromResult("Success: " + success));
 Console.WriteLine(message);
 ```
@@ -109,7 +109,7 @@ Example:
 var result = Success.From(42);
 var mappedResult = result.Map(value => value.ToString());
 Console.WriteLine(mappedResult.Match(
-    failure => "Failed",
+    failures => "Failed",
     success => "Success: " + success));
 ```
 
@@ -124,7 +124,7 @@ Example:
 var result = Success.From(42);
 var mappedResult = await result.MapAsync(async value => await Task.FromResult(value.ToString()));
 Console.WriteLine(mappedResult.Match(
-    failure => "Failed",
+    failures => "Failed",
     success => "Success: " + success));
 ```
 
@@ -139,7 +139,7 @@ Example:
 var result = Success.From(42);
 var boundResult = result.Bind(value => Success.From(value.ToString()));
 Console.WriteLine(boundResult.Match(
-    failure => "Failed",
+    failures => "Failed",
     success => "Success: " + success));
 ```
 
@@ -154,7 +154,7 @@ Example:
 var result = Success.From(42);
 var boundResult = await result.BindAsync(async value => await Task.FromResult(Success.From(value.ToString())));
 Console.WriteLine(boundResult.Match(
-    failure => "Failed",
+    failures => "Failed",
     success => "Success: " + success));
 ```
 
@@ -330,6 +330,18 @@ public static Result<T> ToResult<T>(this Failure failure)
 #### Example
 ```csharp
 var failureResult = Failure.Fatal("Error", "Let the Galaxy burn").ToResult<int>(); // Result<int> with fatal failure "Let the Galaxy burn"
+```
+
+### ToResult
+Converts a `IEnumerable<Failure>` to a failed `Result<T>`.
+
+```csharp
+public static Result<T> ToResult<T>(this IEnumerable<Failure> failures)
+```
+
+#### Example
+```csharp
+var failureResult = new [] { Failure.Fatal("Error", "Let the Galaxy burn") }.ToResult<int>(); // Result<int> with fatal failure "Let the Galaxy burn"
 ```
 
 ## Query syntax

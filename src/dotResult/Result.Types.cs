@@ -1,4 +1,6 @@
-﻿namespace DotResult;
+﻿using System.Collections.Generic;
+
+namespace DotResult;
 
 public readonly partial record struct Result<T>
 {
@@ -12,8 +14,13 @@ public readonly partial record struct Result<T>
         public T Value { get; } = Value;
     }
 
-    private readonly record struct FailureType(Failure Value) : IResult
+    private readonly record struct FailureType(IEnumerable<Failure> Value) : IResult
     {
-        public Failure Value { get; } = Value;
+        internal FailureType(Failure error)
+            : this(FailureCollection.Create(error))
+        {
+        }
+
+        public IEnumerable<Failure> Value { get; } = FailureCollection.Create(Value);
     }
 }

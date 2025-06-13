@@ -1,4 +1,7 @@
-﻿namespace DotResult;
+﻿using System.Collections.Generic;
+using System.Text;
+
+namespace DotResult;
 
 /// <summary>
 /// Represents a result of an operation that can be either a success or a failure.
@@ -50,6 +53,13 @@ public readonly partial record struct Result<T>
     /// <param name="failure">The failure information.</param>
     /// <returns>A new failure result containing the provided failure information.</returns>
     internal static Result<T> Failure(Failure failure) => new(new FailureType(failure));
+
+    /// <summary>
+    /// Creates a new failure result.
+    /// </summary>
+    /// <param name="failures">The collection of failures.</param>
+    /// <returns>A new failure result containing the provided failures.</returns>
+    internal static Result<T> Failure(IEnumerable<Failure> failures) => new(new FailureType(failures));
 }
 
 /// <summary>
@@ -88,5 +98,16 @@ public static partial class ResultExtensions
     public static Result<T> ToResult<T>(this Failure failure)
     {
         return Fail.OfType<T>(failure);
+    }
+
+    /// <summary>
+    /// Converts a collection of <see cref="Failure"/> to a failure <see cref="Result{T}"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the value in the resulting result.</typeparam>
+    /// <param name="failures">The failures to convert.</param>
+    /// <returns>A failure result containing the specified failures.</returns>
+    public static Result<T> ToResult<T>(this IEnumerable<Failure> failures)
+    {
+        return Fail.OfType<T>(failures);
     }
 }

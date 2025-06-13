@@ -19,7 +19,7 @@ public class ResultOrDefaultTests
     [Property]
     public void CanGetDefaultFromFailure(NonNegativeInt value)
     {
-        Fail.OfType<int>(Failure.Fatal())
+        Fail.OfType<int>([Failure.Fatal()])
             .OrDefault(value.Item)
             .Should()
             .Be(value.Item);

@@ -20,7 +20,7 @@ public class ResultMatchingTests
     public void CanTransformFailureUsingMatch(NonEmptyString value)
     {
         Fail.OfType<int>(Failure.Fatal(message: value.Item))
-            .Match(f => f.Message.Length, _ => -1)
+            .Match(f => f.First().Message.Length, _ => -1)
             .Should()
             .Be(value.Item.Length);
     }
@@ -38,7 +38,7 @@ public class ResultMatchingTests
     public async Task CanTransformFailureUsingMatchAsync(NonEmptyString value)
     {
         (await Fail.OfType<int>(Failure.Fatal(message: value.Item))
-                .MatchAsync(async f => await Task.FromResult(f.Message.Length), _ => Task.FromResult(-1)))
+                .MatchAsync(async f => await Task.FromResult(f.First().Message.Length), _ => Task.FromResult(-1)))
             .Should()
             .Be(value.Item.Length);
     }
@@ -56,7 +56,7 @@ public class ResultMatchingTests
     public async Task CanSynchronouslyTransformFailureUsingMatchAsync(NonEmptyString value)
     {
         (await Fail.OfType<int>(Failure.Fatal(message: value.Item))
-                .MatchAsync(f => f.Message.Length, _ => Task.FromResult(-1)))
+                .MatchAsync(f => f.First().Message.Length, _ => Task.FromResult(-1)))
             .Should()
             .Be(value.Item.Length);
     }
