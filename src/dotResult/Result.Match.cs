@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DotResult;
@@ -17,7 +18,7 @@ public readonly partial record struct Result<T>
         return _result switch
         {
             SuccessType successType => success(successType.Value),
-            FailureType failureType => failure(failureType.Value),
+            FailureType failureType => failure(failureType.Value.First()),
             _ => throw new InvalidOperationException("Reached an invalid state in Match."),
         };
     }
@@ -34,7 +35,7 @@ public readonly partial record struct Result<T>
         return _result switch
         {
             SuccessType successType => await success(successType.Value).ConfigureAwait(false),
-            FailureType failureType => await failure(failureType.Value).ConfigureAwait(false),
+            FailureType failureType => await failure(failureType.Value.First()).ConfigureAwait(false),
             _ => throw new InvalidOperationException("Reached an invalid state in Match."),
         };
     }
@@ -51,7 +52,7 @@ public readonly partial record struct Result<T>
         return _result switch
         {
             SuccessType successType => await success(successType.Value).ConfigureAwait(false),
-            FailureType failureType => failure(failureType.Value),
+            FailureType failureType => failure(failureType.Value.First()),
             _ => throw new InvalidOperationException("Reached an invalid state in Match."),
         };
     }
