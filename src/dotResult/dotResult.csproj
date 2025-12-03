@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
-        <LangVersion>preview</LangVersion>
+        <LangVersion>14</LangVersion>
         <Nullable>enable</Nullable>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
@@ -14,16 +14,13 @@
         <Version>1.2.0</Version>
         <Title>dotResult</Title>
         <Description>dotResult is a lightweight and intuitive implementation of the Result monad for the .NET platform. It simplifies error handling and value propagation in a functional way, improving code readability and safety.</Description>
-        <Copyright>Frognar 2024</Copyright>
+        <Copyright>Frognar 2025</Copyright>
         <PackageProjectUrl>https://github.com/Frognar/dotResult</PackageProjectUrl>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <RepositoryUrl>https://github.com/Frognar/dotResult</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>Result, Monad, Monads, C#, Try, Results, ErrorHandling, Error, Errors</PackageTags>
-        <PackageReleaseNotes>
-          - add support for Result with multiple failures
-        </PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
