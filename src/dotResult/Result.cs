@@ -18,5 +18,10 @@ public static class Result
         /// Constructs an Ok result.
         /// </summary>
         public static Result<T, TError> Ok(T value) => new();
+
+        /// <summary>
+        /// Constructs an Error result.
+        /// </summary>
+        public static Result<T, TError> Error(TError error) => new();
     }
 }
