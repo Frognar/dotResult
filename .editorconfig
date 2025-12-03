@@ -18,6 +18,9 @@ dotnet_diagnostic.SA1101.severity = none
 # SA1309: Field names must not begin with underscore
 dotnet_diagnostic.SA1309.severity = none
 
+# SA1402: File may only contain a single type
+dotnet_diagnostic.SA1402.severity = none
+
 # SA1633: File must have header.
 dotnet_diagnostic.SA1633.severity = none
 
