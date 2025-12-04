@@ -10,32 +10,34 @@ public class ResultConstructionTests
     [Property]
     public void Ok_roundtrips(int value)
     {
-        var ok = Result.Ok<int, string>(value);
-        Assert.Equal(Result.Ok<int, string>(value), ok);
+        Assert.Equal(Ok(value), Ok(value));
     }
 
     [Property]
     public void Error_roundtrips(NonEmptyString msg)
     {
-        var err = Result.Error<int, string>(msg.Get);
-        Assert.Equal(Result.Error<int, string>(msg.Get), err);
+        Assert.Equal(Error(msg.Get), Error(msg.Get));
     }
 
     [Property]
     public void Ok_and_Error_are_not_equal(int value, NonEmptyString msg)
     {
-        Assert.NotEqual(Result.Ok<int, string>(value), Result.Error<int, string>(msg.Get));
+        Assert.NotEqual(Ok(value), Error(msg.Get));
     }
 
     [Property]
     public Property Ok_with_different_values_are_not_equal() =>
         Prop.ForAll<int, int>((a, b) =>
             (a != b)
-                .Implies(Result.Ok<int, string>(a) != Result.Ok<int, string>(b)));
+                .Implies(Ok(a) != Ok(b)));
 
     [Property]
     public Property Error_with_different_values_are_not_equal() =>
         Prop.ForAll<int, int>((a, b) =>
             (a != b)
-                .Implies(Result.Error<string, int>(a) != Result.Error<string, int>(b)));
+                .Implies(Error(a) != Error(b)));
+
+    private static DotResult.Result<int, string> Ok(int value) => Result.Ok<int, string>(value);
+    private static DotResult.Result<string, int> Error(int value) => Result.Error<string, int>(value);
+    private static DotResult.Result<int, string> Error(string value) => Result.Error<int, string>(value);
 }
