@@ -35,4 +35,13 @@ public class ResultConstructionTests
                 .When(a != b))
         .QuickCheckThrowOnFailure();
     }
+    
+    [Fact]
+    public void Error_with_different_values_are_not_equal()
+    {
+        Prop.ForAll<int, int>((a, b) =>
+            (Result.Error<string, int>(a) != Result.Error<string, int>(b))
+                .When(a != b))
+        .QuickCheckThrowOnFailure();
+    }
 }

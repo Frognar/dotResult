@@ -9,13 +9,15 @@ public sealed record Result<T, TError>
 {
     private readonly bool isOk;
     private readonly T? value;
+    private readonly TError? error;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Result{T, TError}"/> class.
     /// </summary>
     /// <param name="isOk">Indicates whether the result is Ok.</param>
     /// <param name="value">The value of the result if it is Ok; otherwise, null.</param>
-    internal Result(bool isOk, T? value) => (this.isOk, this.value) = (isOk, value);
+    /// <param name="error">The error of the result if it is Error; otherwise, null.</param>
+    internal Result(bool isOk, T? value, TError? error) => (this.isOk, this.value, this.error) = (isOk, value, error);
 }
 
 /// <summary>
@@ -28,11 +30,11 @@ public static class Result
         /// <summary>
         /// Constructs an Ok result.
         /// </summary>
-        public static Result<T, TError> Ok(T value) => new(true, value);
+        public static Result<T, TError> Ok(T value) => new(true, value, default);
 
         /// <summary>
         /// Constructs an Error result.
         /// </summary>
-        public static Result<T, TError> Error(TError error) => new(false, default);
+        public static Result<T, TError> Error(TError error) => new(false, default, error);
     }
 }
