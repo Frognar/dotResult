@@ -26,22 +26,16 @@ public class ResultConstructionTests
     {
         Assert.NotEqual(Result.Ok<int, string>(value), Result.Error<int, string>(msg.Get));
     }
-    
-    [Fact]
-    public void Ok_with_different_values_are_not_equal()
-    {
+
+    [Property]
+    public Property Ok_with_different_values_are_not_equal() =>
         Prop.ForAll<int, int>((a, b) =>
-            (Result.Ok<int, string>(a) != Result.Ok<int, string>(b))
-                .When(a != b))
-        .QuickCheckThrowOnFailure();
-    }
-    
-    [Fact]
-    public void Error_with_different_values_are_not_equal()
-    {
+            (a != b)
+                .Implies(Result.Ok<int, string>(a) != Result.Ok<int, string>(b)));
+
+    [Property]
+    public Property Error_with_different_values_are_not_equal() =>
         Prop.ForAll<int, int>((a, b) =>
-            (Result.Error<string, int>(a) != Result.Error<string, int>(b))
-                .When(a != b))
-        .QuickCheckThrowOnFailure();
-    }
+            (a != b)
+                .Implies(Result.Error<string, int>(a) != Result.Error<string, int>(b)));
 }
