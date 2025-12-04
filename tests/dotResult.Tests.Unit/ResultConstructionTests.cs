@@ -7,22 +7,19 @@ using FsCheck.Xunit;
 public class ResultConstructionTests
 {
     [Property]
-    public void Ok_roundtrips(int value)
-    {
-        Assert.Equal(Ok(value), Ok(value));
-    }
+    public Property Ok_roundtrips() =>
+        Prop.ForAll<int>(value =>
+            Ok(value) == Ok(value));
 
     [Property]
-    public void Error_roundtrips(NonEmptyString msg)
-    {
-        Assert.Equal(Error(msg.Get), Error(msg.Get));
-    }
+    public Property Error_roundtrips() =>
+        Prop.ForAll<NonEmptyString>(msg =>
+            Error(msg.Get) == Error(msg.Get));
 
     [Property]
-    public void Ok_and_Error_are_not_equal(int value, NonEmptyString msg)
-    {
-        Assert.NotEqual(Ok(value), Error(msg.Get));
-    }
+    public Property Ok_and_Error_are_not_equal() =>
+        Prop.ForAll<int, NonEmptyString>((value, msg) =>
+            Ok(value) != Error(msg.Get));
 
     [Property]
     public Property Ok_with_different_values_are_not_equal() =>
