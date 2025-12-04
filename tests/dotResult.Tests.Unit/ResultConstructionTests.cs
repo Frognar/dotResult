@@ -19,4 +19,10 @@ public class ResultConstructionTests
         var err = Result.Error<int, string>(msg.Get);
         Assert.Equal(Result.Error<int, string>(msg.Get), err);
     }
+
+    [Property]
+    public void Ok_and_Error_are_not_equal(int value, NonEmptyString msg)
+    {
+        Assert.NotEqual(Result.Ok<int, string>(value), Result.Error<int, string>(msg.Get));
+    }
 }
