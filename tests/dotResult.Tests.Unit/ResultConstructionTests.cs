@@ -3,7 +3,6 @@ namespace dotResult.Tests.Unit;
 using FsCheck;
 using FsCheck.Fluent;
 using FsCheck.Xunit;
-using Result = DotResult.Result;
 
 public class ResultConstructionTests
 {
@@ -37,7 +36,7 @@ public class ResultConstructionTests
             (a != b)
                 .Implies(Error(a) != Error(b)));
 
-    private static DotResult.Result<int, string> Ok(int value) => Result.Ok<int, string>(value);
-    private static DotResult.Result<string, int> Error(int value) => Result.Error<string, int>(value);
-    private static DotResult.Result<int, string> Error(string value) => Result.Error<int, string>(value);
+    private static DotResult.Result<int, string> Ok(int value) => DotResult.Result.Ok<int, string>(value);
+    private static DotResult.Result<string, int> Error(int value) => DotResult.Result.Error<string, int>(value);
+    private static DotResult.Result<int, string> Error(string value) => DotResult.Result.Error<int, string>(value);
 }
