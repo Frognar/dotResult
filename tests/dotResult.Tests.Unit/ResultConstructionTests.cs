@@ -1,6 +1,7 @@
 namespace dotResult.Tests.Unit;
 
 using FsCheck;
+using FsCheck.Fluent;
 using FsCheck.Xunit;
 using Result = DotResult.Result;
 
@@ -24,5 +25,14 @@ public class ResultConstructionTests
     public void Ok_and_Error_are_not_equal(int value, NonEmptyString msg)
     {
         Assert.NotEqual(Result.Ok<int, string>(value), Result.Error<int, string>(msg.Get));
+    }
+    
+    [Fact]
+    public void Ok_with_different_values_are_not_equal()
+    {
+        Prop.ForAll<int, int>((a, b) =>
+            (Result.Ok<int, string>(a) != Result.Ok<int, string>(b))
+                .When(a != b))
+        .QuickCheckThrowOnFailure();
     }
 }

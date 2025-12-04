@@ -8,12 +8,14 @@ namespace DotResult;
 public sealed record Result<T, TError>
 {
     private readonly bool isOk;
+    private readonly T? value;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Result{T, TError}"/> class.
     /// </summary>
     /// <param name="isOk">Indicates whether the result is Ok.</param>
-    internal Result(bool isOk) => this.isOk = isOk;
+    /// <param name="value">The value of the result if it is Ok; otherwise, null.</param>
+    internal Result(bool isOk, T? value) => (this.isOk, this.value) = (isOk, value);
 }
 
 /// <summary>
@@ -26,11 +28,11 @@ public static class Result
         /// <summary>
         /// Constructs an Ok result.
         /// </summary>
-        public static Result<T, TError> Ok(T value) => new(true);
+        public static Result<T, TError> Ok(T value) => new(true, value);
 
         /// <summary>
         /// Constructs an Error result.
         /// </summary>
-        public static Result<T, TError> Error(TError error) => new(false);
+        public static Result<T, TError> Error(TError error) => new(false, default);
     }
 }
