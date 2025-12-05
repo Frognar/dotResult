@@ -11,6 +11,17 @@ public class ResultMapTests
     public Property Map_preserves_error() =>
         Prop.ForAll<NonEmptyString>(msg =>
             Error(msg.Get).Map(x => x + 1) == Error(msg.Get));
-    
+
+    [Property]
+    public Property Map_identity_is_noop() =>
+        Prop.ForAll<int>(value =>
+            Ok(value).Map(x => x) == Ok(value));
+
+    [Property]
+    public Property Map_respects_composition() =>
+        Prop.ForAll<int, Func<int, int>, Func<int, int>>((value, f, g) =>
+            Ok(value).Map(f).Map(g) == Ok(value).Map(x => g(f(x))));    
+
+    private static Result<int, string> Ok(int value) => DotResult.Result.Ok<int, string>(value);
     private static Result<int, string> Error(string value) => DotResult.Result.Error<int, string>(value);
 }

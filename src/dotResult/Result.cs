@@ -22,6 +22,19 @@ public sealed record Result<T, TError>
     internal Result(bool isOk, T? value, TError? error) => (this.isOk, this.value, this.error) = (isOk, value, error);
 
     /// <summary>
+    /// Gets a value indicating whether the result is Ok.
+    /// </summary>
+    internal bool IsOk => isOk;
+
+    /// <summary>
+    /// Gets the value of the result if it is Ok.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown if the result is not Ok.</exception>
+    internal T Value => isOk
+        ? value!
+        : throw new InvalidOperationException("Cannot get Value from an Error result.");
+
+    /// <summary>
     /// Gets the error of the result if it is Error.
     /// </summary>
     /// <exception cref="InvalidOperationException">Thrown if the result is not Error.</exception>
@@ -55,7 +68,9 @@ public static class Result
         /// If the result is Error, it is returned unchanged.
         /// </summary>
         public static Result<TResult, TError> Map(Func<T, TResult> mapper, Result<T, TError> result) =>
-            Result<TResult, TError>.Error(result.Error);
+            result.IsOk
+                ? Result<TResult, TError>.Ok(mapper(result.Value))
+                : Result<TResult, TError>.Error(result.Error);
     }
 
     extension<T, TError, TResult>(Result<T, TError> result)
