@@ -1,8 +1,8 @@
-namespace dotResult.Tests.Unit;
-
 using FsCheck;
 using FsCheck.Fluent;
 using FsCheck.Xunit;
+
+namespace dotResult.Tests.Unit;
 
 public class ResultConstructionTests
 {
