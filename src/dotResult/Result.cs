@@ -1,3 +1,5 @@
+using System;
+
 namespace DotResult;
 
 /// <summary>
@@ -18,6 +20,14 @@ public sealed record Result<T, TError>
     /// <param name="value">The value of the result if it is Ok; otherwise, null.</param>
     /// <param name="error">The error of the result if it is Error; otherwise, null.</param>
     internal Result(bool isOk, T? value, TError? error) => (this.isOk, this.value, this.error) = (isOk, value, error);
+
+    /// <summary>
+    /// Gets the error of the result if it is Error.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown if the result is not Error.</exception>
+    internal TError Error => isOk
+        ? throw new InvalidOperationException("Cannot get Error from an Ok result.")
+        : error!;
 }
 
 /// <summary>
@@ -36,5 +46,24 @@ public static class Result
         /// Constructs an Error result.
         /// </summary>
         public static Result<T, TError> Error(TError error) => new(false, default, error);
+    }
+
+    extension<T, TError, TResult>(Result<T, TError>)
+    {
+        /// <summary>
+        /// Maps the value of an Ok result using the provided mapper function.
+        /// If the result is Error, it is returned unchanged.
+        /// </summary>
+        public static Result<TResult, TError> Map(Func<T, TResult> mapper, Result<T, TError> result) =>
+            Result<TResult, TError>.Error(result.Error);
+    }
+
+    extension<T, TError, TResult>(Result<T, TError> result)
+    {
+        /// <summary>
+        /// Maps the value of an Ok result using the provided mapper function.
+        /// If the result is Error, it is returned unchanged.
+        /// </summary>
+        public Result<TResult, TError> Map(Func<T, TResult> mapper) => Map(mapper, result);
     }
 }
