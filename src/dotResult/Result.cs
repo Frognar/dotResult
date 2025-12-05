@@ -71,6 +71,15 @@ public static class Result
             result.IsOk
                 ? Result<TResult, TError>.Ok(mapper(result.Value))
                 : Result<TResult, TError>.Error(result.Error);
+
+        /// <summary>
+        /// Binds the result to another result using the provided binder function.
+        /// If the result is Error, it is returned unchanged.
+        /// </summary>
+        public static Result<TResult, TError> Bind(Func<T, Result<TResult, TError>> binder, Result<T, TError> result) =>
+            result.IsOk
+                ? binder(result.Value)
+                : Result<TResult, TError>.Error(result.Error);
     }
 
     extension<T, TError, TResult>(Result<T, TError> result)
@@ -80,5 +89,11 @@ public static class Result
         /// If the result is Error, it is returned unchanged.
         /// </summary>
         public Result<TResult, TError> Map(Func<T, TResult> mapper) => Map(mapper, result);
+
+        /// <summary>
+        /// Binds the result to another result using the provided binder function.
+        /// If the result is Error, it is returned unchanged.
+        /// </summary>
+        public Result<TResult, TError> Bind(Func<T, Result<TResult, TError>> binder) => Bind(binder, result);
     }
 }
