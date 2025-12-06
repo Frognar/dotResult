@@ -32,7 +32,4 @@ public class ResultConstructionTests
         Prop.ForAll<NonEmptyString, NonEmptyString>((a, b) =>
             (a != b)
                 .Implies(Error(a.Get) != Error(b.Get)));
-
-    private static DotResult.Result<int, string> Ok(int value) => DotResult.Result.Ok<int, string>(value);
-    private static DotResult.Result<int, string> Error(string value) => DotResult.Result.Error<int, string>(value);
 }

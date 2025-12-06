@@ -30,7 +30,4 @@ public class ResultMapTests
             var result = Error(msg.Get).Map(x => { called = true; return x + 1; });
             return result == Error(msg.Get) && called == false;
         });
-
-    private static Result<int, string> Ok(int value) => DotResult.Result.Ok<int, string>(value);
-    private static Result<int, string> Error(string value) => DotResult.Result.Error<int, string>(value);
 }

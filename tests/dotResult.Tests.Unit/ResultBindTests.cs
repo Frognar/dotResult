@@ -41,9 +41,6 @@ public class ResultBindTests
             return result == Error(msg.Get) && called == false;
         });
 
-    private static Result<int, string> Ok(int value) => DotResult.Result.Ok<int, string>(value);
-    private static Result<int, string> Error(string value) => DotResult.Result.Error<int, string>(value);
-
     internal class ResultGenerator
     {
         public static Arbitrary<Result<int, string>> Result() =>
