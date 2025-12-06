@@ -29,11 +29,10 @@ public class ResultConstructionTests
 
     [Property]
     public Property Error_with_different_values_are_not_equal() =>
-        Prop.ForAll<int, int>((a, b) =>
+        Prop.ForAll<NonEmptyString, NonEmptyString>((a, b) =>
             (a != b)
-                .Implies(Error(a) != Error(b)));
+                .Implies(Error(a.Get) != Error(b.Get)));
 
     private static DotResult.Result<int, string> Ok(int value) => DotResult.Result.Ok<int, string>(value);
-    private static DotResult.Result<string, int> Error(int value) => DotResult.Result.Error<string, int>(value);
     private static DotResult.Result<int, string> Error(string value) => DotResult.Result.Error<int, string>(value);
 }
