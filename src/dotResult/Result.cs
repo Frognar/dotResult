@@ -59,6 +59,16 @@ public static class Result
         /// Constructs an Error result.
         /// </summary>
         public static Result<T, TError> Error(TError error) => new(false, default, error);
+
+        /// <summary>
+        /// Gets a value indicating whether the result is Ok.
+        /// </summary>
+        public static bool IsOk(Result<T, TError> result) => result.IsOk;
+
+        /// <summary>
+        /// Gets a value indicating whether the result is Error.
+        /// </summary>
+        public static bool IsError(Result<T, TError> result) => !result.IsOk;
     }
 
     extension<T, TError, TResult>(Result<T, TError>)
@@ -88,6 +98,19 @@ public static class Result
 /// </summary>
 public static class ResultExtensions
 {
+    extension<T, TError>(Result<T, TError> result)
+    {
+        /// <summary>
+        /// Gets a value indicating whether the result is Ok.
+        /// </summary>
+        public bool IsOk() => Result.IsOk(result);
+
+        /// <summary>
+        /// Gets a value indicating whether the result is Error.
+        /// </summary>
+        public bool IsError() => Result.IsError(result);
+    }
+
     extension<T, TError, TResult>(Result<T, TError> result)
     {
         /// <summary>
