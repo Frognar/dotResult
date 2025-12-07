@@ -81,19 +81,25 @@ public static class Result
                 ? binder(result.Value)
                 : Result<TResult, TError>.Error(result.Error);
     }
+}
 
+/// <summary>
+/// Static helper methods for constructing <see cref="Result{T, TError}"/> instances.
+/// </summary>
+public static class ResultExtensions
+{
     extension<T, TError, TResult>(Result<T, TError> result)
     {
         /// <summary>
         /// Maps the value of an Ok result using the provided mapper function.
         /// If the result is Error, it is returned unchanged.
         /// </summary>
-        public Result<TResult, TError> Map(Func<T, TResult> mapper) => Map(mapper, result);
+        public Result<TResult, TError> Map(Func<T, TResult> mapper) => Result.Map(mapper, result);
 
         /// <summary>
         /// Binds the result to another result using the provided binder function.
         /// If the result is Error, it is returned unchanged.
         /// </summary>
-        public Result<TResult, TError> Bind(Func<T, Result<TResult, TError>> binder) => Bind(binder, result);
+        public Result<TResult, TError> Bind(Func<T, Result<TResult, TError>> binder) => Result.Bind(binder, result);
     }
 }
