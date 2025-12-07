@@ -22,4 +22,17 @@ public class ResultStateTests
             var r = Error(msg.Get);
             return r.IsOk() == false && r.IsError() == true;
         });
+
+    [Property(Arbitrary = [typeof(ResultGenerator)])]
+    public Property IsOk_and_IsError_are_mutually_exclusive() =>
+        Prop.ForAll<Result<int, string>>(r => r.IsOk != r.IsError);
+
+    internal class ResultGenerator
+    {
+        public static Arbitrary<Result<int, string>> Result() =>
+            Gen.OneOf(
+                ArbMap.Default.GeneratorFor<int>().Select(Ok),
+                ArbMap.Default.GeneratorFor<NonEmptyString>().Select(s => Error(s.Get)))
+            .ToArbitrary();
+    }
 }
