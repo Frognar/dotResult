@@ -2,7 +2,7 @@ using FsCheck;
 using FsCheck.Fluent;
 using FsCheck.Xunit;
 
-namespace dotResult.Tests.Unit;
+namespace DotResult.Tests.Unit;
 
 public class ResultConstructionTests
 {

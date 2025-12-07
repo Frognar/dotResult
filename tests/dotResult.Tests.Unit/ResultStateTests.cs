@@ -1,10 +1,9 @@
 using FsCheck;
 using FsCheck.Fluent;
 using FsCheck.Xunit;
-using DotResult;
-using dotResult.Tests.Unit.Generators;
+using DotResult.Tests.Unit.Generators;
 
-namespace dotResult.Tests.Unit;
+namespace DotResult.Tests.Unit;
 
 public class ResultStateTests
 {

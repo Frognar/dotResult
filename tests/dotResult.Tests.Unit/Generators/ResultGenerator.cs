@@ -1,8 +1,7 @@
 using FsCheck;
 using FsCheck.Fluent;
-using DotResult;
 
-namespace dotResult.Tests.Unit.Generators;
+namespace DotResult.Tests.Unit.Generators;
 
 internal class ResultGenerator
 {

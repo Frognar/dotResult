@@ -1,1 +1,1 @@
-global using static dotResult.Tests.Unit.ResultFactory;
+global using static DotResult.Tests.Unit.ResultFactory;
