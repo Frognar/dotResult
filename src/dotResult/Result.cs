@@ -5,8 +5,8 @@ namespace DotResult;
 /// <summary>
 /// Represents the result of an operation that can succeed or fail.
 /// </summary>
-/// <typeparam name="T"></typeparam>
-/// <typeparam name="TError"></typeparam>
+/// <typeparam name="T">Success value type.</typeparam>
+/// <typeparam name="TError">Error value type.</typeparam>
 public sealed record Result<T, TError>
 {
     private readonly bool isOk;
@@ -16,18 +16,18 @@ public sealed record Result<T, TError>
     /// <summary>
     /// Initializes a new instance of the <see cref="Result{T, TError}"/> class.
     /// </summary>
-    /// <param name="isOk">Indicates whether the result is Ok.</param>
-    /// <param name="value">The value of the result if it is Ok; otherwise, null.</param>
-    /// <param name="error">The error of the result if it is Error; otherwise, null.</param>
+    /// <param name="isOk">True for success, false for error.</param>
+    /// <param name="value">Success value when <paramref name="isOk"/> is true; otherwise ignored.</param>
+    /// <param name="error">Error value when <paramref name="isOk"/> is false; otherwise ignored.</param>
     internal Result(bool isOk, T? value, TError? error) => (this.isOk, this.value, this.error) = (isOk, value, error);
 
     /// <summary>
-    /// Gets a value indicating whether the result is Ok.
+    /// Gets a value indicating whether the result represents success.
     /// </summary>
     internal bool IsOk => isOk;
 
     /// <summary>
-    /// Gets the value of the result if it is Ok.
+    /// Gets the success value.
     /// </summary>
     /// <exception cref="InvalidOperationException">Thrown if the result is not Ok.</exception>
     internal T Value => isOk
@@ -35,7 +35,7 @@ public sealed record Result<T, TError>
         : throw new InvalidOperationException("Cannot get Value from an Error result.");
 
     /// <summary>
-    /// Gets the error of the result if it is Error.
+    /// Gets the error value.
     /// </summary>
     /// <exception cref="InvalidOperationException">Thrown if the result is not Error.</exception>
     internal TError Error => isOk
@@ -44,29 +44,29 @@ public sealed record Result<T, TError>
 }
 
 /// <summary>
-/// Static helper methods for constructing <see cref="Result{T, TError}"/> instances.
+/// Core helpers for creating and transforming <see cref="Result{T, TError}"/> instances.
 /// </summary>
 public static class Result
 {
     extension<T, TError>(Result<T, TError>)
     {
         /// <summary>
-        /// Constructs an Ok result.
+        /// Wraps a success value in an Ok result.
         /// </summary>
         public static Result<T, TError> Ok(T value) => new(true, value, default);
 
         /// <summary>
-        /// Constructs an Error result.
+        /// Wraps an error value in an Error result.
         /// </summary>
         public static Result<T, TError> Error(TError error) => new(false, default, error);
 
         /// <summary>
-        /// Gets a value indicating whether the result is Ok.
+        /// Returns true when the result represents success.
         /// </summary>
         public static bool IsOk(Result<T, TError> result) => result.IsOk;
 
         /// <summary>
-        /// Gets a value indicating whether the result is Error.
+        /// Returns true when the result represents an error.
         /// </summary>
         public static bool IsError(Result<T, TError> result) => !result.IsOk;
     }
@@ -74,8 +74,7 @@ public static class Result
     extension<T, TError, TResult>(Result<T, TError>)
     {
         /// <summary>
-        /// Maps the value of an Ok result using the provided mapper function.
-        /// If the result is Error, it is returned unchanged.
+        /// Transforms the success value; leaves an Error unchanged.
         /// </summary>
         public static Result<TResult, TError> Map(Func<T, TResult> mapper, Result<T, TError> result) =>
             result.IsOk
@@ -83,8 +82,7 @@ public static class Result
                 : Result<TResult, TError>.Error(result.Error);
 
         /// <summary>
-        /// Binds the result to another result using the provided binder function.
-        /// If the result is Error, it is returned unchanged.
+        /// Chains a result-producing binder for success; short-circuits on Error.
         /// </summary>
         public static Result<TResult, TError> Bind(Func<T, Result<TResult, TError>> binder, Result<T, TError> result) =>
             result.IsOk
@@ -94,19 +92,19 @@ public static class Result
 }
 
 /// <summary>
-/// Static helper methods for constructing <see cref="Result{T, TError}"/> instances.
+/// Extension helpers for fluent access to <see cref="Result{T, TError}"/>.
 /// </summary>
 public static class ResultExtensions
 {
     extension<T, TError>(Result<T, TError> result)
     {
         /// <summary>
-        /// Gets a value indicating whether the result is Ok.
+        /// Returns true when the result represents success.
         /// </summary>
         public bool IsOk() => Result.IsOk(result);
 
         /// <summary>
-        /// Gets a value indicating whether the result is Error.
+        /// Returns true when the result represents an error.
         /// </summary>
         public bool IsError() => Result.IsError(result);
     }
