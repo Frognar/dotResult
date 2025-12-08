@@ -82,6 +82,14 @@ public static class Result
                 : Result<TResult, TError>.Error(result.Error);
 
         /// <summary>
+        /// Transforms the error value; leaves an Ok unchanged.
+        /// </summary>
+        public static Result<T, TResult> MapError(Func<TError, TResult> mapper, Result<T, TError> result) =>
+            result.IsOk
+                ? Result<T, TResult>.Ok(result.Value)
+                : Result<T, TResult>.Error(mapper(result.Error));
+
+        /// <summary>
         /// Chains a result-producing binder for success; short-circuits on Error.
         /// </summary>
         public static Result<TResult, TError> Bind(Func<T, Result<TResult, TError>> binder, Result<T, TError> result) =>
@@ -116,6 +124,11 @@ public static class ResultExtensions
         /// If the result is Error, it is returned unchanged.
         /// </summary>
         public Result<TResult, TError> Map(Func<T, TResult> mapper) => Result.Map(mapper, result);
+
+        /// <summary>
+        /// Transforms the error value; leaves an Ok unchanged.
+        /// </summary>
+        public Result<T, TResult> MapError(Func<TError, TResult> mapper) => Result.MapError(mapper, result);
 
         /// <summary>
         /// Binds the result to another result using the provided binder function.
