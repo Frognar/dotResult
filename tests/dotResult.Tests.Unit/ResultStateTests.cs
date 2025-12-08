@@ -25,5 +25,5 @@ public class ResultStateTests
 
     [Property(Arbitrary = [typeof(ResultGenerator)])]
     public Property IsOk_and_IsError_are_mutually_exclusive() =>
-        Prop.ForAll<Result<int, string>>(r => r.IsOk != r.IsError);
+        Prop.ForAll<Result<int, string>>(r => r.IsOk() != r.IsError());
 }
