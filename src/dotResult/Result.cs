@@ -96,6 +96,14 @@ public static class Result
             result.IsOk
                 ? binder(result.Value)
                 : Result<TResult, TError>.Error(result.Error);
+
+        /// <summary>
+        /// Applies the binder to the error value; returns Ok results unchanged.
+        /// </summary>
+        public static Result<T, TResult> BindError(Func<TError, Result<T, TResult>> binder, Result<T, TError> result) =>
+            result.IsOk
+                ? Result<T, TResult>.Ok(result.Value)
+                : binder(result.Error);
     }
 }
 
@@ -135,5 +143,10 @@ public static class ResultExtensions
         /// If the result is Error, it is returned unchanged.
         /// </summary>
         public Result<TResult, TError> Bind(Func<T, Result<TResult, TError>> binder) => Result.Bind(binder, result);
+
+        /// <summary>
+        /// Applies the binder to the error value; returns Ok results unchanged.
+        /// </summary>
+        public Result<T, TResult> BindError(Func<TError, Result<T, TResult>> binder) => Result.BindError(binder, result);
     }
 }
