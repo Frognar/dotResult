@@ -104,6 +104,14 @@ public static class Result
             result.IsOk
                 ? Result<T, TResult>.Ok(result.Value)
                 : binder(result.Error);
+
+        /// <summary>
+        /// Matches on the result and evaluates the corresponding handler.
+        /// </summary>
+        public static TResult Match(Func<TError, TResult> onError, Func<T, TResult> onOk, Result<T, TError> result) =>
+            result.IsOk
+                ? onOk(result.Value)
+                : onError(result.Error);
     }
 }
 
@@ -148,5 +156,10 @@ public static class ResultExtensions
         /// Applies the binder to the error value; returns Ok results unchanged.
         /// </summary>
         public Result<T, TResult> BindError(Func<TError, Result<T, TResult>> binder) => Result.BindError(binder, result);
+
+        /// <summary>
+        /// Matches on the result and evaluates the corresponding handler.
+        /// </summary>
+        public TResult Match(Func<TError, TResult> onError, Func<T, TResult> onOk) => Result.Match(onError, onOk, result);
     }
 }
