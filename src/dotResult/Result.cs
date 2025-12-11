@@ -69,6 +69,14 @@ public static class Result
         /// Returns true when the result represents an error.
         /// </summary>
         public static bool IsError(Result<T, TError> result) => !result.IsOk;
+
+        /// <summary>
+        /// Returns the success value when Ok; otherwise returns the provided fallback.
+        /// </summary>
+        public static T UnwrapOr(T fallback, Result<T, TError> result) =>
+            result.IsOk
+                ? result.Value
+                : fallback;
     }
 
     extension<T, TError, TResult>(Result<T, TError>)
@@ -131,6 +139,11 @@ public static class ResultExtensions
         /// Returns true when the result represents an error.
         /// </summary>
         public bool IsError() => Result.IsError(result);
+
+        /// <summary>
+        /// Returns the success value when Ok; otherwise returns the provided fallback.
+        /// </summary>
+        public T UnwrapOr(T fallback) => Result.UnwrapOr(fallback, result);
     }
 
     extension<T, TError, TResult>(Result<T, TError> result)
