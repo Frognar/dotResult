@@ -77,6 +77,14 @@ public static class Result
             result.IsOk
                 ? result.Value
                 : fallback;
+
+        /// <summary>
+        /// Returns the success value when Ok; otherwise evaluates the fallback factory.
+        /// </summary>
+        public static T UnwrapOrElse(Func<T> fallbackFactory, Result<T, TError> result) =>
+            result.IsOk
+                ? result.Value
+                : fallbackFactory();
     }
 
     extension<T, TError, TResult>(Result<T, TError>)
@@ -144,6 +152,11 @@ public static class ResultExtensions
         /// Returns the success value when Ok; otherwise returns the provided fallback.
         /// </summary>
         public T UnwrapOr(T fallback) => Result.UnwrapOr(fallback, result);
+
+        /// <summary>
+        /// Returns the success value when Ok; otherwise evaluates the fallback factory.
+        /// </summary>
+        public T UnwrapOrElse(Func<T> fallbackFactory) => Result.UnwrapOrElse(fallbackFactory, result);
     }
 
     extension<T, TError, TResult>(Result<T, TError> result)
