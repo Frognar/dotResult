@@ -109,6 +109,12 @@ public static class Result
         public static bool Contains(T value, Result<T, TError> result) =>
             result.IsOk
                 && EqualityComparer<T>.Default.Equals(result.Value, value);
+
+        /// <summary>
+        /// Returns true when the result is Ok and its value equals the provided one using the supplied comparer.
+        /// </summary>
+        public static bool Contains(T value, IEqualityComparer<T> comparer, Result<T, TError> result) =>
+            result.IsOk && comparer.Equals(result.Value, value);
     }
 
     extension<T, TError, TResult>(Result<T, TError>)
@@ -196,6 +202,11 @@ public static class ResultExtensions
         /// Returns true when the result is Ok and its value equals the provided one.
         /// </summary>
         public bool Contains(T value) => Result.Contains(value, result);
+
+        /// <summary>
+        /// Returns true when the result is Ok and its value equals the provided one using the supplied comparer.
+        /// </summary>
+        public bool Contains(T value, IEqualityComparer<T> comparer) => Result.Contains(value, comparer, result);
     }
 
     extension<T, TError, TResult>(Result<T, TError> result)

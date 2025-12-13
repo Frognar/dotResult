@@ -21,4 +21,18 @@ public class ResultContainsTests
     public Property Contains_returns_false_for_error() =>
         Prop.ForAll<NonEmptyString, int>((msg, probe) =>
             Error(msg.Get).Contains(probe) == false);
+
+    [Property]
+    public Property Contains_with_custom_comparer_matches_equivalent_value() =>
+        Prop.ForAll<NonEmptyString>(msg =>
+        {
+            var value = msg.Get + "a"; // ensure case change
+            var probe = value.ToUpperInvariant();
+            return Ok<string, string>(value).Contains(probe, StringComparer.OrdinalIgnoreCase) == true;
+        });
+
+    [Property]
+    public Property Contains_with_comparer_returns_false_for_error() =>
+        Prop.ForAll<NonEmptyString, NonEmptyString>((msg, probe) =>
+            Error<string, string>(msg.Get).Contains(value: probe.Get, comparer: StringComparer.OrdinalIgnoreCase) == false);
 }
