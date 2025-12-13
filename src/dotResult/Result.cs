@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace DotResult;
 
@@ -101,6 +102,13 @@ public static class Result
             result.IsOk
                 ? fallbackFactory()
                 : result.Error;
+
+        /// <summary>
+        /// Returns true when the result is Ok and its value equals the provided one.
+        /// </summary>
+        public static bool Contains(T value, Result<T, TError> result) =>
+            result.IsOk
+                && EqualityComparer<T>.Default.Equals(result.Value, value);
     }
 
     extension<T, TError, TResult>(Result<T, TError>)
@@ -183,6 +191,11 @@ public static class ResultExtensions
         /// Returns the error value when Error; otherwise evaluates the fallback factory.
         /// </summary>
         public TError UnwrapErrorOrElse(Func<TError> fallbackFactory) => Result.UnwrapErrorOrElse(fallbackFactory, result);
+
+        /// <summary>
+        /// Returns true when the result is Ok and its value equals the provided one.
+        /// </summary>
+        public bool Contains(T value) => Result.Contains(value, result);
     }
 
     extension<T, TError, TResult>(Result<T, TError> result)
