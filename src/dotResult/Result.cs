@@ -115,6 +115,12 @@ public static class Result
         /// </summary>
         public static bool Contains(T value, IEqualityComparer<T> comparer, Result<T, TError> result) =>
             result.IsOk && comparer.Equals(result.Value, value);
+
+        /// <summary>
+        /// Returns true when the result is Ok and the predicate holds for its value.
+        /// </summary>
+        public static bool Exists(Func<T, bool> predicate, Result<T, TError> result) =>
+            result.IsOk && predicate(result.Value);
     }
 
     extension<T, TError, TResult>(Result<T, TError>)
@@ -207,6 +213,11 @@ public static class ResultExtensions
         /// Returns true when the result is Ok and its value equals the provided one using the supplied comparer.
         /// </summary>
         public bool Contains(T value, IEqualityComparer<T> comparer) => Result.Contains(value, comparer, result);
+
+        /// <summary>
+        /// Returns true when the result is Ok and the predicate holds for its value.
+        /// </summary>
+        public bool Exists(Func<T, bool> predicate) => Result.Exists(predicate, result);
     }
 
     extension<T, TError, TResult>(Result<T, TError> result)
