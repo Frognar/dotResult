@@ -164,6 +164,14 @@ public static class Result
             result.IsOk
                 ? onOk(result.Value)
                 : onError(result.Error);
+
+        /// <summary>
+        /// Accumulates the Ok value into the supplied state, or returns the state for Error.
+        /// </summary>
+        public static TResult Fold(Func<TResult, T, TResult> folder, TResult state, Result<T, TError> result) =>
+            result.IsOk
+                ? folder(state, result.Value)
+                : state;
     }
 }
 
@@ -248,5 +256,10 @@ public static class ResultExtensions
         /// Matches on the result and evaluates the corresponding handler.
         /// </summary>
         public TResult Match(Func<TError, TResult> onError, Func<T, TResult> onOk) => Result.Match(onError, onOk, result);
+
+        /// <summary>
+        /// Accumulates the Ok value into the provided state, or leaves the state unchanged for Error.
+        /// </summary>
+        public TResult Fold(Func<TResult, T, TResult> folder, TResult state) => Result.Fold(folder, state, result);
     }
 }
