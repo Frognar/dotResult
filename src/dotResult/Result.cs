@@ -172,6 +172,14 @@ public static class Result
             result.IsOk
                 ? folder(state, result.Value)
                 : state;
+
+        /// <summary>
+        /// Accumulates the Ok value into the supplied state, or returns the state for Error.
+        /// </summary>
+        public static TResult FoldBack(Func<T, TResult, TResult> folder, Result<T, TError> result, TResult state) =>
+            result.IsOk
+                ? folder(result.Value, state)
+                : state;
     }
 }
 
@@ -261,5 +269,10 @@ public static class ResultExtensions
         /// Accumulates the Ok value into the provided state, or leaves the state unchanged for Error.
         /// </summary>
         public TResult Fold(Func<TResult, T, TResult> folder, TResult state) => Result.Fold(folder, state, result);
+
+        /// <summary>
+        /// Accumulates the Ok value into the provided state, or leaves the state unchanged for Error.
+        /// </summary>
+        public TResult FoldBack(Func<T, TResult, TResult> folder, TResult state) => Result.FoldBack(folder, result, state);
     }
 }
