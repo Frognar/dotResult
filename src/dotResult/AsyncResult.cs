@@ -19,6 +19,15 @@ public static class AsyncResult
             => result.IsOk
                 ? Result<TResult, TError>.Ok(await mapper(result.Value))
                 : Result<TResult, TError>.Error(result.Error);
+
+        /// <summary>
+        /// Asynchronously maps the error value of an Error result.
+        /// If the result is Ok, it is returned unchanged.
+        /// </summary>
+        public static async Task<Result<T, TResult>> MapErrorAsync(Func<TError, Task<TResult>> mapper, Result<T, TError> result)
+            => result.IsOk
+                ? Result<T, TResult>.Ok(result.Value)
+                : Result<T, TResult>.Error(await mapper(result.Error));
     }
 
     extension<T, TError, TResult>(Result<T, TError> result)
@@ -28,6 +37,12 @@ public static class AsyncResult
         /// If the result is Error, it is returned unchanged.
         /// </summary>
         public async Task<Result<TResult, TError>> MapAsync(Func<T, Task<TResult>> mapper) => await AsyncResult.MapAsync(mapper, result);
+
+        /// <summary>
+        /// Asynchronously maps the error value of an Error result.
+        /// If the result is Ok, it is returned unchanged.
+        /// </summary>
+        public async Task<Result<T, TResult>> MapErrorAsync(Func<TError, Task<TResult>> mapper) => await AsyncResult.MapErrorAsync(mapper, result);
     }
 
     extension<T, TError, TResult>(Task<Result<T, TError>> asyncResult)
@@ -37,5 +52,11 @@ public static class AsyncResult
         /// If the result is Error, it is returned unchanged.
         /// </summary>
         public async Task<Result<TResult, TError>> MapAsync(Func<T, Task<TResult>> mapper) => await AsyncResult.MapAsync(mapper, await asyncResult);
+
+        /// <summary>
+        /// Asynchronously maps the error value of an Error result.
+        /// If the result is Ok, it is returned unchanged.
+        /// </summary>
+        public async Task<Result<T, TResult>> MapErrorAsync(Func<TError, Task<TResult>> mapper) => await AsyncResult.MapErrorAsync(mapper, await asyncResult);
     }
 }
