@@ -1,5 +1,4 @@
 using System;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace DotResult;
@@ -28,6 +27,15 @@ public static class AsyncResult
             => result.IsOk
                 ? Result<T, TResult>.Ok(result.Value)
                 : Result<T, TResult>.Error(await mapper(result.Error));
+
+        /// <summary>
+        /// Asynchronously binds the value of an Ok result.
+        /// If the result is Error, it is returned unchanged.
+        /// </summary>
+        public static async Task<Result<TResult, TError>> BindAsync(Func<T, Task<Result<TResult, TError>>> binder, Result<T, TError> result)
+            => result.IsOk
+                ? await binder(result.Value)
+                : Result<TResult, TError>.Error(result.Error);
     }
 
     extension<T, TError, TResult>(Result<T, TError> result)
@@ -43,6 +51,12 @@ public static class AsyncResult
         /// If the result is Ok, it is returned unchanged.
         /// </summary>
         public async Task<Result<T, TResult>> MapErrorAsync(Func<TError, Task<TResult>> mapper) => await AsyncResult.MapErrorAsync(mapper, result);
+
+        /// <summary>
+        /// Asynchronously binds the value of an Ok result.
+        /// If the result is Error, it is returned unchanged.
+        /// </summary>
+        public async Task<Result<TResult, TError>> BindAsync(Func<T, Task<Result<TResult, TError>>> binder) => await AsyncResult.BindAsync(binder, result);
     }
 
     extension<T, TError, TResult>(Task<Result<T, TError>> asyncResult)
@@ -58,5 +72,11 @@ public static class AsyncResult
         /// If the result is Ok, it is returned unchanged.
         /// </summary>
         public async Task<Result<T, TResult>> MapErrorAsync(Func<TError, Task<TResult>> mapper) => await AsyncResult.MapErrorAsync(mapper, await asyncResult);
+
+        /// <summary>
+        /// Asynchronously binds the value of an Ok result.
+        /// If the result is Error, it is returned unchanged.
+        /// </summary>
+        public async Task<Result<TResult, TError>> BindAsync(Func<T, Task<Result<TResult, TError>>> binder) => await AsyncResult.BindAsync(binder, await asyncResult);
     }
 }
