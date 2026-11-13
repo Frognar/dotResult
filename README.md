@@ -143,6 +143,15 @@ synchronous counterparts, on a result and on a `Task` or `ValueTask` of one, so 
 `await`. Every step takes a synchronous delegate or one that returns a `Task`; the case a step passes through is
 returned at once, without waiting.
 
+Query syntax works over tasks too; the whole query is awaited once:
+
+```csharp
+var report = await (
+    from user in repository.FindUserAsync(id)            // Task<Result<User, string>>
+    from order in repository.LastOrderAsync(user)        // Task<Result<Order, string>>
+    select $"{user.Name}: {order.Total}");
+```
+
 The delegates return `Task<T>`, so any async lambda fits; the methods return `ValueTask<T>`, already complete (and
 allocation-free) when there is nothing to wait for. Arguments are checked immediately; anything a delegate throws
 comes out when the result is awaited, and an `OperationCanceledException` for a requested token gives a canceled

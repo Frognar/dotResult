@@ -221,6 +221,27 @@ public readonly partial struct Result<T, TError>
                 : new(new Error<TError>(Produced(error(source._ok.Value), nameof(error))));
     }
 
+    // Query syntax with an asynchronous step (ResultTaskQueryExtensions): Bind then project, without a closure (R7).
+    internal ValueTask<Result<TResult, TError>> SelectManyAsync<TIntermediate, TResult>(
+        Func<T, Task<Result<TIntermediate, TError>>> selector,
+        Func<T, TIntermediate, TResult> resultSelector)
+        where TIntermediate : notnull
+        where TResult : notnull
+    {
+        return _case switch
+        {
+            ResultCase.Ok => ProjectAfter(_ok.Value, selector, resultSelector),
+            ResultCase.Error => ValueTask.FromResult(new Result<TResult, TError>(_error)),
+            _ => throw Uninitialized(),
+        };
+
+        static async ValueTask<Result<TResult, TError>> ProjectAfter(
+            T value,
+            Func<T, Task<Result<TIntermediate, TError>>> selector,
+            Func<T, TIntermediate, TResult> resultSelector) =>
+            Project(value, await selector(value).ConfigureAwait(false), resultSelector);
+    }
+
     private static ValueTask<TResult> Start<TArg, TResult>(Func<TArg, Task<TResult>> step, TArg arg)
     {
         try
