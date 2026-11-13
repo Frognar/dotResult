@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.0-alpha.4](https://github.com/Frognar/dotResult/compare/v2.0.0-alpha.3...v2.0.0-alpha.4) (2026-11-13)
+
+
+### Features
+
+* add asynchronous Match and OrDefault ([#69](https://github.com/Frognar/dotResult/issues/69)) ([797ad59](https://github.com/Frognar/dotResult/commit/797ad59191e4a55e25d4029f50c615c55a915e89))
+* add MapAsync, MapErrorAsync, BindAsync and EnsureAsync ([#71](https://github.com/Frognar/dotResult/issues/71)) ([8165729](https://github.com/Frognar/dotResult/commit/8165729092a9fb090c508c0ba5694cb371ae2cb2))
+
 ## [2.0.0-alpha.3](https://github.com/Frognar/dotResult/compare/v2.0.0-alpha.2...v2.0.0-alpha.3) (2026-11-13)
 
 
