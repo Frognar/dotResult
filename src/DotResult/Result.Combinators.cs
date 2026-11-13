@@ -1,7 +1,7 @@
 namespace DotResult;
 
 /// <content>
-/// Combinators: <c>OrElse</c>, <c>Zip</c> and <c>Fold</c>.
+/// Combinators: <c>OrElse</c>, <c>Zip</c>, <c>Fold</c>, <c>Iter</c>, <c>Tap</c> and <c>TapError</c>.
 /// </content>
 public readonly partial struct Result<T, TError>
 {
@@ -136,6 +136,69 @@ public readonly partial struct Result<T, TError>
             ResultCase.Error => state,
             _ => throw Uninitialized(),
         };
+    }
+
+    /// <summary>
+    /// Runs <paramref name="action"/> on the value of a success, for its side effect. Does nothing for an error.
+    /// </summary>
+    /// <remarks>
+    /// Use <see cref="Tap"/> when the chain goes on after the side effect.
+    /// </remarks>
+    /// <param name="action">The side effect to run on the value.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="action"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">The result is uninitialized (default).</exception>
+    public void Iter(Action<T> action)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+        switch (_case)
+        {
+            case ResultCase.Ok:
+                action(_ok.Value);
+                break;
+            case ResultCase.Error:
+                break;
+            default:
+                throw Uninitialized();
+        }
+    }
+
+    /// <summary>
+    /// Runs <paramref name="action"/> on the value of a success, for its side effect, and returns this result
+    /// unchanged, so the chain goes on: <c>result.Tap(log).Map(…)</c>. Does nothing for an error.
+    /// </summary>
+    /// <param name="action">The side effect to run on the value.</param>
+    /// <returns>This result.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="action"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">The result is uninitialized (default).</exception>
+    public Result<T, TError> Tap(Action<T> action)
+    {
+        Iter(action);
+        return this;
+    }
+
+    /// <summary>
+    /// Runs <paramref name="action"/> on the error, for its side effect (logging, metrics), and returns this result
+    /// unchanged, so the chain goes on. Does nothing for a success.
+    /// </summary>
+    /// <param name="action">The side effect to run on the error.</param>
+    /// <returns>This result.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="action"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">The result is uninitialized (default).</exception>
+    public Result<T, TError> TapError(Action<TError> action)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+        switch (_case)
+        {
+            case ResultCase.Ok:
+                break;
+            case ResultCase.Error:
+                action(_error.Value);
+                break;
+            default:
+                throw Uninitialized();
+        }
+
+        return this;
     }
 
     // Result.Flatten: the inner result of a success, or the outer error (R3: never an uninitialized inner result).
