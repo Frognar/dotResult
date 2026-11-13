@@ -19,6 +19,7 @@ Check(answer == ok(42) && answer != failed && answer.GetHashCode() == Parse("42"
 Check(Results(ok(1), error(1)) is [Ok<int>, Error<int>], "same value and error type");
 Check(default(Result<int, string>) is null && answer is not null, "uninitialized result");
 Check(Throws<ArgumentNullException>(static () => ok<string>(null!)), "null value rejected");
+Check($"{answer} {failed} {default(Result<int, string>)}" == "Ok(42) Error(boom) Uninitialized", "ToString");
 
 if (failures.Count > 0)
 {

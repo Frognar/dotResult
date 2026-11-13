@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace DotResult;
 
 /// <summary>
@@ -17,6 +19,7 @@ namespace DotResult;
 /// </code>
 /// </remarks>
 /// <typeparam name="T">The type of the value. Never <see langword="null"/>.</typeparam>
+[DebuggerDisplay("{ToString(),nq}")]
 public readonly struct Ok<T> : IEquatable<Ok<T>>
     where T : notnull
 {
@@ -73,4 +76,10 @@ public readonly struct Ok<T> : IEquatable<Ok<T>>
 
     /// <inheritdoc/>
     public override int GetHashCode() => HashCode.Combine(_value);
+
+    /// <summary>
+    /// Returns <c>Ok(…)</c> with the value inside, like the result that holds this case.
+    /// </summary>
+    /// <returns>A text representation of this success.</returns>
+    public override string ToString() => $"Ok({_value})";
 }

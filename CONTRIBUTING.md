@@ -115,7 +115,6 @@ NotRecognized`). Drop it once a BenchmarkDotNet release supports .NET 11.
   ```
 
   A surviving mutant means a behavior no property pins down: add a property, or accept it and say why in the PR.
-  The threshold starts at 0 while the library is only a skeleton and rises to 70 with the first real features.
 - **Native AOT** (CI job *Native AOT smoke test*): `smoke/DotResult.AotSmoke` is published with Native AOT and run. Any
   trimming or AOT warning from the library fails the publish, and the program checks that the API, async code and
   JSON through a source-generated context work in the native binary. Every feature adds its checks. Locally:

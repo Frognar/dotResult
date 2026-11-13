@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace DotResult;
 
 /// <summary>
@@ -17,6 +19,7 @@ namespace DotResult;
 /// </code>
 /// </remarks>
 /// <typeparam name="TError">The type of the error. Never <see langword="null"/>.</typeparam>
+[DebuggerDisplay("{ToString(),nq}")]
 public readonly struct Error<TError> : IEquatable<Error<TError>>
     where TError : notnull
 {
@@ -73,4 +76,10 @@ public readonly struct Error<TError> : IEquatable<Error<TError>>
 
     /// <inheritdoc/>
     public override int GetHashCode() => HashCode.Combine(_value);
+
+    /// <summary>
+    /// Returns <c>Error(…)</c> with the error inside, like the result that holds this case.
+    /// </summary>
+    /// <returns>A text representation of this error.</returns>
+    public override string ToString() => $"Error({_value})";
 }

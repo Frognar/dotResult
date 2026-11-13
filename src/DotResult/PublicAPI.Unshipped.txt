@@ -23,10 +23,13 @@ DotResult.Result<T, TError>.IUnionMembers.Value.get -> object?
 DotResult.Result<T, TError>.Result() -> void
 override DotResult.Error<TError>.Equals(object? obj) -> bool
 override DotResult.Error<TError>.GetHashCode() -> int
+override DotResult.Error<TError>.ToString() -> string!
 override DotResult.Ok<T>.Equals(object? obj) -> bool
 override DotResult.Ok<T>.GetHashCode() -> int
+override DotResult.Ok<T>.ToString() -> string!
 override DotResult.Result<T, TError>.Equals(object? obj) -> bool
 override DotResult.Result<T, TError>.GetHashCode() -> int
+override DotResult.Result<T, TError>.ToString() -> string!
 static DotResult.Error<TError>.operator !=(DotResult.Error<TError> left, DotResult.Error<TError> right) -> bool
 static DotResult.Error<TError>.operator ==(DotResult.Error<TError> left, DotResult.Error<TError> right) -> bool
 static DotResult.Ok<T>.operator !=(DotResult.Ok<T> left, DotResult.Ok<T> right) -> bool
