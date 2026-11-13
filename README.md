@@ -27,8 +27,8 @@ var message = Parse("42") switch
 - **No invalid values.** `null` is never a value or an error, and there is no `.Value`, `IsOk` or other accessor
   that can throw: you get a value out through pattern matching or total functions.
 - **No allocations.** For value types, creating, matching and comparing results allocates nothing.
-- **Functional API** (arriving through the 2.0.0 alphas): `Match`, `OrDefault`, `Map`, `MapError`, `Bind`, `Ensure`,
-  query syntax, async pipelines, combinators, collections, JSON.
+- **Functional API.** `Match` and `OrDefault` today; `Map`, `MapError`, `Bind`, `Ensure`, query syntax, async
+  pipelines, combinators, collections and JSON arrive through the 2.0.0 alphas.
 
 ## Usage
 
@@ -68,12 +68,15 @@ if (parsed is Ok<int>(var number))
 {
     Console.WriteLine(number);
 }
+
+var same = answer.Match(value => $"The answer is {value}", error => $"No answer: {error}");
+var orZero = answer.OrDefault(0);
+var fromError = answer.OrDefault(error => error.Length);   // the fallback sees the error
 ```
 
 Both cases make the `switch` exhaustive, and the compiler warns when one is missing. Pattern matching works in generic
-code too: `result is Ok<T>(var value)` reads the value when `T` is a type parameter.
-
-`Match`, `OrDefault` and the rest of the functional API arrive in the next alphas.
+code too: `result is Ok<T>(var value)` reads the value when `T` is a type parameter. `Match` runs exactly one branch,
+exactly once; the `OrDefault` factory runs only for an error.
 
 ### The uninitialized result
 

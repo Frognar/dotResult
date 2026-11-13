@@ -7,7 +7,7 @@ namespace DotResult.PropertyTests;
 /// name of the parameter that carried it.
 /// </summary>
 /// <remarks>
-/// Every member that takes a delegate adds a line here: a missing delegate is rejected whatever the case.
+/// Missing delegates are covered next to each member (<c>A_missing_…_is_rejected_whatever_the_case</c>).
 /// </remarks>
 public sealed class NullInputProperties
 {

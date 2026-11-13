@@ -80,6 +80,25 @@ public sealed class UninitializedProperties
     }
 
     [Fact]
+    public void Match_throws_and_runs_no_branch()
+    {
+        var calls = 0;
+
+        Assert.Throws<InvalidOperationException>(() => Uninitialized.Match(_ => ++calls, _ => ++calls));
+        Assert.Equal(0, calls);
+    }
+
+    [Fact]
+    public void OrDefault_throws_and_runs_no_factory()
+    {
+        var calls = 0;
+
+        Assert.Throws<InvalidOperationException>(() => Uninitialized.OrDefault(0));
+        Assert.Throws<InvalidOperationException>(() => Uninitialized.OrDefault(_ => ++calls));
+        Assert.Equal(0, calls);
+    }
+
+    [Fact]
     public void The_union_members_report_no_case()
     {
         Result<int, string>.IUnionMembers members = Uninitialized;

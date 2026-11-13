@@ -71,7 +71,8 @@ git restore src/DotResult/packages.lock.json   # the AOT publish rewrites it for
   default).
 - **R4 No null:** `null` is never a value or an error. `ok(null!)`, `new Ok<T>(null!)` etc. throw
   `ArgumentNullException`; converting a `default(Ok<T>)`/`default(Error<TError>)` that holds null throws
-  `ArgumentException`; a delegate returning null where a value is needed throws `InvalidOperationException`.
+  `ArgumentException`; a delegate returning null where a value would enter a result (`Map`, `MapError`, `Zip`'s
+  combine, …) throws `InvalidOperationException`. Values leaving a result (`Match`, `OrDefault`) are not checked.
   Delegates are null-checked with `ArgumentNullException.ThrowIfNull`.
 - **R5 No accessors:** no `IsOk`, `IsError`, `Value` or `Error` on the result. Values come out via pattern matching,
   `Match`, `OrDefault`, or total functions.

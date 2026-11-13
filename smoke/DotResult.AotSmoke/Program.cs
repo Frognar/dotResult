@@ -20,6 +20,11 @@ Check(Results(ok(1), error(1)) is [Ok<int>, Error<int>], "same value and error t
 Check(default(Result<int, string>) is null && answer is not null, "uninitialized result");
 Check(Throws<ArgumentNullException>(static () => ok<string>(null!)), "null value rejected");
 Check($"{answer} {failed} {default(Result<int, string>)}" == "Ok(42) Error(boom) Uninitialized", "ToString");
+Check(answer.Match(static value => value, static error => error.Length) == 42, "Match on Ok");
+Check(failed.Match(static value => value, static error => error.Length) == 4, "Match on Error");
+Check(answer.OrDefault(0) == 42 && failed.OrDefault(0) == 0, "OrDefault");
+Check(failed.OrDefault(static error => error.Length) == 4, "OrDefault(factory)");
+Check(Throws<InvalidOperationException>(static () => default(Result<int, string>).OrDefault(0)), "uninitialized OrDefault");
 
 if (failures.Count > 0)
 {

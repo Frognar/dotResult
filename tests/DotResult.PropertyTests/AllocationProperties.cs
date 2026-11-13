@@ -51,6 +51,14 @@ public sealed class AllocationProperties
     }
 
     [Property(Skip = Allocations.SkipInDebug)]
+    public void Reading_allocates_nothing(Result<int, int> result)
+    {
+        Allocations.AssertNone("Match", () => _ = result.Match(static value => value, static error => -error));
+        Allocations.AssertNone("OrDefault", () => _ = result.OrDefault(0));
+        Allocations.AssertNone("OrDefault(factory)", () => _ = result.OrDefault(static error => -error));
+    }
+
+    [Property(Skip = Allocations.SkipInDebug)]
     public void Comparing_allocates_nothing(Result<int, int> result, Result<int, int> other)
     {
         Allocations.AssertNone("Equals", () => _ = result.Equals(other));
