@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.0.0-alpha.2](https://github.com/Frognar/dotResult/compare/v2.0.0-alpha.1...v2.0.0-alpha.2) (2026-11-13)
+
+
+### Features
+
+* add Ensure ([#66](https://github.com/Frognar/dotResult/issues/66)) ([3d6343b](https://github.com/Frognar/dotResult/commit/3d6343ba1a1cc21334cc4e774b75420b91c36acc))
+* add Map, MapError and Bind ([#65](https://github.com/Frognar/dotResult/issues/65)) ([47f8b22](https://github.com/Frognar/dotResult/commit/47f8b22ea18aab8bb8ab5fa5ca6fe0412d94b419))
+* add Match and OrDefault ([#63](https://github.com/Frognar/dotResult/issues/63)) ([a1c94bd](https://github.com/Frognar/dotResult/commit/a1c94bd5b6211ede9cc18d4471b94d37d41c3095))
+
 ## [2.0.0-alpha.1](https://github.com/Frognar/dotResult/compare/v2.0.0-alpha.0...v2.0.0-alpha.1) (2026-11-13)
 
 
