@@ -320,6 +320,83 @@ public readonly partial struct Result<T, TError> : Result<T, TError>.IUnionMembe
     }
 
     /// <summary>
+    /// Query-syntax name for <see cref="Map{TResult}"/>: <c>from value in result select f(value)</c>.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the selected value.</typeparam>
+    /// <param name="selector">Transforms the value.</param>
+    /// <returns>A success with the selected value, or the same error.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="selector"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    /// The result is uninitialized (default), or <paramref name="selector"/> returned <see langword="null"/>.
+    /// </exception>
+    public Result<TResult, TError> Select<TResult>(Func<T, TResult> selector)
+        where TResult : notnull
+    {
+        ArgumentNullException.ThrowIfNull(selector);
+        return Map(selector);
+    }
+
+    /// <summary>
+    /// Query-syntax name for <see cref="Bind{TResult}"/>.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the value produced by the next step.</typeparam>
+    /// <param name="selector">The next step.</param>
+    /// <returns>The result of the next step, or the same error.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="selector"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    /// The result is uninitialized (default), or <paramref name="selector"/> returned an uninitialized result.
+    /// </exception>
+    public Result<TResult, TError> SelectMany<TResult>(Func<T, Result<TResult, TError>> selector)
+        where TResult : notnull
+    {
+        ArgumentNullException.ThrowIfNull(selector);
+        return Bind(selector);
+    }
+
+    /// <summary>
+    /// Query-syntax form of <see cref="Bind{TResult}"/> followed by a projection:
+    /// <c>from x in result from y in f(x) select g(x, y)</c>. The first error wins.
+    /// </summary>
+    /// <typeparam name="TIntermediate">The type of the value produced by <paramref name="selector"/>.</typeparam>
+    /// <typeparam name="TResult">The type of the projected value.</typeparam>
+    /// <param name="selector">The next step.</param>
+    /// <param name="resultSelector">Combines the value with the value of the next step.</param>
+    /// <returns>A success with the projected value, or the first error.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// <paramref name="selector"/> or <paramref name="resultSelector"/> is null.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// The result is uninitialized (default), <paramref name="selector"/> returned an uninitialized result, or
+    /// <paramref name="resultSelector"/> returned <see langword="null"/>.
+    /// </exception>
+    public Result<TResult, TError> SelectMany<TIntermediate, TResult>(
+        Func<T, Result<TIntermediate, TError>> selector,
+        Func<T, TIntermediate, TResult> resultSelector)
+        where TIntermediate : notnull
+        where TResult : notnull
+    {
+        ArgumentNullException.ThrowIfNull(selector);
+        ArgumentNullException.ThrowIfNull(resultSelector);
+        switch (_case)
+        {
+            case ResultCase.Ok:
+                var next = selector(_ok.Value);
+                return next._case switch
+                {
+                    ResultCase.Ok => new Result<TResult, TError>(
+                        new Ok<TResult>(Produced(resultSelector(_ok.Value, next._ok.Value), nameof(resultSelector)))),
+                    ResultCase.Error => new Result<TResult, TError>(next._error),
+                    _ => throw new InvalidOperationException(
+                        $"'{nameof(selector)}' returned an uninitialized (default) result."),
+                };
+            case ResultCase.Error:
+                return new Result<TResult, TError>(_error);
+            default:
+                throw Uninitialized();
+        }
+    }
+
+    /// <summary>
     /// Compares two results: both successes with equal values, both errors with equal errors, or both uninitialized.
     /// </summary>
     /// <param name="left">The first result.</param>

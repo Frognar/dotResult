@@ -69,6 +69,26 @@ public sealed class AllocationProperties
     }
 
     [Property(Skip = Allocations.SkipInDebug)]
+    public void Query_syntax_allocates_nothing(Result<int, int> result)
+    {
+        Allocations.AssertNone("Select", () => _ = result.Select(static value => value + 1));
+        Allocations.AssertNone("SelectMany", () => _ = result.SelectMany(static value => Half(value)));
+        Allocations.AssertNone(
+            "SelectMany(resultSelector)",
+            () => _ = result.SelectMany(static value => Half(value), static (value, half) => value + half));
+
+        // At most two from clauses and no let: beyond that the compiler carries the range variables in an anonymous
+        // object (a transparent identifier) that it allocates, whatever the library does.
+        Allocations.AssertNone("query", () => _ = from value in result select value + 1);
+        Allocations.AssertNone(
+            "query with two from clauses",
+            () => _ =
+                from value in result
+                from half in Half(value)
+                select value + half);
+    }
+
+    [Property(Skip = Allocations.SkipInDebug)]
     public void Comparing_allocates_nothing(Result<int, int> result, Result<int, int> other)
     {
         Allocations.AssertNone("Equals", () => _ = result.Equals(other));
