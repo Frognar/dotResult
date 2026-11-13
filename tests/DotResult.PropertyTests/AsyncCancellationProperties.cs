@@ -51,6 +51,22 @@ public sealed class AsyncCancellationProperties : IDisposable
         await AssertCanceled(() => failure.OrDefaultAsync(CanceledStep<string, int>()));
     }
 
+    [Fact]
+    public async Task The_steps_are_canceled_by_their_delegate()
+    {
+        var success = Results.Ok<int, string>(1);
+        var failure = Results.Error<int, string>("boom");
+
+        await AssertCanceled(() => success.MapAsync(ThrowingStep<int, string>()));
+        await AssertCanceled(() => success.MapAsync(CanceledStep<int, string>()));
+        await AssertCanceled(() => failure.MapErrorAsync(ThrowingStep<string, int>()));
+        await AssertCanceled(() => failure.MapErrorAsync(CanceledStep<string, int>()));
+        await AssertCanceled(() => success.BindAsync(ThrowingStep<int, Result<string, string>>()));
+        await AssertCanceled(() => success.BindAsync(CanceledStep<int, Result<string, string>>()));
+        await AssertCanceled(() => success.EnsureAsync(ThrowingStep<int, bool>(), "error"));
+        await AssertCanceled(() => success.EnsureAsync(CanceledStep<int, bool>(), "error"));
+    }
+
     private static async Task AssertCanceled<TResult>(Func<ValueTask<TResult>> call)
     {
         ValueTask<TResult> pending = default;

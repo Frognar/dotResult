@@ -144,6 +144,21 @@ public sealed class UninitializedProperties
     }
 
     [Fact]
+    public void Async_steps_throw_immediately_and_run_nothing()
+    {
+        var calls = 0;
+
+        Assert.Throws<InvalidOperationException>(() => Uninitialized.MapAsync(value => Task.FromResult(++calls + value)));
+        Assert.Throws<InvalidOperationException>(() => Uninitialized.MapErrorAsync(error => Task.FromResult(++calls)));
+        Assert.Throws<InvalidOperationException>(
+            () => Uninitialized.BindAsync(value => Task.FromResult(Results.Ok<int, string>(++calls))));
+        Assert.Throws<InvalidOperationException>(() => Uninitialized.EnsureAsync(_ => Task.FromResult(++calls > 0), "error"));
+        Assert.Throws<InvalidOperationException>(
+            () => Uninitialized.EnsureAsync(_ => Task.FromResult(++calls > 0), _ => "error"));
+        Assert.Equal(0, calls);
+    }
+
+    [Fact]
     public void The_union_members_report_no_case()
     {
         Result<int, string>.IUnionMembers members = Uninitialized;

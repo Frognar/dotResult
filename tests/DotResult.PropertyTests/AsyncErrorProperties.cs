@@ -42,6 +42,20 @@ public sealed class AsyncErrorProperties
         await AssertFailsOnlyWhenAwaited(() => Results.Error<int, string>(failure.Get).OrDefaultAsync(fallback));
     }
 
+    [Property]
+    public async Task The_steps_report_a_throwing_delegate_when_awaited(int value, NonNull<string> failure)
+    {
+        var success = Results.Ok<int, string>(value);
+        var error = Results.Error<int, string>(failure.Get);
+
+        await AssertFailsOnlyWhenAwaited(() => success.MapAsync((Func<int, Task<string>>)(_ => throw Failure())));
+        await AssertFailsOnlyWhenAwaited(() => error.MapErrorAsync((Func<string, Task<int>>)(_ => throw Failure())));
+        await AssertFailsOnlyWhenAwaited(() => success.BindAsync((Func<int, Task<Result<int, string>>>)(_ => throw Failure())));
+        await AssertFailsOnlyWhenAwaited(() => success.EnsureAsync((Func<int, Task<bool>>)(_ => throw Failure()), "error"));
+        await AssertFailsOnlyWhenAwaited(
+            () => success.EnsureAsync(_ => Task.FromResult(false), (Func<int, string>)(_ => throw Failure())));
+    }
+
     private static InvalidOperationException Failure() => new(Message);
 
     private static async Task AssertFailsOnlyWhenAwaited<TResult>(Func<ValueTask<TResult>> call)

@@ -14,8 +14,11 @@ DotResult.Ok<T>.Value.get -> T
 DotResult.Prelude
 DotResult.Result<T, TError>
 DotResult.Result<T, TError>.Bind<TResult>(System.Func<T, DotResult.Result<TResult, TError>>! bind) -> DotResult.Result<TResult, TError>
+DotResult.Result<T, TError>.BindAsync<TResult>(System.Func<T, System.Threading.Tasks.Task<DotResult.Result<TResult, TError>>!>! bind) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
 DotResult.Result<T, TError>.Ensure(System.Func<T, bool>! predicate, System.Func<T, TError>! error) -> DotResult.Result<T, TError>
 DotResult.Result<T, TError>.Ensure(System.Func<T, bool>! predicate, TError error) -> DotResult.Result<T, TError>
+DotResult.Result<T, TError>.EnsureAsync(System.Func<T, System.Threading.Tasks.Task<bool>!>! predicate, System.Func<T, TError>! error) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>>
+DotResult.Result<T, TError>.EnsureAsync(System.Func<T, System.Threading.Tasks.Task<bool>!>! predicate, TError error) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>>
 DotResult.Result<T, TError>.Equals(DotResult.Result<T, TError> other) -> bool
 DotResult.Result<T, TError>.IUnionMembers
 DotResult.Result<T, TError>.IUnionMembers.Create(DotResult.Error<TError> value) -> DotResult.Result<T, TError>
@@ -24,7 +27,9 @@ DotResult.Result<T, TError>.IUnionMembers.TryGetValue(out DotResult.Error<TError
 DotResult.Result<T, TError>.IUnionMembers.TryGetValue(out DotResult.Ok<T> value) -> bool
 DotResult.Result<T, TError>.IUnionMembers.Value.get -> object?
 DotResult.Result<T, TError>.Map<TResult>(System.Func<T, TResult>! map) -> DotResult.Result<TResult, TError>
+DotResult.Result<T, TError>.MapAsync<TResult>(System.Func<T, System.Threading.Tasks.Task<TResult>!>! map) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
 DotResult.Result<T, TError>.MapError<TNewError>(System.Func<TError, TNewError>! map) -> DotResult.Result<T, TNewError>
+DotResult.Result<T, TError>.MapErrorAsync<TNewError>(System.Func<TError, System.Threading.Tasks.Task<TNewError>!>! map) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TNewError>>
 DotResult.Result<T, TError>.Match<TResult>(System.Func<T, TResult>! ok, System.Func<TError, TResult>! error) -> TResult
 DotResult.Result<T, TError>.MatchAsync<TResult>(System.Func<T, System.Threading.Tasks.Task<TResult>!>! ok, System.Func<TError, System.Threading.Tasks.Task<TResult>!>! error) -> System.Threading.Tasks.ValueTask<TResult>
 DotResult.Result<T, TError>.MatchAsync<TResult>(System.Func<T, System.Threading.Tasks.Task<TResult>!>! ok, System.Func<TError, TResult>! error) -> System.Threading.Tasks.ValueTask<TResult>
