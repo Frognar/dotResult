@@ -124,6 +124,69 @@ public readonly partial struct Result<T, TError> : Result<T, TError>.IUnionMembe
         };
 
     /// <summary>
+    /// Reduces this result to a single value: <paramref name="ok"/> runs on the value of a success,
+    /// <paramref name="error"/> runs on the error. Exactly one of them runs, exactly once.
+    /// </summary>
+    /// <remarks>
+    /// The expression form of <c>result switch { Ok&lt;T&gt;(var value) => ..., Error&lt;TError&gt;(var error) => ... }</c>,
+    /// convenient in lambdas and chains.
+    /// </remarks>
+    /// <typeparam name="TResult">The type of the value both branches produce.</typeparam>
+    /// <param name="ok">Produces the value from the value of a success.</param>
+    /// <param name="error">Produces the value from the error.</param>
+    /// <returns>The value produced by the branch that ran.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="ok"/> or <paramref name="error"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">The result is uninitialized (default).</exception>
+    public TResult Match<TResult>(Func<T, TResult> ok, Func<TError, TResult> error)
+    {
+        ArgumentNullException.ThrowIfNull(ok);
+        ArgumentNullException.ThrowIfNull(error);
+        return _case switch
+        {
+            ResultCase.Ok => ok(_ok.Value),
+            ResultCase.Error => error(_error.Value),
+            _ => throw Uninitialized(),
+        };
+    }
+
+    /// <summary>
+    /// Returns the value of a success, or <paramref name="fallback"/> for an error.
+    /// </summary>
+    /// <param name="fallback">The value to use for an error.</param>
+    /// <returns>The value or the fallback. Never <see langword="null"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="fallback"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">The result is uninitialized (default).</exception>
+    public T OrDefault(T fallback)
+    {
+        ArgumentNullException.ThrowIfNull(fallback);
+        return _case switch
+        {
+            ResultCase.Ok => _ok.Value,
+            ResultCase.Error => fallback,
+            _ => throw Uninitialized(),
+        };
+    }
+
+    /// <summary>
+    /// Returns the value of a success, or the value <paramref name="fallback"/> produces from the error.
+    /// <paramref name="fallback"/> runs only for an error.
+    /// </summary>
+    /// <param name="fallback">Produces the value to use from the error.</param>
+    /// <returns>The value or the produced fallback.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="fallback"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">The result is uninitialized (default).</exception>
+    public T OrDefault(Func<TError, T> fallback)
+    {
+        ArgumentNullException.ThrowIfNull(fallback);
+        return _case switch
+        {
+            ResultCase.Ok => _ok.Value,
+            ResultCase.Error => fallback(_error.Value),
+            _ => throw Uninitialized(),
+        };
+    }
+
+    /// <summary>
     /// Compares two results: both successes with equal values, both errors with equal errors, or both uninitialized.
     /// </summary>
     /// <param name="left">The first result.</param>
@@ -178,6 +241,10 @@ public readonly partial struct Result<T, TError> : Result<T, TError>.IUnionMembe
             ResultCase.Error => HashCode.Combine(ResultCase.Error, _error),
             _ => 0,
         };
+
+    // R3: every consuming member rejects the uninitialized default the same way.
+    private static InvalidOperationException Uninitialized() =>
+        new("The result is uninitialized (default). Create results with ok(value) or error(value).");
 
     /// <summary>
     /// Returns <c>Ok(value)</c> for a success, <c>Error(error)</c> for an error, and <c>Uninitialized</c> for
