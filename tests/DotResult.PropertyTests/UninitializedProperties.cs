@@ -120,6 +120,18 @@ public sealed class UninitializedProperties
     }
 
     [Fact]
+    public void Query_syntax_throws_and_runs_nothing()
+    {
+        var calls = 0;
+
+        Assert.Throws<InvalidOperationException>(() => Uninitialized.Select(value => ++calls + value));
+        Assert.Throws<InvalidOperationException>(() => Uninitialized.SelectMany(value => Results.Ok<int, string>(++calls)));
+        Assert.Throws<InvalidOperationException>(
+            () => Uninitialized.SelectMany(value => Results.Ok<int, string>(++calls), (first, second) => first + second));
+        Assert.Equal(0, calls);
+    }
+
+    [Fact]
     public void The_union_members_report_no_case()
     {
         Result<int, string>.IUnionMembers members = Uninitialized;

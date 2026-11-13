@@ -32,6 +32,9 @@ Check(answer.Bind<int>(static value => value > 0 ? ok(value) : error("negative")
 Check(Generic<string, string>("generic") && ok("text").Equals(ok("text")), "reference types");
 Check(answer.Ensure(static value => value < 100, "too large") == answer, "Ensure keeps");
 Check(answer.Ensure(static value => value > 100, static value => $"{value} too small") == error("42 too small"), "Ensure rejects");
+Check((from value in answer from half in Half(value) select value + half) == ok(63), "query syntax");
+Check((from value in answer let doubled = value * 2 from half in Half(doubled) select half) == ok(42), "query with let");
+Check((from value in Parse("x") from half in Half(value) select half) == error("not a number"), "query fails fast");
 
 if (failures.Count > 0)
 {

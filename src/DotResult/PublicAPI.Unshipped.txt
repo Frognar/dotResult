@@ -29,6 +29,9 @@ DotResult.Result<T, TError>.Match<TResult>(System.Func<T, TResult>! ok, System.F
 DotResult.Result<T, TError>.OrDefault(System.Func<TError, T>! fallback) -> T
 DotResult.Result<T, TError>.OrDefault(T fallback) -> T
 DotResult.Result<T, TError>.Result() -> void
+DotResult.Result<T, TError>.Select<TResult>(System.Func<T, TResult>! selector) -> DotResult.Result<TResult, TError>
+DotResult.Result<T, TError>.SelectMany<TIntermediate, TResult>(System.Func<T, DotResult.Result<TIntermediate, TError>>! selector, System.Func<T, TIntermediate, TResult>! resultSelector) -> DotResult.Result<TResult, TError>
+DotResult.Result<T, TError>.SelectMany<TResult>(System.Func<T, DotResult.Result<TResult, TError>>! selector) -> DotResult.Result<TResult, TError>
 override DotResult.Error<TError>.Equals(object? obj) -> bool
 override DotResult.Error<TError>.GetHashCode() -> int
 override DotResult.Error<TError>.ToString() -> string!

@@ -27,7 +27,7 @@ var message = Parse("42") switch
 - **No invalid values.** `null` is never a value or an error, and there is no `.Value`, `IsOk` or other accessor
   that can throw: you get a value out through pattern matching or total functions.
 - **No allocations.** For value types, creating, matching and comparing results allocates nothing.
-- **Functional API.** `Match`, `OrDefault`, `Map`, `MapError`, `Bind` and `Ensure` today; query syntax, async
+- **Functional API.** `Match`, `OrDefault`, `Map`, `MapError`, `Bind`, `Ensure` and query syntax today; async
   pipelines, combinators, collections and JSON arrive through the 2.0.0 alphas.
 
 ## Usage
@@ -103,6 +103,24 @@ var positive = answer.Bind<int>(value => value > 0 ? ok(value) : error("not posi
 
 A step that already returns a result (`answer.Bind(Half)`) needs nothing. A `null` from `Map` or `MapError` is
 rejected with `InvalidOperationException`: a result never holds `null`.
+
+### Query syntax
+
+```csharp
+var total =
+    from value in answer
+    let doubled = value * 2
+    from half in Half(doubled)
+    select doubled + half;
+```
+
+A query is `Map` and `Bind` in disguise: the first error wins and later clauses never run. Every `from` must produce a
+result with the same error type. There is no `where`, because a failed condition has no error to give; check inside a
+clause with `Ensure` instead: `from half in Half(value).Ensure(h => h > 0, "not positive")`. For the same reason as
+with `Bind`, a later `from` needs a result, not a bare `ok(...)`.
+
+Queries with one or two `from` clauses allocate nothing for value types. With more clauses or a `let`, the compiler
+itself allocates a small object per query to carry the range variables.
 
 ### The uninitialized result
 
