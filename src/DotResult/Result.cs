@@ -187,6 +187,85 @@ public readonly partial struct Result<T, TError> : Result<T, TError>.IUnionMembe
     }
 
     /// <summary>
+    /// Transforms the value of a success with <paramref name="map"/>; an error passes through unchanged.
+    /// </summary>
+    /// <remarks>
+    /// <paramref name="map"/> runs only for a success, exactly once.
+    /// </remarks>
+    /// <typeparam name="TResult">The type of the transformed value.</typeparam>
+    /// <param name="map">Transforms the value.</param>
+    /// <returns>A success with the transformed value, or the same error.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="map"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    /// The result is uninitialized (default), or <paramref name="map"/> returned <see langword="null"/>.
+    /// </exception>
+    public Result<TResult, TError> Map<TResult>(Func<T, TResult> map)
+        where TResult : notnull
+    {
+        ArgumentNullException.ThrowIfNull(map);
+        return _case switch
+        {
+            ResultCase.Ok => new Result<TResult, TError>(new Ok<TResult>(Produced(map(_ok.Value), nameof(map)))),
+            ResultCase.Error => new Result<TResult, TError>(_error),
+            _ => throw Uninitialized(),
+        };
+    }
+
+    /// <summary>
+    /// Transforms the error with <paramref name="map"/>, possibly into another type; a success passes through
+    /// unchanged.
+    /// </summary>
+    /// <remarks>
+    /// <paramref name="map"/> runs only for an error, exactly once. Use it to translate errors between layers, for
+    /// example from a parser error to a message.
+    /// </remarks>
+    /// <typeparam name="TNewError">The type of the transformed error.</typeparam>
+    /// <param name="map">Transforms the error.</param>
+    /// <returns>The same success, or an error with the transformed error.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="map"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    /// The result is uninitialized (default), or <paramref name="map"/> returned <see langword="null"/>.
+    /// </exception>
+    public Result<T, TNewError> MapError<TNewError>(Func<TError, TNewError> map)
+        where TNewError : notnull
+    {
+        ArgumentNullException.ThrowIfNull(map);
+        return _case switch
+        {
+            ResultCase.Ok => new Result<T, TNewError>(_ok),
+            ResultCase.Error => new Result<T, TNewError>(new Error<TNewError>(Produced(map(_error.Value), nameof(map)))),
+            _ => throw Uninitialized(),
+        };
+    }
+
+    /// <summary>
+    /// Continues a success with <paramref name="bind"/>, a step that may itself fail; an error stops the chain and
+    /// passes through unchanged.
+    /// </summary>
+    /// <remarks>
+    /// <paramref name="bind"/> runs only for a success, exactly once. Use it to chain steps that can each fail with
+    /// the same type of error.
+    /// </remarks>
+    /// <typeparam name="TResult">The type of the value produced by the next step.</typeparam>
+    /// <param name="bind">The next step.</param>
+    /// <returns>The result of the next step, or the same error.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="bind"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    /// The result is uninitialized (default), or <paramref name="bind"/> returned an uninitialized result.
+    /// </exception>
+    public Result<TResult, TError> Bind<TResult>(Func<T, Result<TResult, TError>> bind)
+        where TResult : notnull
+    {
+        ArgumentNullException.ThrowIfNull(bind);
+        return _case switch
+        {
+            ResultCase.Ok => Initialized(bind(_ok.Value), nameof(bind)),
+            ResultCase.Error => new Result<TResult, TError>(_error),
+            _ => throw Uninitialized(),
+        };
+    }
+
+    /// <summary>
     /// Compares two results: both successes with equal values, both errors with equal errors, or both uninitialized.
     /// </summary>
     /// <param name="left">The first result.</param>
@@ -245,6 +324,17 @@ public readonly partial struct Result<T, TError> : Result<T, TError>.IUnionMembe
     // R3: every consuming member rejects the uninitialized default the same way.
     private static InvalidOperationException Uninitialized() =>
         new("The result is uninitialized (default). Create results with ok(value) or error(value).");
+
+    // R4: a delegate never smuggles a null into a result.
+    private static TValue Produced<TValue>(TValue value, string producer) =>
+        value is null ? throw new InvalidOperationException($"'{producer}' returned null, which a result cannot hold.") : value;
+
+    // R3: no operation produces an uninitialized result, even when a delegate returns one.
+    private static Result<TResult, TError> Initialized<TResult>(Result<TResult, TError> result, string producer)
+        where TResult : notnull =>
+        result._case == ResultCase.Uninitialized
+            ? throw new InvalidOperationException($"'{producer}' returned an uninitialized (default) result.")
+            : result;
 
     /// <summary>
     /// Returns <c>Ok(value)</c> for a success, <c>Error(error)</c> for an error, and <c>Uninitialized</c> for

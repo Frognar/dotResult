@@ -25,6 +25,11 @@ Check(failed.Match(static value => value, static error => error.Length) == 4, "M
 Check(answer.OrDefault(0) == 42 && failed.OrDefault(0) == 0, "OrDefault");
 Check(failed.OrDefault(static error => error.Length) == 4, "OrDefault(factory)");
 Check(Throws<InvalidOperationException>(static () => default(Result<int, string>).OrDefault(0)), "uninitialized OrDefault");
+Check(answer.Map(static value => value * 2) == ok(84) && failed.Map(static value => value * 2) == failed, "Map");
+Check(failed.MapError(static error => error.Length) == error(4), "MapError");
+Check(Parse("8").Bind(Half) == ok(4) && Parse("7").Bind(Half) == error("odd") && failed.Bind(Half) == failed, "Bind");
+Check(answer.Bind<int>(static value => value > 0 ? ok(value) : error("negative")) == answer, "Bind with ok and error");
+Check(Generic<string, string>("generic") && ok("text").Equals(ok("text")), "reference types");
 
 if (failures.Count > 0)
 {
@@ -44,6 +49,8 @@ static string Describe(Result<int, string> result) => result switch
     Ok<int>(var value) => $"ok {value}",
     Error<string>(var error) => $"error {error}",
 };
+
+static Result<int, string> Half(int value) => value % 2 == 0 ? ok(value / 2) : error("odd");
 
 static Result<int, string> Parse(string text) =>
     int.TryParse(text, out var number) ? ok(number) : error("not a number");

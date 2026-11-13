@@ -99,6 +99,17 @@ public sealed class UninitializedProperties
     }
 
     [Fact]
+    public void Map_MapError_and_Bind_throw_and_run_nothing()
+    {
+        var calls = 0;
+
+        Assert.Throws<InvalidOperationException>(() => Uninitialized.Map(value => ++calls + value));
+        Assert.Throws<InvalidOperationException>(() => Uninitialized.MapError(error => ++calls + error.Length));
+        Assert.Throws<InvalidOperationException>(() => Uninitialized.Bind(value => Results.Ok<int, string>(++calls)));
+        Assert.Equal(0, calls);
+    }
+
+    [Fact]
     public void The_union_members_report_no_case()
     {
         Result<int, string>.IUnionMembers members = Uninitialized;

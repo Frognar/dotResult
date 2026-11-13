@@ -68,7 +68,8 @@ git restore src/DotResult/packages.lock.json   # the AOT publish rewrites it for
   `Bind`, `OrDefault`, …) throw `InvalidOperationException`; a `switch` throws `SwitchExpressionException`; `is Ok<T>`
   and `is Error<TError>` are false. Observing members never throw: `Equals`/`==` (default equals only default),
   `GetHashCode`, `ToString` (`Uninitialized`), `CompareTo` (default first), and `result is null` (true only for
-  default).
+  default). No operation ever produces an uninitialized result: a delegate that returns one (`Bind`, …) makes the
+  operation throw `InvalidOperationException`.
 - **R4 No null:** `null` is never a value or an error. `ok(null!)`, `new Ok<T>(null!)` etc. throw
   `ArgumentNullException`; converting a `default(Ok<T>)`/`default(Error<TError>)` that holds null throws
   `ArgumentException`; a delegate returning null where a value would enter a result (`Map`, `MapError`, `Zip`'s
