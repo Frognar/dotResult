@@ -27,8 +27,8 @@ var message = Parse("42") switch
 - **No invalid values.** `null` is never a value or an error, and there is no `.Value`, `IsOk` or other accessor
   that can throw: you get a value out through pattern matching or total functions.
 - **No allocations.** For value types, creating, matching and comparing results allocates nothing.
-- **Functional API.** `Match`, `OrDefault`, `Map`, `MapError`, `Bind`, `Ensure`, `OrElse`, query syntax and async
-  pipelines today; more combinators, collections and JSON arrive through the 2.0.0 alphas.
+- **Functional API.** `Match`, `OrDefault`, `Map`, `MapError`, `Bind`, `Ensure`, `OrElse`, `Zip`, `Fold`, `Flatten`,
+  query syntax and async pipelines today; more combinators, collections and JSON arrive through the 2.0.0 alphas.
 
 ## Usage
 
@@ -116,6 +116,16 @@ var recovered = lookup.OrElse(error => error == "not found" ? CreateDefault() : 
 with a step that receives the error and may itself fail, possibly with another error type. A success passes through,
 and the recovery never runs for it. `OrElseAsync` does the same with an asynchronous recovery, on a result or in a
 pipeline.
+
+```csharp
+var both = name.Zip(age);                                   // Ok((name, age)), or the first error
+var person = name.Zip(age, (n, a) => new Person(n, a));
+var total = answer.Fold(100, (sum, value) => sum + value);  // 142; an error leaves 100
+var flat = nested.Flatten();                                // Result<Result<T, E>, E> -> Result<T, E>
+```
+
+`Zip` combines independent results and, like `Bind`, stops at the first error: errors are never accumulated.
+Collecting every error is validation, an applicative rather than a monad, and does not belong in `Result`.
 
 ### Query syntax
 

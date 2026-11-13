@@ -12,6 +12,7 @@ DotResult.Ok<T>.Ok() -> void
 DotResult.Ok<T>.Ok(T value) -> void
 DotResult.Ok<T>.Value.get -> T
 DotResult.Prelude
+DotResult.Result
 DotResult.Result<T, TError>
 DotResult.Result<T, TError>.Bind<TResult>(System.Func<T, DotResult.Result<TResult, TError>>! bind) -> DotResult.Result<TResult, TError>
 DotResult.Result<T, TError>.BindAsync<TResult>(System.Func<T, System.Threading.Tasks.Task<DotResult.Result<TResult, TError>>!>! bind) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
@@ -20,6 +21,7 @@ DotResult.Result<T, TError>.Ensure(System.Func<T, bool>! predicate, TError error
 DotResult.Result<T, TError>.EnsureAsync(System.Func<T, System.Threading.Tasks.Task<bool>!>! predicate, System.Func<T, TError>! error) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>>
 DotResult.Result<T, TError>.EnsureAsync(System.Func<T, System.Threading.Tasks.Task<bool>!>! predicate, TError error) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>>
 DotResult.Result<T, TError>.Equals(DotResult.Result<T, TError> other) -> bool
+DotResult.Result<T, TError>.Fold<TState>(TState state, System.Func<TState, T, TState>! folder) -> TState
 DotResult.Result<T, TError>.IUnionMembers
 DotResult.Result<T, TError>.IUnionMembers.Create(DotResult.Error<TError> value) -> DotResult.Result<T, TError>
 DotResult.Result<T, TError>.IUnionMembers.Create(DotResult.Ok<T> value) -> DotResult.Result<T, TError>
@@ -43,6 +45,8 @@ DotResult.Result<T, TError>.Result() -> void
 DotResult.Result<T, TError>.Select<TResult>(System.Func<T, TResult>! selector) -> DotResult.Result<TResult, TError>
 DotResult.Result<T, TError>.SelectMany<TIntermediate, TResult>(System.Func<T, DotResult.Result<TIntermediate, TError>>! selector, System.Func<T, TIntermediate, TResult>! resultSelector) -> DotResult.Result<TResult, TError>
 DotResult.Result<T, TError>.SelectMany<TResult>(System.Func<T, DotResult.Result<TResult, TError>>! selector) -> DotResult.Result<TResult, TError>
+DotResult.Result<T, TError>.Zip<TOther, TResult>(DotResult.Result<TOther, TError> other, System.Func<T, TOther, TResult>! combine) -> DotResult.Result<TResult, TError>
+DotResult.Result<T, TError>.Zip<TOther>(DotResult.Result<TOther, TError> other) -> DotResult.Result<(T, TOther), TError>
 DotResult.ResultTaskExtensions
 DotResult.ResultTaskQueryExtensions
 override DotResult.Error<TError>.Equals(object? obj) -> bool
@@ -60,6 +64,7 @@ static DotResult.Ok<T>.operator !=(DotResult.Ok<T> left, DotResult.Ok<T> right) 
 static DotResult.Ok<T>.operator ==(DotResult.Ok<T> left, DotResult.Ok<T> right) -> bool
 static DotResult.Prelude.error<TError>(TError value) -> DotResult.Error<TError>
 static DotResult.Prelude.ok<T>(T value) -> DotResult.Ok<T>
+static DotResult.Result.Flatten<T, TError>(this DotResult.Result<DotResult.Result<T, TError>, TError> nested) -> DotResult.Result<T, TError>
 static DotResult.Result<T, TError>.operator !=(DotResult.Result<T, TError> left, DotResult.Result<T, TError> right) -> bool
 static DotResult.Result<T, TError>.operator ==(DotResult.Result<T, TError> left, DotResult.Result<T, TError> right) -> bool
 static DotResult.ResultTaskExtensions.BindAsync<T, TError, TResult>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<T, DotResult.Result<TResult, TError>>! bind) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
