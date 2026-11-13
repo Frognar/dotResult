@@ -45,6 +45,14 @@ var described = await answer.MatchAsync(
     static error => error);
 Check(described == "ok 42", "MatchAsync");
 Check(await failed.OrDefaultAsync(static error => Task.FromResult(error.Length)) == 4, "OrDefaultAsync");
+Check(await answer.MapAsync(static async value =>
+{
+    await Task.Yield();
+    return value * 2;
+}) == ok(84), "MapAsync");
+Check(await failed.MapErrorAsync(static error => Task.FromResult(error.Length)) == error(4), "MapErrorAsync");
+Check(await Parse("8").BindAsync(static value => Task.FromResult(Half(value))) == ok(4), "BindAsync");
+Check(await answer.EnsureAsync(static value => Task.FromResult(value > 100), "too small") == error("too small"), "EnsureAsync");
 
 if (failures.Count > 0)
 {

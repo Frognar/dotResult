@@ -103,6 +103,18 @@ public sealed class AllocationProperties
     }
 
     [Property(Skip = Allocations.SkipInDebug)]
+    public void Async_steps_with_completed_tasks_allocate_nothing(Result<int, int> result)
+    {
+        Allocations.AssertNone("MapAsync", () => _ = result.MapAsync(static _ => CompletedOne).IsCompleted);
+        Allocations.AssertNone("MapErrorAsync", () => _ = result.MapErrorAsync(static _ => CompletedOne).IsCompleted);
+        Allocations.AssertNone("BindAsync", () => _ = result.BindAsync(static _ => CompletedOkOne).IsCompleted);
+        Allocations.AssertNone("EnsureAsync", () => _ = result.EnsureAsync(static _ => CompletedTrue, -1).IsCompleted);
+        Allocations.AssertNone(
+            "EnsureAsync(factory)",
+            () => _ = result.EnsureAsync(static _ => CompletedFalse, static value => -value).IsCompleted);
+    }
+
+    [Property(Skip = Allocations.SkipInDebug)]
     public void Comparing_allocates_nothing(Result<int, int> result, Result<int, int> other)
     {
         Allocations.AssertNone("Equals", () => _ = result.Equals(other));
@@ -115,6 +127,9 @@ public sealed class AllocationProperties
 
     // Tasks completed in advance: any allocation in the async tests comes from the library, not from the delegate.
     private static readonly Task<int> CompletedOne = Task.FromResult(1);
+    private static readonly Task<bool> CompletedTrue = Task.FromResult(true);
+    private static readonly Task<bool> CompletedFalse = Task.FromResult(false);
+    private static readonly Task<Result<int, int>> CompletedOkOne = Task.FromResult(Results.Ok<int, int>(1));
 
     private static Result<int, int> Half(int value) => value % 2 == 0 ? ok(value / 2) : error(value);
 

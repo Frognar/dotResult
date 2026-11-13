@@ -130,7 +130,16 @@ var text = await answer.MatchAsync(
     error => $"No answer: {error}");                       // a synchronous branch is fine too
 
 var value = await answer.OrDefaultAsync(error => LoadFallbackAsync(error));
+
+var user = await userId.BindAsync(id => repository.FindAsync(id)); // the step returns Task<Result<User, string>>
+var active = await user.EnsureAsync(found => IsActiveAsync(found), "inactive");
+var name = await active.MapAsync(found => LoadNameAsync(found));
+var translated = await name.MapErrorAsync(error => TranslateAsync(error));
 ```
+
+`MapAsync`, `MapErrorAsync`, `BindAsync` and `EnsureAsync` work like their synchronous counterparts; the case they
+pass through is returned at once, without waiting. (For now every step needs its own `await`; pipelines over
+`Task<Result<T, TError>>` arrive in the next alpha.)
 
 The delegates return `Task<T>`, so any async lambda fits; the methods return `ValueTask<T>`, already complete (and
 allocation-free) when there is nothing to wait for. Arguments are checked immediately; anything a delegate throws

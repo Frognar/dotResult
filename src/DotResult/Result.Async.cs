@@ -1,7 +1,8 @@
 namespace DotResult;
 
 /// <content>
-/// Asynchronous counterparts of <c>Match</c> and <c>OrDefault</c>.
+/// Asynchronous counterparts of <c>Match</c>, <c>OrDefault</c>, <c>Map</c>, <c>MapError</c>, <c>Bind</c> and
+/// <c>Ensure</c>.
 /// </content>
 /// <remarks>
 /// <para>
@@ -79,6 +80,145 @@ public readonly partial struct Result<T, TError>
             ResultCase.Error => Start(fallback, _error.Value),
             _ => throw Uninitialized(),
         };
+    }
+
+    /// <summary>
+    /// Asynchronously transforms the value of a success; an error passes through at once, without waiting.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the transformed value.</typeparam>
+    /// <param name="map">Transforms the value.</param>
+    /// <returns>A success with the transformed value, or the same error.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="map"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    /// The result is uninitialized (default); or, when awaited, <paramref name="map"/> produced <see langword="null"/>.
+    /// </exception>
+    public ValueTask<Result<TResult, TError>> MapAsync<TResult>(Func<T, Task<TResult>> map)
+        where TResult : notnull
+    {
+        ArgumentNullException.ThrowIfNull(map);
+        return _case switch
+        {
+            ResultCase.Ok => MapValueAsync(_ok.Value, map),
+            ResultCase.Error => ValueTask.FromResult(new Result<TResult, TError>(_error)),
+            _ => throw Uninitialized(),
+        };
+
+        static async ValueTask<Result<TResult, TError>> MapValueAsync(T value, Func<T, Task<TResult>> map) =>
+            new(new Ok<TResult>(Produced(await map(value).ConfigureAwait(false), nameof(map))));
+    }
+
+    /// <summary>
+    /// Asynchronously transforms the error, possibly into another type; a success passes through at once, without
+    /// waiting.
+    /// </summary>
+    /// <typeparam name="TNewError">The type of the transformed error.</typeparam>
+    /// <param name="map">Transforms the error.</param>
+    /// <returns>The same success, or an error with the transformed error.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="map"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    /// The result is uninitialized (default); or, when awaited, <paramref name="map"/> produced <see langword="null"/>.
+    /// </exception>
+    public ValueTask<Result<T, TNewError>> MapErrorAsync<TNewError>(Func<TError, Task<TNewError>> map)
+        where TNewError : notnull
+    {
+        ArgumentNullException.ThrowIfNull(map);
+        return _case switch
+        {
+            ResultCase.Ok => ValueTask.FromResult(new Result<T, TNewError>(_ok)),
+            ResultCase.Error => MapErrorValueAsync(_error.Value, map),
+            _ => throw Uninitialized(),
+        };
+
+        static async ValueTask<Result<T, TNewError>> MapErrorValueAsync(TError error, Func<TError, Task<TNewError>> map) =>
+            new(new Error<TNewError>(Produced(await map(error).ConfigureAwait(false), nameof(map))));
+    }
+
+    /// <summary>
+    /// Continues a success with an asynchronous step that may itself fail; an error passes through at once, without
+    /// waiting.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the value produced by the next step.</typeparam>
+    /// <param name="bind">The next step.</param>
+    /// <returns>The result of the next step, or the same error.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="bind"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    /// The result is uninitialized (default); or, when awaited, <paramref name="bind"/> produced an uninitialized
+    /// result.
+    /// </exception>
+    public ValueTask<Result<TResult, TError>> BindAsync<TResult>(Func<T, Task<Result<TResult, TError>>> bind)
+        where TResult : notnull
+    {
+        ArgumentNullException.ThrowIfNull(bind);
+        return _case switch
+        {
+            ResultCase.Ok => BindValueAsync(_ok.Value, bind),
+            ResultCase.Error => ValueTask.FromResult(new Result<TResult, TError>(_error)),
+            _ => throw Uninitialized(),
+        };
+
+        static async ValueTask<Result<TResult, TError>> BindValueAsync(
+            T value,
+            Func<T, Task<Result<TResult, TError>>> bind) =>
+            Initialized(await bind(value).ConfigureAwait(false), nameof(bind));
+    }
+
+    /// <summary>
+    /// Keeps a success only when the asynchronous <paramref name="predicate"/> holds; otherwise the result becomes
+    /// <paramref name="error"/>. An error passes through at once, without waiting.
+    /// </summary>
+    /// <param name="predicate">The condition the value must satisfy.</param>
+    /// <param name="error">The error when the value does not satisfy <paramref name="predicate"/>.</param>
+    /// <returns>This result, or <paramref name="error"/> when the value does not satisfy the predicate.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="predicate"/> or <paramref name="error"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">The result is uninitialized (default).</exception>
+    public ValueTask<Result<T, TError>> EnsureAsync(Func<T, Task<bool>> predicate, TError error)
+    {
+        ArgumentNullException.ThrowIfNull(predicate);
+        ArgumentNullException.ThrowIfNull(error);
+        return _case switch
+        {
+            ResultCase.Ok => EnsureValueAsync(this, predicate, error),
+            ResultCase.Error => ValueTask.FromResult(this),
+            _ => throw Uninitialized(),
+        };
+
+        static async ValueTask<Result<T, TError>> EnsureValueAsync(
+            Result<T, TError> source,
+            Func<T, Task<bool>> predicate,
+            TError error) =>
+            await predicate(source._ok.Value).ConfigureAwait(false) ? source : new(new Error<TError>(error));
+    }
+
+    /// <summary>
+    /// Keeps a success only when the asynchronous <paramref name="predicate"/> holds; otherwise the result becomes the
+    /// error that <paramref name="error"/> produces from the value. An error passes through at once, without waiting.
+    /// </summary>
+    /// <param name="predicate">The condition the value must satisfy.</param>
+    /// <param name="error">Produces the error from the value that does not satisfy <paramref name="predicate"/>.</param>
+    /// <returns>This result, or the produced error when the value does not satisfy the predicate.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="predicate"/> or <paramref name="error"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    /// The result is uninitialized (default); or, when awaited, <paramref name="error"/> produced
+    /// <see langword="null"/>.
+    /// </exception>
+    public ValueTask<Result<T, TError>> EnsureAsync(Func<T, Task<bool>> predicate, Func<T, TError> error)
+    {
+        ArgumentNullException.ThrowIfNull(predicate);
+        ArgumentNullException.ThrowIfNull(error);
+        return _case switch
+        {
+            ResultCase.Ok => EnsureValueAsync(this, predicate, error),
+            ResultCase.Error => ValueTask.FromResult(this),
+            _ => throw Uninitialized(),
+        };
+
+        static async ValueTask<Result<T, TError>> EnsureValueAsync(
+            Result<T, TError> source,
+            Func<T, Task<bool>> predicate,
+            Func<T, TError> error) =>
+            await predicate(source._ok.Value).ConfigureAwait(false)
+                ? source
+                : new(new Error<TError>(Produced(error(source._ok.Value), nameof(error))));
     }
 
     private static ValueTask<TResult> Start<TArg, TResult>(Func<TArg, Task<TResult>> step, TArg arg)
