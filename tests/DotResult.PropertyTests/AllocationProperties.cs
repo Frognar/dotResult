@@ -192,6 +192,17 @@ public sealed class AllocationProperties
     }
 
     [Property(Skip = Allocations.SkipInDebug)]
+    public void Combining_allocates_nothing(Result<int, int> result, Result<int, int> other)
+    {
+        var nested = result.Map(static value => Results.Ok<int, int>(value));
+
+        Allocations.AssertNone("Zip", () => _ = result.Zip(other));
+        Allocations.AssertNone("Zip(combine)", () => _ = result.Zip(other, static (left, right) => left + right));
+        Allocations.AssertNone("Fold", () => _ = result.Fold(1, static (state, value) => state + value));
+        Allocations.AssertNone("Flatten", () => _ = nested.Flatten());
+    }
+
+    [Property(Skip = Allocations.SkipInDebug)]
     public void Comparing_allocates_nothing(Result<int, int> result, Result<int, int> other)
     {
         Allocations.AssertNone("Equals", () => _ = result.Equals(other));

@@ -75,6 +75,10 @@ Check(await (from value in answer from half in Task.FromResult(Half(value)) sele
 Check(failed.OrElse(Parse("x")).OrElse(ok(7)) == ok(7) && answer.OrElse(ok(7)) == answer, "OrElse");
 Check(failed.OrElse<int>(static failure => failure.Length > 3 ? ok(failure.Length) : error(0)) == ok(4), "OrElse recovery");
 Check(await Task.FromResult(failed).OrElseAsync(static error => Task.FromResult(Parse("9"))) == ok(9), "OrElseAsync pipeline");
+Check(answer.Zip(Parse("8")) == ok((42, 8)) && answer.Zip(failed) == failed.Map(static _ => (0, 0)), "Zip");
+Check(answer.Zip(Parse("8"), static (a, b) => a + b) == ok(50), "Zip(combine)");
+Check(answer.Fold(100, static (sum, value) => sum + value) == 142 && failed.Fold(100, static (sum, value) => sum + value) == 100, "Fold");
+Check(answer.Map(Half).Flatten() == answer.Bind(Half), "Flatten");
 
 if (failures.Count > 0)
 {
