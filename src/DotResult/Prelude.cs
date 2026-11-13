@@ -28,7 +28,7 @@ public static class Prelude
     /// <returns>The success case.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
     public static Ok<T> ok<T>(T value)
-        where T : notnull => throw new NotImplementedException();
+        where T : notnull => new(value);
 
     /// <summary>
     /// An error holding <paramref name="value"/>. It converts implicitly to <see cref="Result{T, TError}"/> of any
@@ -47,7 +47,7 @@ public static class Prelude
     /// <returns>The error case.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
     public static Error<TError> error<TError>(TError value)
-        where TError : notnull => throw new NotImplementedException();
+        where TError : notnull => new(value);
 
 #pragma warning restore IDE1006
 }
