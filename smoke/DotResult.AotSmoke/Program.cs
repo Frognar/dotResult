@@ -79,6 +79,13 @@ Check(answer.Zip(Parse("8")) == ok((42, 8)) && answer.Zip(failed) == failed.Map(
 Check(answer.Zip(Parse("8"), static (a, b) => a + b) == ok(50), "Zip(combine)");
 Check(answer.Fold(100, static (sum, value) => sum + value) == 142 && failed.Fold(100, static (sum, value) => sum + value) == 100, "Fold");
 Check(answer.Map(Half).Flatten() == answer.Bind(Half), "Flatten");
+var sideEffects = new List<string>();
+answer.Iter(value => sideEffects.Add($"iter {value}"));
+Check(
+    answer.Tap(value => sideEffects.Add($"tap {value}")).TapError(sideEffects.Add) == answer
+    && failed.Tap(value => sideEffects.Add($"tap {value}")).TapError(sideEffects.Add) == failed
+    && string.Join(",", sideEffects) == "iter 42,tap 42,boom",
+    "Iter, Tap, TapError");
 
 if (failures.Count > 0)
 {

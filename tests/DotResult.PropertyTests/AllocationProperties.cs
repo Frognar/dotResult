@@ -200,6 +200,9 @@ public sealed class AllocationProperties
         Allocations.AssertNone("Zip(combine)", () => _ = result.Zip(other, static (left, right) => left + right));
         Allocations.AssertNone("Fold", () => _ = result.Fold(1, static (state, value) => state + value));
         Allocations.AssertNone("Flatten", () => _ = nested.Flatten());
+        Allocations.AssertNone("Iter", () => result.Iter(static _ => { }));
+        Allocations.AssertNone("Tap", () => _ = result.Tap(static _ => { }));
+        Allocations.AssertNone("TapError", () => _ = result.TapError(static _ => { }));
     }
 
     [Property(Skip = Allocations.SkipInDebug)]

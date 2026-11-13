@@ -28,7 +28,8 @@ var message = Parse("42") switch
   that can throw: you get a value out through pattern matching or total functions.
 - **No allocations.** For value types, creating, matching and comparing results allocates nothing.
 - **Functional API.** `Match`, `OrDefault`, `Map`, `MapError`, `Bind`, `Ensure`, `OrElse`, `Zip`, `Fold`, `Flatten`,
-  query syntax and async pipelines today; more combinators, collections and JSON arrive through the 2.0.0 alphas.
+  `Iter`, `Tap`, `TapError`, query syntax and async pipelines today; collections and JSON arrive through the 2.0.0
+  alphas.
 
 ## Usage
 
@@ -122,6 +123,11 @@ var both = name.Zip(age);                                   // Ok((name, age)), 
 var person = name.Zip(age, (n, a) => new Person(n, a));
 var total = answer.Fold(100, (sum, value) => sum + value);  // 142; an error leaves 100
 var flat = nested.Flatten();                                // Result<Result<T, E>, E> -> Result<T, E>
+
+var logged = answer
+    .Tap(value => logger.LogDebug("got {Value}", value))     // side effects; the result goes on unchanged
+    .TapError(error => logger.LogWarning("failed: {Error}", error));
+answer.Iter(value => Console.WriteLine(value));             // a side effect that ends the chain
 ```
 
 `Zip` combines independent results and, like `Bind`, stops at the first error: errors are never accumulated.

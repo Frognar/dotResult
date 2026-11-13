@@ -22,6 +22,7 @@ DotResult.Result<T, TError>.EnsureAsync(System.Func<T, System.Threading.Tasks.Ta
 DotResult.Result<T, TError>.EnsureAsync(System.Func<T, System.Threading.Tasks.Task<bool>!>! predicate, TError error) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>>
 DotResult.Result<T, TError>.Equals(DotResult.Result<T, TError> other) -> bool
 DotResult.Result<T, TError>.Fold<TState>(TState state, System.Func<TState, T, TState>! folder) -> TState
+DotResult.Result<T, TError>.Iter(System.Action<T>! action) -> void
 DotResult.Result<T, TError>.IUnionMembers
 DotResult.Result<T, TError>.IUnionMembers.Create(DotResult.Error<TError> value) -> DotResult.Result<T, TError>
 DotResult.Result<T, TError>.IUnionMembers.Create(DotResult.Ok<T> value) -> DotResult.Result<T, TError>
@@ -45,6 +46,8 @@ DotResult.Result<T, TError>.Result() -> void
 DotResult.Result<T, TError>.Select<TResult>(System.Func<T, TResult>! selector) -> DotResult.Result<TResult, TError>
 DotResult.Result<T, TError>.SelectMany<TIntermediate, TResult>(System.Func<T, DotResult.Result<TIntermediate, TError>>! selector, System.Func<T, TIntermediate, TResult>! resultSelector) -> DotResult.Result<TResult, TError>
 DotResult.Result<T, TError>.SelectMany<TResult>(System.Func<T, DotResult.Result<TResult, TError>>! selector) -> DotResult.Result<TResult, TError>
+DotResult.Result<T, TError>.Tap(System.Action<T>! action) -> DotResult.Result<T, TError>
+DotResult.Result<T, TError>.TapError(System.Action<TError>! action) -> DotResult.Result<T, TError>
 DotResult.Result<T, TError>.Zip<TOther, TResult>(DotResult.Result<TOther, TError> other, System.Func<T, TOther, TResult>! combine) -> DotResult.Result<TResult, TError>
 DotResult.Result<T, TError>.Zip<TOther>(DotResult.Result<TOther, TError> other) -> DotResult.Result<(T, TOther), TError>
 DotResult.ResultTaskExtensions
