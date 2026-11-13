@@ -115,6 +115,49 @@ public sealed class AllocationProperties
     }
 
     [Property(Skip = Allocations.SkipInDebug)]
+    public void Pipelines_on_completed_sources_with_synchronous_steps_allocate_nothing(Result<int, int> result)
+    {
+        var fromValueTask = ValueTask.FromResult(result);
+        var fromTask = Task.FromResult(result);
+
+        Allocations.AssertNone(
+            "chain on ValueTask",
+            () => _ = fromValueTask
+                .MapAsync(static value => value + 1)
+                .BindAsync(static value => Half(value))
+                .EnsureAsync(static value => value > 0, -1)
+                .MapErrorAsync(static error => error - 1)
+                .OrDefaultAsync(0)
+                .IsCompleted);
+        Allocations.AssertNone(
+            "chain on Task",
+            () => _ = fromTask.MapAsync(static value => value + 1).MatchAsync(static value => value, static error => -error).IsCompleted);
+        Allocations.AssertNone("OrDefaultAsync(factory) (Task)", () => _ = fromTask.OrDefaultAsync(static error => -error).IsCompleted);
+        Allocations.AssertNone(
+            "EnsureAsync(factory) (Task)",
+            () => _ = fromTask.EnsureAsync(static value => value > 0, static value => -value).IsCompleted);
+    }
+
+    [Property(Skip = Allocations.SkipInDebug)]
+    public void Pipelines_on_completed_sources_with_completed_tasks_allocate_nothing(Result<int, int> result)
+    {
+        var fromValueTask = ValueTask.FromResult(result);
+        var fromTask = Task.FromResult(result);
+
+        Allocations.AssertNone("MapAsync", () => _ = fromValueTask.MapAsync(static _ => CompletedOne).IsCompleted);
+        Allocations.AssertNone("MapErrorAsync", () => _ = fromTask.MapErrorAsync(static _ => CompletedOne).IsCompleted);
+        Allocations.AssertNone("BindAsync", () => _ = fromValueTask.BindAsync(static _ => CompletedOkOne).IsCompleted);
+        Allocations.AssertNone("EnsureAsync", () => _ = fromTask.EnsureAsync(static _ => CompletedTrue, -1).IsCompleted);
+        Allocations.AssertNone(
+            "MatchAsync(async, async)",
+            () => _ = fromValueTask.MatchAsync(static _ => CompletedOne, static _ => CompletedOne).IsCompleted);
+        Allocations.AssertNone(
+            "MatchAsync(async, sync)",
+            () => _ = fromTask.MatchAsync(static _ => CompletedOne, static error => error).IsCompleted);
+        Allocations.AssertNone("OrDefaultAsync(async)", () => _ = fromValueTask.OrDefaultAsync(static _ => CompletedOne).IsCompleted);
+    }
+
+    [Property(Skip = Allocations.SkipInDebug)]
     public void Comparing_allocates_nothing(Result<int, int> result, Result<int, int> other)
     {
         Allocations.AssertNone("Equals", () => _ = result.Equals(other));

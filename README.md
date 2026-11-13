@@ -27,8 +27,8 @@ var message = Parse("42") switch
 - **No invalid values.** `null` is never a value or an error, and there is no `.Value`, `IsOk` or other accessor
   that can throw: you get a value out through pattern matching or total functions.
 - **No allocations.** For value types, creating, matching and comparing results allocates nothing.
-- **Functional API.** `Match`, `OrDefault`, `Map`, `MapError`, `Bind`, `Ensure` and query syntax today; async
-  pipelines, combinators, collections and JSON arrive through the 2.0.0 alphas.
+- **Functional API.** `Match`, `OrDefault`, `Map`, `MapError`, `Bind`, `Ensure`, query syntax and async pipelines
+  today; combinators, collections and JSON arrive through the 2.0.0 alphas.
 
 ## Usage
 
@@ -131,15 +131,17 @@ var text = await answer.MatchAsync(
 
 var value = await answer.OrDefaultAsync(error => LoadFallbackAsync(error));
 
-var user = await userId.BindAsync(id => repository.FindAsync(id)); // the step returns Task<Result<User, string>>
-var active = await user.EnsureAsync(found => IsActiveAsync(found), "inactive");
-var name = await active.MapAsync(found => LoadNameAsync(found));
-var translated = await name.MapErrorAsync(error => TranslateAsync(error));
+var name = await repository.FindAsync(id)                    // Task<Result<User, string>>
+    .EnsureAsync(user => IsActiveAsync(user), "inactive")
+    .MapAsync(user => user.Name)
+    .MapErrorAsync(error => $"lookup failed: {error}")
+    .OrDefaultAsync("anonymous");
 ```
 
-`MapAsync`, `MapErrorAsync`, `BindAsync` and `EnsureAsync` work like their synchronous counterparts; the case they
-pass through is returned at once, without waiting. (For now every step needs its own `await`; pipelines over
-`Task<Result<T, TError>>` arrive in the next alpha.)
+`MapAsync`, `MapErrorAsync`, `BindAsync`, `EnsureAsync`, `MatchAsync` and `OrDefaultAsync` work like their
+synchronous counterparts, on a result and on a `Task` or `ValueTask` of one, so a whole pipeline needs a single
+`await`. Every step takes a synchronous delegate or one that returns a `Task`; the case a step passes through is
+returned at once, without waiting.
 
 The delegates return `Task<T>`, so any async lambda fits; the methods return `ValueTask<T>`, already complete (and
 allocation-free) when there is nothing to wait for. Arguments are checked immediately; anything a delegate throws

@@ -53,6 +53,17 @@ Check(await answer.MapAsync(static async value =>
 Check(await failed.MapErrorAsync(static error => Task.FromResult(error.Length)) == error(4), "MapErrorAsync");
 Check(await Parse("8").BindAsync(static value => Task.FromResult(Half(value))) == ok(4), "BindAsync");
 Check(await answer.EnsureAsync(static value => Task.FromResult(value > 100), "too small") == error("too small"), "EnsureAsync");
+Check(
+    await Task.FromResult(Parse("16"))
+        .BindAsync(static value => Task.FromResult(Half(value)))
+        .EnsureAsync(static value => value > 0, "not positive")
+        .MapAsync(static value => value * 10)
+        .MapErrorAsync(static error => error.ToUpperInvariant())
+        .OrDefaultAsync(0) == 80,
+    "async pipeline");
+Check(
+    await ValueTask.FromResult(Parse("x")).MatchAsync(static value => $"{value}", static error => error) == "not a number",
+    "async pipeline on an error");
 
 if (failures.Count > 0)
 {
