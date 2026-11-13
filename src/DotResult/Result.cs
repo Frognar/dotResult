@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace DotResult;
@@ -31,6 +32,7 @@ namespace DotResult;
 /// </para>
 /// </remarks>
 [Union]
+[DebuggerDisplay("{ToString(),nq}")]
 public readonly partial struct Result<T, TError> : Result<T, TError>.IUnionMembers, IEquatable<Result<T, TError>>
     where T : notnull
     where TError : notnull
@@ -175,5 +177,18 @@ public readonly partial struct Result<T, TError> : Result<T, TError>.IUnionMembe
             ResultCase.Ok => HashCode.Combine(ResultCase.Ok, _ok),
             ResultCase.Error => HashCode.Combine(ResultCase.Error, _error),
             _ => 0,
+        };
+
+    /// <summary>
+    /// Returns <c>Ok(value)</c> for a success, <c>Error(error)</c> for an error, and <c>Uninitialized</c> for
+    /// <c>default</c>.
+    /// </summary>
+    /// <returns>A text representation of this result.</returns>
+    public override string ToString() =>
+        _case switch
+        {
+            ResultCase.Ok => _ok.ToString(),
+            ResultCase.Error => _error.ToString(),
+            _ => "Uninitialized",
         };
 }
