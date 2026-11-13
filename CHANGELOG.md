@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.0.0-alpha.6](https://github.com/Frognar/dotResult/compare/v2.0.0-alpha.5...v2.0.0-alpha.6) (2026-11-13)
+
+
+### Features
+
+* add Iter, Tap and TapError ([#78](https://github.com/Frognar/dotResult/issues/78)) ([61adec6](https://github.com/Frognar/dotResult/commit/61adec649a0cebe23ebdd29134c023d9560b8c23))
+* add OrElse recovery ([#75](https://github.com/Frognar/dotResult/issues/75)) ([2d6391d](https://github.com/Frognar/dotResult/commit/2d6391dbd9f11f62cdf83139570941049709d844))
+* add Zip, Fold and Flatten ([#77](https://github.com/Frognar/dotResult/issues/77)) ([3aef988](https://github.com/Frognar/dotResult/commit/3aef98848ac7aebfbca03e7697f5039aeb409189))
+
 ## [2.0.0-alpha.5](https://github.com/Frognar/dotResult/compare/v2.0.0-alpha.4...v2.0.0-alpha.5) (2026-11-13)
 
 
