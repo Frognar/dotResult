@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.0-alpha.3](https://github.com/Frognar/dotResult/compare/v2.0.0-alpha.2...v2.0.0-alpha.3) (2026-11-13)
+
+
+### Features
+
+* add LINQ query syntax for results ([#67](https://github.com/Frognar/dotResult/issues/67)) ([fc9b42c](https://github.com/Frognar/dotResult/commit/fc9b42c2fed0328dd2e2a2e5da1235d1c3bed245))
+
 ## [2.0.0-alpha.2](https://github.com/Frognar/dotResult/compare/v2.0.0-alpha.1...v2.0.0-alpha.2) (2026-11-13)
 
 
