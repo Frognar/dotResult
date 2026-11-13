@@ -377,23 +377,12 @@ public readonly partial struct Result<T, TError> : Result<T, TError>.IUnionMembe
     {
         ArgumentNullException.ThrowIfNull(selector);
         ArgumentNullException.ThrowIfNull(resultSelector);
-        switch (_case)
+        return _case switch
         {
-            case ResultCase.Ok:
-                var next = selector(_ok.Value);
-                return next._case switch
-                {
-                    ResultCase.Ok => new Result<TResult, TError>(
-                        new Ok<TResult>(Produced(resultSelector(_ok.Value, next._ok.Value), nameof(resultSelector)))),
-                    ResultCase.Error => new Result<TResult, TError>(next._error),
-                    _ => throw new InvalidOperationException(
-                        $"'{nameof(selector)}' returned an uninitialized (default) result."),
-                };
-            case ResultCase.Error:
-                return new Result<TResult, TError>(_error);
-            default:
-                throw Uninitialized();
-        }
+            ResultCase.Ok => Project(_ok.Value, selector(_ok.Value), resultSelector),
+            ResultCase.Error => new Result<TResult, TError>(_error),
+            _ => throw Uninitialized(),
+        };
     }
 
     /// <summary>
@@ -459,6 +448,22 @@ public readonly partial struct Result<T, TError> : Result<T, TError>.IUnionMembe
     // R4: a delegate never smuggles a null into a result.
     private static TValue Produced<TValue>(TValue value, string producer) =>
         value is null ? throw new InvalidOperationException($"'{producer}' returned null, which a result cannot hold.") : value;
+
+    // The second half of a query-syntax SelectMany: project the value with the value of the next step, or pass the
+    // step's error on (R3, R4 included).
+    private static Result<TResult, TError> Project<TIntermediate, TResult>(
+        T value,
+        Result<TIntermediate, TError> next,
+        Func<T, TIntermediate, TResult> resultSelector)
+        where TIntermediate : notnull
+        where TResult : notnull =>
+        next._case switch
+        {
+            ResultCase.Ok => new Result<TResult, TError>(
+                new Ok<TResult>(Produced(resultSelector(value, next._ok.Value), nameof(resultSelector)))),
+            ResultCase.Error => new Result<TResult, TError>(next._error),
+            _ => throw new InvalidOperationException("'selector' returned an uninitialized (default) result."),
+        };
 
     // R3: no operation produces an uninitialized result, even when a delegate returns one.
     private static Result<TResult, TError> Initialized<TResult>(Result<TResult, TError> result, string producer)

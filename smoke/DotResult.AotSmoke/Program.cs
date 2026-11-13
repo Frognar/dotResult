@@ -65,6 +65,14 @@ Check(
     await ValueTask.FromResult(Parse("x")).MatchAsync(static value => $"{value}", static error => error) == "not a number",
     "async pipeline on an error");
 
+var asyncQuery = await (
+    from value in Task.FromResult(Parse("40"))
+    from half in Half(value)
+    from quarter in Task.FromResult(Half(half))
+    select value + half + quarter);
+Check(asyncQuery == ok(70), "async query");
+Check(await (from value in answer from half in Task.FromResult(Half(value)) select half) == ok(21), "async query from a result");
+
 if (failures.Count > 0)
 {
     foreach (var failure in failures)

@@ -158,6 +158,28 @@ public sealed class AllocationProperties
     }
 
     [Property(Skip = Allocations.SkipInDebug)]
+    public void Async_queries_on_completed_sources_allocate_nothing(Result<int, int> result)
+    {
+        var fromValueTask = ValueTask.FromResult(result);
+        var fromTask = Task.FromResult(result);
+
+        Allocations.AssertNone("select (ValueTask)", () => _ = (from value in fromValueTask select value + 1).IsCompleted);
+        Allocations.AssertNone("select (Task)", () => _ = (from value in fromTask select value + 1).IsCompleted);
+        Allocations.AssertNone(
+            "two from clauses, synchronous step (ValueTask)",
+            () => _ = (from value in fromValueTask from half in Half(value) select value + half).IsCompleted);
+        Allocations.AssertNone(
+            "two from clauses, synchronous step (Task)",
+            () => _ = (from value in fromTask from half in Half(value) select value + half).IsCompleted);
+        Allocations.AssertNone(
+            "two from clauses, completed task step",
+            () => _ = (from value in fromValueTask from one in CompletedOkOne select value + one).IsCompleted);
+        Allocations.AssertNone(
+            "from a plain result, completed task step",
+            () => _ = (from value in result from one in CompletedOkOne select value + one).IsCompleted);
+    }
+
+    [Property(Skip = Allocations.SkipInDebug)]
     public void Comparing_allocates_nothing(Result<int, int> result, Result<int, int> other)
     {
         Allocations.AssertNone("Equals", () => _ = result.Equals(other));
