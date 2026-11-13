@@ -72,6 +72,9 @@ var asyncQuery = await (
     select value + half + quarter);
 Check(asyncQuery == ok(70), "async query");
 Check(await (from value in answer from half in Task.FromResult(Half(value)) select half) == ok(21), "async query from a result");
+Check(failed.OrElse(Parse("x")).OrElse(ok(7)) == ok(7) && answer.OrElse(ok(7)) == answer, "OrElse");
+Check(failed.OrElse<int>(static failure => failure.Length > 3 ? ok(failure.Length) : error(0)) == ok(4), "OrElse recovery");
+Check(await Task.FromResult(failed).OrElseAsync(static error => Task.FromResult(Parse("9"))) == ok(9), "OrElseAsync pipeline");
 
 if (failures.Count > 0)
 {

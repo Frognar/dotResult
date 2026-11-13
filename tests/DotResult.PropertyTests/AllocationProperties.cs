@@ -180,6 +180,18 @@ public sealed class AllocationProperties
     }
 
     [Property(Skip = Allocations.SkipInDebug)]
+    public void Recovering_allocates_nothing(Result<int, int> result, Result<int, int> alternative)
+    {
+        var fromTask = Task.FromResult(result);
+
+        Allocations.AssertNone("OrElse", () => _ = result.OrElse(alternative));
+        Allocations.AssertNone("OrElse(recover)", () => _ = result.OrElse(static error => Half(error)));
+        Allocations.AssertNone("OrElseAsync", () => _ = result.OrElseAsync(static _ => CompletedOkOne).IsCompleted);
+        Allocations.AssertNone("OrElseAsync (Task)", () => _ = fromTask.OrElseAsync(alternative).IsCompleted);
+        Allocations.AssertNone("OrElseAsync(recover) (Task)", () => _ = fromTask.OrElseAsync(static error => Half(error)).IsCompleted);
+    }
+
+    [Property(Skip = Allocations.SkipInDebug)]
     public void Comparing_allocates_nothing(Result<int, int> result, Result<int, int> other)
     {
         Allocations.AssertNone("Equals", () => _ = result.Equals(other));

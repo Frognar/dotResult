@@ -159,6 +159,18 @@ public sealed class UninitializedProperties
     }
 
     [Fact]
+    public void OrElse_throws_and_runs_nothing()
+    {
+        var calls = 0;
+
+        Assert.Throws<InvalidOperationException>(() => Uninitialized.OrElse(Results.Ok<int, string>(1)));
+        Assert.Throws<InvalidOperationException>(() => Uninitialized.OrElse(_ => Results.Ok<int, int>(++calls)));
+        Assert.Throws<InvalidOperationException>(
+            () => Uninitialized.OrElseAsync(_ => Task.FromResult(Results.Ok<int, int>(++calls))));
+        Assert.Equal(0, calls);
+    }
+
+    [Fact]
     public void The_union_members_report_no_case()
     {
         Result<int, string>.IUnionMembers members = Uninitialized;

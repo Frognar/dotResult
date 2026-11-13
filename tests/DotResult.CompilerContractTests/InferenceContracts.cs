@@ -89,6 +89,34 @@ public sealed class InferenceContracts
     }
 
     [Fact]
+    public void OrElse_takes_a_case_as_the_alternative()
+    {
+        var result = Snippet.Compile(Consumer.File(Steps + """
+                public static Result<int, string> WithDefault(Result<int, string> result) => result.OrElse(ok(0));
+                public static Result<int, string> WithOtherError(Result<int, string> result) => result.OrElse(error("fallback"));
+            """));
+
+        ContractAssert.CompilesCleanly(result);
+    }
+
+    [Fact]
+    public void A_recovery_that_returns_ok_needs_the_new_error_type()
+    {
+        var bare = Snippet.Compile(Consumer.File(Steps + """
+                public static Result<int, string> Recover(Result<int, string> result) => result.OrElse(error => ok(error.Length));
+            """));
+        var spelled = Snippet.Compile(Consumer.File(Steps + """
+                public static Result<int, string> Recover(Result<int, string> result) =>
+                    result.OrElse<string>(failure => failure.Length > 3 ? ok(failure.Length) : error("short"));
+            """));
+
+        // TNewError cannot be inferred, so only OrElse(Result<T, TError>) is left and the lambda does not convert to it
+        // (CS1660 with the .NET 11 GA compiler). Spelling out the new error type picks the recovery overload.
+        ContractAssert.DoesNotCompile(bare);
+        ContractAssert.CompilesCleanly(spelled);
+    }
+
+    [Fact]
     public void MapError_lines_up_the_error_types_for_Bind()
     {
         var result = Snippet.Compile(Consumer.File(Steps + """
