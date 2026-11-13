@@ -36,6 +36,16 @@ Check((from value in answer from half in Half(value) select value + half) == ok(
 Check((from value in answer let doubled = value * 2 from half in Half(doubled) select half) == ok(42), "query with let");
 Check((from value in Parse("x") from half in Half(value) select half) == error("not a number"), "query fails fast");
 
+var described = await answer.MatchAsync(
+    static async value =>
+    {
+        await Task.Yield();
+        return $"ok {value}";
+    },
+    static error => error);
+Check(described == "ok 42", "MatchAsync");
+Check(await failed.OrDefaultAsync(static error => Task.FromResult(error.Length)) == 4, "OrDefaultAsync");
+
 if (failures.Count > 0)
 {
     foreach (var failure in failures)

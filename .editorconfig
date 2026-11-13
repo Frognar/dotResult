@@ -53,3 +53,7 @@ dotnet_diagnostic.CA1021.severity = none
 dotnet_diagnostic.CA1303.severity = none
 # Error<TError> is the natural name of the error case; "Error" is a Visual Basic keyword, but VB callers can escape it ([Error]).
 dotnet_diagnostic.CA1716.severity = none
+
+# R8: the async helpers catch every exception from a delegate and hand it back through the ValueTask.
+[src/DotResult/Result.Async.cs]
+dotnet_diagnostic.CA1031.severity = none

@@ -89,6 +89,20 @@ public sealed class AllocationProperties
     }
 
     [Property(Skip = Allocations.SkipInDebug)]
+    public void Async_reads_with_completed_tasks_allocate_nothing(Result<int, int> result)
+    {
+        Allocations.AssertNone(
+            "MatchAsync(async, async)",
+            () => _ = result.MatchAsync(static _ => CompletedOne, static _ => CompletedOne).IsCompleted);
+        Allocations.AssertNone(
+            "MatchAsync(async, sync)",
+            () => _ = result.MatchAsync(static _ => CompletedOne, static error => error).IsCompleted);
+        Allocations.AssertNone(
+            "OrDefaultAsync",
+            () => _ = result.OrDefaultAsync(static _ => CompletedOne).IsCompleted);
+    }
+
+    [Property(Skip = Allocations.SkipInDebug)]
     public void Comparing_allocates_nothing(Result<int, int> result, Result<int, int> other)
     {
         Allocations.AssertNone("Equals", () => _ = result.Equals(other));
@@ -98,6 +112,9 @@ public sealed class AllocationProperties
         Allocations.AssertNone("Ok ==", () => _ = new Ok<int>(1) == new Ok<int>(2));
         Allocations.AssertNone("Error GetHashCode", () => _ = new Error<int>(1).GetHashCode());
     }
+
+    // Tasks completed in advance: any allocation in the async tests comes from the library, not from the delegate.
+    private static readonly Task<int> CompletedOne = Task.FromResult(1);
 
     private static Result<int, int> Half(int value) => value % 2 == 0 ? ok(value / 2) : error(value);
 

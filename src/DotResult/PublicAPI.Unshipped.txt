@@ -26,8 +26,11 @@ DotResult.Result<T, TError>.IUnionMembers.Value.get -> object?
 DotResult.Result<T, TError>.Map<TResult>(System.Func<T, TResult>! map) -> DotResult.Result<TResult, TError>
 DotResult.Result<T, TError>.MapError<TNewError>(System.Func<TError, TNewError>! map) -> DotResult.Result<T, TNewError>
 DotResult.Result<T, TError>.Match<TResult>(System.Func<T, TResult>! ok, System.Func<TError, TResult>! error) -> TResult
+DotResult.Result<T, TError>.MatchAsync<TResult>(System.Func<T, System.Threading.Tasks.Task<TResult>!>! ok, System.Func<TError, System.Threading.Tasks.Task<TResult>!>! error) -> System.Threading.Tasks.ValueTask<TResult>
+DotResult.Result<T, TError>.MatchAsync<TResult>(System.Func<T, System.Threading.Tasks.Task<TResult>!>! ok, System.Func<TError, TResult>! error) -> System.Threading.Tasks.ValueTask<TResult>
 DotResult.Result<T, TError>.OrDefault(System.Func<TError, T>! fallback) -> T
 DotResult.Result<T, TError>.OrDefault(T fallback) -> T
+DotResult.Result<T, TError>.OrDefaultAsync(System.Func<TError, System.Threading.Tasks.Task<T>!>! fallback) -> System.Threading.Tasks.ValueTask<T>
 DotResult.Result<T, TError>.Result() -> void
 DotResult.Result<T, TError>.Select<TResult>(System.Func<T, TResult>! selector) -> DotResult.Result<TResult, TError>
 DotResult.Result<T, TError>.SelectMany<TIntermediate, TResult>(System.Func<T, DotResult.Result<TIntermediate, TError>>! selector, System.Func<T, TIntermediate, TResult>! resultSelector) -> DotResult.Result<TResult, TError>
