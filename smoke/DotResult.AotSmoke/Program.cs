@@ -30,6 +30,8 @@ Check(failed.MapError(static error => error.Length) == error(4), "MapError");
 Check(Parse("8").Bind(Half) == ok(4) && Parse("7").Bind(Half) == error("odd") && failed.Bind(Half) == failed, "Bind");
 Check(answer.Bind<int>(static value => value > 0 ? ok(value) : error("negative")) == answer, "Bind with ok and error");
 Check(Generic<string, string>("generic") && ok("text").Equals(ok("text")), "reference types");
+Check(answer.Ensure(static value => value < 100, "too large") == answer, "Ensure keeps");
+Check(answer.Ensure(static value => value > 100, static value => $"{value} too small") == error("42 too small"), "Ensure rejects");
 
 if (failures.Count > 0)
 {

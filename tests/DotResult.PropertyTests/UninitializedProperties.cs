@@ -110,6 +110,16 @@ public sealed class UninitializedProperties
     }
 
     [Fact]
+    public void Ensure_throws_and_runs_nothing()
+    {
+        var calls = 0;
+
+        Assert.Throws<InvalidOperationException>(() => Uninitialized.Ensure(_ => ++calls > 0, "error"));
+        Assert.Throws<InvalidOperationException>(() => Uninitialized.Ensure(_ => ++calls > 0, _ => $"{++calls}"));
+        Assert.Equal(0, calls);
+    }
+
+    [Fact]
     public void The_union_members_report_no_case()
     {
         Result<int, string>.IUnionMembers members = Uninitialized;
