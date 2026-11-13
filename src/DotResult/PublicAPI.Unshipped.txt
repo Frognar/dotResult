@@ -13,6 +13,7 @@ DotResult.Ok<T>.Ok(T value) -> void
 DotResult.Ok<T>.Value.get -> T
 DotResult.Prelude
 DotResult.Result<T, TError>
+DotResult.Result<T, TError>.Bind<TResult>(System.Func<T, DotResult.Result<TResult, TError>>! bind) -> DotResult.Result<TResult, TError>
 DotResult.Result<T, TError>.Equals(DotResult.Result<T, TError> other) -> bool
 DotResult.Result<T, TError>.IUnionMembers
 DotResult.Result<T, TError>.IUnionMembers.Create(DotResult.Error<TError> value) -> DotResult.Result<T, TError>
@@ -20,6 +21,8 @@ DotResult.Result<T, TError>.IUnionMembers.Create(DotResult.Ok<T> value) -> DotRe
 DotResult.Result<T, TError>.IUnionMembers.TryGetValue(out DotResult.Error<TError> value) -> bool
 DotResult.Result<T, TError>.IUnionMembers.TryGetValue(out DotResult.Ok<T> value) -> bool
 DotResult.Result<T, TError>.IUnionMembers.Value.get -> object?
+DotResult.Result<T, TError>.Map<TResult>(System.Func<T, TResult>! map) -> DotResult.Result<TResult, TError>
+DotResult.Result<T, TError>.MapError<TNewError>(System.Func<TError, TNewError>! map) -> DotResult.Result<T, TNewError>
 DotResult.Result<T, TError>.Match<TResult>(System.Func<T, TResult>! ok, System.Func<TError, TResult>! error) -> TResult
 DotResult.Result<T, TError>.OrDefault(System.Func<TError, T>! fallback) -> T
 DotResult.Result<T, TError>.OrDefault(T fallback) -> T

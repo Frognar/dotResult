@@ -27,7 +27,7 @@ var message = Parse("42") switch
 - **No invalid values.** `null` is never a value or an error, and there is no `.Value`, `IsOk` or other accessor
   that can throw: you get a value out through pattern matching or total functions.
 - **No allocations.** For value types, creating, matching and comparing results allocates nothing.
-- **Functional API.** `Match` and `OrDefault` today; `Map`, `MapError`, `Bind`, `Ensure`, query syntax, async
+- **Functional API.** `Match`, `OrDefault`, `Map`, `MapError` and `Bind` today; `Ensure`, query syntax, async
   pipelines, combinators, collections and JSON arrive through the 2.0.0 alphas.
 
 ## Usage
@@ -77,6 +77,30 @@ var fromError = answer.OrDefault(error => error.Length);   // the fallback sees 
 Both cases make the `switch` exhaustive, and the compiler warns when one is missing. Pattern matching works in generic
 code too: `result is Ok<T>(var value)` reads the value when `T` is a type parameter. `Match` runs exactly one branch,
 exactly once; the `OrDefault` factory runs only for an error.
+
+### Transforming and chaining
+
+```csharp
+Result<int, string> Half(int value) => value % 2 == 0 ? ok(value / 2) : error("odd");
+
+var doubled = answer.Map(value => value * 2);               // Ok(84); an error passes through
+var halved = answer.Bind(Half);                             // a step that can fail; the first error wins
+var detailed = answer.MapError(error => $"lookup failed: {error}"); // translate the error, keep the value
+```
+
+`Map` and `MapError` change one side and leave the other alone; `Bind` continues a success with a step that returns a
+result with the same error type (line error types up with `MapError` first). A step runs only for a success, exactly
+once.
+
+Union conversions take no part in type inference, so a `Bind` lambda that returns `ok(...)` or `error(...)` needs the
+value type spelled out:
+
+```csharp
+var positive = answer.Bind<int>(value => value > 0 ? ok(value) : error("not positive"));
+```
+
+A step that already returns a result (`answer.Bind(Half)`) needs nothing. A `null` from `Map` or `MapError` is
+rejected with `InvalidOperationException`: a result never holds `null`.
 
 ### The uninitialized result
 

@@ -59,6 +59,14 @@ public sealed class AllocationProperties
     }
 
     [Property(Skip = Allocations.SkipInDebug)]
+    public void Transforming_allocates_nothing(Result<int, int> result)
+    {
+        Allocations.AssertNone("Map", () => _ = result.Map(static value => value + 1));
+        Allocations.AssertNone("MapError", () => _ = result.MapError(static error => (long)error));
+        Allocations.AssertNone("Bind", () => _ = result.Bind(static value => Half(value)));
+    }
+
+    [Property(Skip = Allocations.SkipInDebug)]
     public void Comparing_allocates_nothing(Result<int, int> result, Result<int, int> other)
     {
         Allocations.AssertNone("Equals", () => _ = result.Equals(other));
@@ -68,6 +76,8 @@ public sealed class AllocationProperties
         Allocations.AssertNone("Ok ==", () => _ = new Ok<int>(1) == new Ok<int>(2));
         Allocations.AssertNone("Error GetHashCode", () => _ = new Error<int>(1).GetHashCode());
     }
+
+    private static Result<int, int> Half(int value) => value % 2 == 0 ? ok(value / 2) : error(value);
 
     private static Result<int, int> Succeed(int value) => ok(value);
 
