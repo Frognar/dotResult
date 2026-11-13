@@ -35,11 +35,23 @@ public readonly partial struct Result<T, TError> : Result<T, TError>.IUnionMembe
     where T : notnull
     where TError : notnull
 {
-    private readonly T _value;
-    private readonly TError _error;
+    private readonly Ok<T> _ok;
+    private readonly Error<TError> _error;
     private readonly ResultCase _case;
 
-    private Result(ResultCase @case, T value, TError error) => (_case, _value, _error) = (@case, value, error);
+    private Result(Ok<T> ok)
+    {
+        _ok = ok;
+        _error = default;
+        _case = ResultCase.Ok;
+    }
+
+    private Result(Error<TError> error)
+    {
+        _ok = default;
+        _error = error;
+        _case = ResultCase.Error;
+    }
 
     /// <summary>
     /// The union members the C# compiler uses for union conversions and pattern matching.
@@ -56,7 +68,10 @@ public readonly partial struct Result<T, TError> : Result<T, TError>.IUnionMembe
         /// <param name="value">The success case.</param>
         /// <returns>The <see cref="Ok{T}"/> case.</returns>
         /// <exception cref="ArgumentException"><paramref name="value"/> is a default <see cref="Ok{T}"/> holding null.</exception>
-        static Result<T, TError> Create(Ok<T> value) => throw new NotImplementedException();
+        static Result<T, TError> Create(Ok<T> value) =>
+            value.Value is null
+                ? throw new ArgumentException("A default Ok<T> holds no value; create it with ok(value).", nameof(value))
+                : new Result<T, TError>(value);
 
         /// <summary>
         /// Creates a failed <see cref="Result{T, TError}"/>.
@@ -66,7 +81,12 @@ public readonly partial struct Result<T, TError> : Result<T, TError>.IUnionMembe
         /// <exception cref="ArgumentException">
         /// <paramref name="value"/> is a default <see cref="Error{TError}"/> holding null.
         /// </exception>
-        static Result<T, TError> Create(Error<TError> value) => throw new NotImplementedException();
+        static Result<T, TError> Create(Error<TError> value) =>
+            value.Value is null
+                ? throw new ArgumentException(
+                    "A default Error<TError> holds no error; create it with error(value).",
+                    nameof(value))
+                : new Result<T, TError>(value);
 
         /// <summary>
         /// Gets the current case, boxed: an <see cref="Ok{T}"/> or an <see cref="Error{TError}"/>, or
@@ -93,7 +113,13 @@ public readonly partial struct Result<T, TError> : Result<T, TError>.IUnionMembe
         bool TryGetValue(out Error<TError> value);
     }
 
-    object? IUnionMembers.Value => throw new NotImplementedException();
+    object? IUnionMembers.Value =>
+        _case switch
+        {
+            ResultCase.Ok => _ok,
+            ResultCase.Error => _error,
+            _ => null,
+        };
 
     /// <summary>
     /// Compares two results: both successes with equal values, both errors with equal errors, or both uninitialized.
@@ -111,9 +137,17 @@ public readonly partial struct Result<T, TError> : Result<T, TError>.IUnionMembe
     /// <returns><see langword="true"/> when the results differ; otherwise <see langword="false"/>.</returns>
     public static bool operator !=(Result<T, TError> left, Result<T, TError> right) => !left.Equals(right);
 
-    bool IUnionMembers.TryGetValue(out Ok<T> value) => throw new NotImplementedException();
+    bool IUnionMembers.TryGetValue(out Ok<T> value)
+    {
+        value = _ok;
+        return _case == ResultCase.Ok;
+    }
 
-    bool IUnionMembers.TryGetValue(out Error<TError> value) => throw new NotImplementedException();
+    bool IUnionMembers.TryGetValue(out Error<TError> value)
+    {
+        value = _error;
+        return _case == ResultCase.Error;
+    }
 
     /// <summary>
     /// Determines whether this result equals <paramref name="other"/>: both successes with values that are equal
@@ -126,8 +160,8 @@ public readonly partial struct Result<T, TError> : Result<T, TError>.IUnionMembe
         _case == other._case
         && _case switch
         {
-            ResultCase.Ok => EqualityComparer<T>.Default.Equals(_value, other._value),
-            ResultCase.Error => EqualityComparer<TError>.Default.Equals(_error, other._error),
+            ResultCase.Ok => _ok.Equals(other._ok),
+            ResultCase.Error => _error.Equals(other._error),
             _ => true,
         };
 
@@ -138,7 +172,7 @@ public readonly partial struct Result<T, TError> : Result<T, TError>.IUnionMembe
     public override int GetHashCode() =>
         _case switch
         {
-            ResultCase.Ok => HashCode.Combine(ResultCase.Ok, _value),
+            ResultCase.Ok => HashCode.Combine(ResultCase.Ok, _ok),
             ResultCase.Error => HashCode.Combine(ResultCase.Error, _error),
             _ => 0,
         };
