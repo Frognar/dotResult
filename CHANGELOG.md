@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.0-alpha.5](https://github.com/Frognar/dotResult/compare/v2.0.0-alpha.4...v2.0.0-alpha.5) (2026-11-13)
+
+
+### Features
+
+* add async pipelines over Task and ValueTask of results ([#72](https://github.com/Frognar/dotResult/issues/72)) ([005c090](https://github.com/Frognar/dotResult/commit/005c090d40a748f5295053a28ce0f54c1ccad8a9))
+* add async query syntax for results ([#74](https://github.com/Frognar/dotResult/issues/74)) ([4e04242](https://github.com/Frognar/dotResult/commit/4e042427a4deeb635f6b247d82952773757c3270))
+
 ## [2.0.0-alpha.4](https://github.com/Frognar/dotResult/compare/v2.0.0-alpha.3...v2.0.0-alpha.4) (2026-11-13)
 
 
