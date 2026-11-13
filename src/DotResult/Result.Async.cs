@@ -1,8 +1,8 @@
 namespace DotResult;
 
 /// <content>
-/// Asynchronous counterparts of <c>Match</c>, <c>OrDefault</c>, <c>Map</c>, <c>MapError</c>, <c>Bind</c> and
-/// <c>Ensure</c>.
+/// Asynchronous counterparts of <c>Match</c>, <c>OrDefault</c>, <c>Map</c>, <c>MapError</c>, <c>Bind</c>,
+/// <c>Ensure</c> and <c>OrElse</c>.
 /// </content>
 /// <remarks>
 /// <para>
@@ -219,6 +219,35 @@ public readonly partial struct Result<T, TError>
             await predicate(source._ok.Value).ConfigureAwait(false)
                 ? source
                 : new(new Error<TError>(Produced(error(source._ok.Value), nameof(error))));
+    }
+
+    /// <summary>
+    /// Recovers from an error with an asynchronous <paramref name="alternative"/>, which receives the error and may
+    /// itself fail; a success passes through at once, without waiting.
+    /// </summary>
+    /// <typeparam name="TNewError">The type of the error the recovery can fail with.</typeparam>
+    /// <param name="alternative">Produces the result to use from the error.</param>
+    /// <returns>The same success, or the result of the recovery.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="alternative"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    /// The result is uninitialized (default); or, when awaited, <paramref name="alternative"/> produced an
+    /// uninitialized result.
+    /// </exception>
+    public ValueTask<Result<T, TNewError>> OrElseAsync<TNewError>(Func<TError, Task<Result<T, TNewError>>> alternative)
+        where TNewError : notnull
+    {
+        ArgumentNullException.ThrowIfNull(alternative);
+        return _case switch
+        {
+            ResultCase.Ok => ValueTask.FromResult(new Result<T, TNewError>(_ok)),
+            ResultCase.Error => RecoverAsync(_error.Value, alternative),
+            _ => throw Uninitialized(),
+        };
+
+        static async ValueTask<Result<T, TNewError>> RecoverAsync(
+            TError error,
+            Func<TError, Task<Result<T, TNewError>>> alternative) =>
+            Result<T, TNewError>.Initialized(await alternative(error).ConfigureAwait(false), nameof(alternative));
     }
 
     // Query syntax with an asynchronous step (ResultTaskQueryExtensions): Bind then project, without a closure (R7).

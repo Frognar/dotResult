@@ -342,6 +342,65 @@ public static class ResultTaskExtensions
             await (await source.ConfigureAwait(false)).OrDefaultAsync(fallback).ConfigureAwait(false);
     }
 
+    /// <summary>Awaits the source, then returns it when it is a success; otherwise <paramref name="alternative"/>.</summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="TError">The type of the error.</typeparam>
+    /// <param name="source">The awaitable result.</param>
+    /// <param name="alternative">The result to use when the source is an error.</param>
+    /// <returns>The source success, or <paramref name="alternative"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="source"/> is null.</exception>
+    /// <exception cref="ArgumentException"><paramref name="alternative"/> is uninitialized (default).</exception>
+    public static ValueTask<Result<T, TError>> OrElseAsync<T, TError>(this ValueTask<Result<T, TError>> source, Result<T, TError> alternative)
+        where T : notnull
+        where TError : notnull
+    {
+        Result<T, TError>.RejectUninitialized(alternative, nameof(alternative));
+        return OrElseAfter(source, alternative);
+
+        static async ValueTask<Result<T, TError>> OrElseAfter(ValueTask<Result<T, TError>> source, Result<T, TError> alternative) =>
+            (await source.ConfigureAwait(false)).OrElse(alternative);
+    }
+
+    /// <summary>Awaits the source, then recovers from an error with <paramref name="alternative"/>.</summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="TError">The type of the error.</typeparam>
+    /// <typeparam name="TNewError">The type of the error the recovery can fail with.</typeparam>
+    /// <param name="source">The awaitable result.</param>
+    /// <param name="alternative">Produces the result to use from the error.</param>
+    /// <returns>The same success, or the result of the recovery.</returns>
+    /// <exception cref="ArgumentNullException">An argument is null.</exception>
+    public static ValueTask<Result<T, TNewError>> OrElseAsync<T, TError, TNewError>(this ValueTask<Result<T, TError>> source, Func<TError, Result<T, TNewError>> alternative)
+        where T : notnull
+        where TError : notnull
+        where TNewError : notnull
+    {
+        ArgumentNullException.ThrowIfNull(alternative);
+        return OrElseAfter(source, alternative);
+
+        static async ValueTask<Result<T, TNewError>> OrElseAfter(ValueTask<Result<T, TError>> source, Func<TError, Result<T, TNewError>> alternative) =>
+            (await source.ConfigureAwait(false)).OrElse(alternative);
+    }
+
+    /// <summary>Awaits the source, then recovers from an error with the asynchronous <paramref name="alternative"/>.</summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="TError">The type of the error.</typeparam>
+    /// <typeparam name="TNewError">The type of the error the recovery can fail with.</typeparam>
+    /// <param name="source">The awaitable result.</param>
+    /// <param name="alternative">Produces the result to use from the error.</param>
+    /// <returns>The same success, or the result of the recovery.</returns>
+    /// <exception cref="ArgumentNullException">An argument is null.</exception>
+    public static ValueTask<Result<T, TNewError>> OrElseAsync<T, TError, TNewError>(this ValueTask<Result<T, TError>> source, Func<TError, Task<Result<T, TNewError>>> alternative)
+        where T : notnull
+        where TError : notnull
+        where TNewError : notnull
+    {
+        ArgumentNullException.ThrowIfNull(alternative);
+        return OrElseAfter(source, alternative);
+
+        static async ValueTask<Result<T, TNewError>> OrElseAfter(ValueTask<Result<T, TError>> source, Func<TError, Task<Result<T, TNewError>>> alternative) =>
+            await (await source.ConfigureAwait(false)).OrElseAsync(alternative).ConfigureAwait(false);
+    }
+
     // ---- Task<Result<T, TError>> sources ----
 
     /// <summary>Awaits the source, then transforms the value of a success with <paramref name="map"/>.</summary>
@@ -604,5 +663,55 @@ public static class ResultTaskExtensions
     {
         ArgumentNullException.ThrowIfNull(source);
         return new ValueTask<Result<T, TError>>(source).OrDefaultAsync(fallback);
+    }
+
+    /// <summary>Awaits the source, then returns it when it is a success; otherwise <paramref name="alternative"/>.</summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="TError">The type of the error.</typeparam>
+    /// <param name="source">The awaitable result.</param>
+    /// <param name="alternative">The result to use when the source is an error.</param>
+    /// <returns>The source success, or <paramref name="alternative"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="source"/> is null.</exception>
+    /// <exception cref="ArgumentException"><paramref name="alternative"/> is uninitialized (default).</exception>
+    public static ValueTask<Result<T, TError>> OrElseAsync<T, TError>(this Task<Result<T, TError>> source, Result<T, TError> alternative)
+        where T : notnull
+        where TError : notnull
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        return new ValueTask<Result<T, TError>>(source).OrElseAsync(alternative);
+    }
+
+    /// <summary>Awaits the source, then recovers from an error with <paramref name="alternative"/>.</summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="TError">The type of the error.</typeparam>
+    /// <typeparam name="TNewError">The type of the error the recovery can fail with.</typeparam>
+    /// <param name="source">The awaitable result.</param>
+    /// <param name="alternative">Produces the result to use from the error.</param>
+    /// <returns>The same success, or the result of the recovery.</returns>
+    /// <exception cref="ArgumentNullException">An argument is null.</exception>
+    public static ValueTask<Result<T, TNewError>> OrElseAsync<T, TError, TNewError>(this Task<Result<T, TError>> source, Func<TError, Result<T, TNewError>> alternative)
+        where T : notnull
+        where TError : notnull
+        where TNewError : notnull
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        return new ValueTask<Result<T, TError>>(source).OrElseAsync(alternative);
+    }
+
+    /// <summary>Awaits the source, then recovers from an error with the asynchronous <paramref name="alternative"/>.</summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="TError">The type of the error.</typeparam>
+    /// <typeparam name="TNewError">The type of the error the recovery can fail with.</typeparam>
+    /// <param name="source">The awaitable result.</param>
+    /// <param name="alternative">Produces the result to use from the error.</param>
+    /// <returns>The same success, or the result of the recovery.</returns>
+    /// <exception cref="ArgumentNullException">An argument is null.</exception>
+    public static ValueTask<Result<T, TNewError>> OrElseAsync<T, TError, TNewError>(this Task<Result<T, TError>> source, Func<TError, Task<Result<T, TNewError>>> alternative)
+        where T : notnull
+        where TError : notnull
+        where TNewError : notnull
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        return new ValueTask<Result<T, TError>>(source).OrElseAsync(alternative);
     }
 }

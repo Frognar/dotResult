@@ -27,8 +27,8 @@ var message = Parse("42") switch
 - **No invalid values.** `null` is never a value or an error, and there is no `.Value`, `IsOk` or other accessor
   that can throw: you get a value out through pattern matching or total functions.
 - **No allocations.** For value types, creating, matching and comparing results allocates nothing.
-- **Functional API.** `Match`, `OrDefault`, `Map`, `MapError`, `Bind`, `Ensure`, query syntax and async pipelines
-  today; combinators, collections and JSON arrive through the 2.0.0 alphas.
+- **Functional API.** `Match`, `OrDefault`, `Map`, `MapError`, `Bind`, `Ensure`, `OrElse`, query syntax and async
+  pipelines today; more combinators, collections and JSON arrive through the 2.0.0 alphas.
 
 ## Usage
 
@@ -102,7 +102,20 @@ var positive = answer.Bind<int>(value => value > 0 ? ok(value) : error("not posi
 ```
 
 A step that already returns a result (`answer.Bind(Half)`) needs nothing. A `null` from `Map` or `MapError` is
-rejected with `InvalidOperationException`: a result never holds `null`.
+rejected with `InvalidOperationException`: a result never holds `null`. Inside a lambda, a parameter named `error`
+hides the `error(...)` function; name it `failure` (or similar) when the body creates an error.
+
+### Combining
+
+```csharp
+var config = fromFile.OrElse(fromEnvironment).OrElse(ok(Defaults));     // the first success wins
+var recovered = lookup.OrElse(error => error == "not found" ? CreateDefault() : Fail(error));
+```
+
+`OrElse` is the error-side counterpart of `Bind`: it replaces an error with an alternative result, or recovers from it
+with a step that receives the error and may itself fail, possibly with another error type. A success passes through,
+and the recovery never runs for it. `OrElseAsync` does the same with an asynchronous recovery, on a result or in a
+pipeline.
 
 ### Query syntax
 

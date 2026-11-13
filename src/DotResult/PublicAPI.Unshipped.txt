@@ -36,6 +36,9 @@ DotResult.Result<T, TError>.MatchAsync<TResult>(System.Func<T, System.Threading.
 DotResult.Result<T, TError>.OrDefault(System.Func<TError, T>! fallback) -> T
 DotResult.Result<T, TError>.OrDefault(T fallback) -> T
 DotResult.Result<T, TError>.OrDefaultAsync(System.Func<TError, System.Threading.Tasks.Task<T>!>! fallback) -> System.Threading.Tasks.ValueTask<T>
+DotResult.Result<T, TError>.OrElse(DotResult.Result<T, TError> alternative) -> DotResult.Result<T, TError>
+DotResult.Result<T, TError>.OrElse<TNewError>(System.Func<TError, DotResult.Result<T, TNewError>>! alternative) -> DotResult.Result<T, TNewError>
+DotResult.Result<T, TError>.OrElseAsync<TNewError>(System.Func<TError, System.Threading.Tasks.Task<DotResult.Result<T, TNewError>>!>! alternative) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TNewError>>
 DotResult.Result<T, TError>.Result() -> void
 DotResult.Result<T, TError>.Select<TResult>(System.Func<T, TResult>! selector) -> DotResult.Result<TResult, TError>
 DotResult.Result<T, TError>.SelectMany<TIntermediate, TResult>(System.Func<T, DotResult.Result<TIntermediate, TError>>! selector, System.Func<T, TIntermediate, TResult>! resultSelector) -> DotResult.Result<TResult, TError>
@@ -91,6 +94,12 @@ static DotResult.ResultTaskExtensions.OrDefaultAsync<T, TError>(this System.Thre
 static DotResult.ResultTaskExtensions.OrDefaultAsync<T, TError>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<TError, System.Threading.Tasks.Task<T>!>! fallback) -> System.Threading.Tasks.ValueTask<T>
 static DotResult.ResultTaskExtensions.OrDefaultAsync<T, TError>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<TError, T>! fallback) -> System.Threading.Tasks.ValueTask<T>
 static DotResult.ResultTaskExtensions.OrDefaultAsync<T, TError>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, T fallback) -> System.Threading.Tasks.ValueTask<T>
+static DotResult.ResultTaskExtensions.OrElseAsync<T, TError, TNewError>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<TError, DotResult.Result<T, TNewError>>! alternative) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TNewError>>
+static DotResult.ResultTaskExtensions.OrElseAsync<T, TError, TNewError>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<TError, System.Threading.Tasks.Task<DotResult.Result<T, TNewError>>!>! alternative) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TNewError>>
+static DotResult.ResultTaskExtensions.OrElseAsync<T, TError, TNewError>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<TError, DotResult.Result<T, TNewError>>! alternative) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TNewError>>
+static DotResult.ResultTaskExtensions.OrElseAsync<T, TError, TNewError>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<TError, System.Threading.Tasks.Task<DotResult.Result<T, TNewError>>!>! alternative) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TNewError>>
+static DotResult.ResultTaskExtensions.OrElseAsync<T, TError>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, DotResult.Result<T, TError> alternative) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>>
+static DotResult.ResultTaskExtensions.OrElseAsync<T, TError>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, DotResult.Result<T, TError> alternative) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>>
 static DotResult.ResultTaskQueryExtensions.Select<T, TError, TResult>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<T, TResult>! selector) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
 static DotResult.ResultTaskQueryExtensions.Select<T, TError, TResult>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<T, TResult>! selector) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
 static DotResult.ResultTaskQueryExtensions.SelectMany<T, TError, TIntermediate, TResult>(this DotResult.Result<T, TError> source, System.Func<T, System.Threading.Tasks.Task<DotResult.Result<TIntermediate, TError>>!>! selector, System.Func<T, TIntermediate, TResult>! resultSelector) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
