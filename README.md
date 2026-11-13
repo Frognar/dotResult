@@ -122,6 +122,21 @@ with `Bind`, a later `from` needs a result, not a bare `ok(...)`.
 Queries with one or two `from` clauses allocate nothing for value types. With more clauses or a `let`, the compiler
 itself allocates a small object per query to carry the range variables.
 
+### Async
+
+```csharp
+var text = await answer.MatchAsync(
+    async value => await FormatAsync(value),
+    error => $"No answer: {error}");                       // a synchronous branch is fine too
+
+var value = await answer.OrDefaultAsync(error => LoadFallbackAsync(error));
+```
+
+The delegates return `Task<T>`, so any async lambda fits; the methods return `ValueTask<T>`, already complete (and
+allocation-free) when there is nothing to wait for. Arguments are checked immediately; anything a delegate throws
+comes out when the result is awaited, and an `OperationCanceledException` for a requested token gives a canceled
+result. To cancel, pass the token through the lambda.
+
 ### The uninitialized result
 
 `Result<T, TError>` is a struct, so `default(Result<T, TError>)` exists, for example in a new array. It is neither
