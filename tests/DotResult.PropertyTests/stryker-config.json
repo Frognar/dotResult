@@ -1,0 +1,17 @@
+{
+  "stryker-config": {
+    "project": "DotResult.csproj",
+    "test-runner": "mtp",
+    "configuration": "Release",
+    "reporters": [
+      "html",
+      "progress",
+      "cleartext"
+    ],
+    "thresholds": {
+      "high": 90,
+      "low": 80,
+      "break": 0
+    }
+  }
+}

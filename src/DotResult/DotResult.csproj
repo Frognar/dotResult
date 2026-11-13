@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>DotResult</AssemblyName>
+    <RootNamespace>DotResult</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- Trimming, AOT and single-file analyzers: reflection that breaks AOT fails the build. -->
+    <IsAotCompatible>true</IsAotCompatible>
+
+    <!-- Every analyzer rule as a warning (so an error), for the library only. Exceptions: .editorconfig. -->
+    <AnalysisLevel>latest-all</AnalysisLevel>
+
+    <!-- Package -->
+    <IsPackable>true</IsPackable>
+    <PackageId>dotResult</PackageId>
+    <Title>dotResult</Title>
+    <Description>A Result monad for C# 15 built on union types: Ok and Error cases, exhaustive pattern matching, query syntax and no hidden exceptions.</Description>
+    <PackageTags>result;either;monad;functional;union;discriminated-union;railway;error-handling;linq;csharp</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/Frognar/dotResult</PackageProjectUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EnablePackageValidation>true</EnablePackageValidation>
+
+    <!-- Versioning from git tags (v2.0.0-alpha.1, ...) -->
+    <MinVerTagPrefix>v</MinVerTagPrefix>
+    <MinVerMinimumMajorMinor>2.0</MinVerMinimumMajorMinor>
+    <MinVerDefaultPreReleaseIdentifiers>alpha.0</MinVerDefaultPreReleaseIdentifiers>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MinVer" PrivateAssets="all" />
+    <!-- Public API tracking: PublicAPI.Shipped.txt / PublicAPI.Unshipped.txt next to this file (see CONTRIBUTING.md). -->
+    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

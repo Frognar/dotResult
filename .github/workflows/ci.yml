@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build:
+    name: Build and test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        # Pull requests: Linux only. Pushes to main: all three operating systems.
+        os: ${{ fromJSON(github.event_name == 'pull_request' && '["ubuntu-latest"]' || '["ubuntu-latest", "windows-latest", "macos-latest"]') }}
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # MinVer computes the version from tags and history
+
+      - name: Set up .NET (version from global.json)
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore dotResult.slnx --locked-mode
+
+      - name: Check formatting
+        if: runner.os == 'Linux'
+        run: dotnet format whitespace --folder --verify-no-changes
+
+      - name: Build
+        run: dotnet build dotResult.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: >-
+          dotnet test --solution dotResult.slnx --configuration Release --no-build
+          --results-directory artifacts/test-results
+          --coverage --coverage-output-format cobertura
+          --report-xunit-trx
+
+      - name: Pack
+        if: runner.os == 'Linux'
+        run: dotnet pack src/DotResult/DotResult.csproj --configuration Release --no-build --output artifacts/packages
+
+      - name: Upload packages
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v7
+        with:
+          name: packages
+          path: artifacts/packages
+          if-no-files-found: error
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results-${{ matrix.os }}
+          path: artifacts/test-results
+          if-no-files-found: ignore
+
+  native-aot:
+    name: Native AOT smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET (version from global.json)
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Install the native toolchain
+        run: sudo apt-get update && sudo apt-get install -y clang zlib1g-dev
+
+      - name: Publish with Native AOT
+        run: >-
+          dotnet publish smoke/DotResult.AotSmoke/DotResult.AotSmoke.csproj
+          --configuration Release --runtime linux-x64 --output artifacts/aot
+
+      - name: Run
+        run: ./artifacts/aot/DotResult.AotSmoke

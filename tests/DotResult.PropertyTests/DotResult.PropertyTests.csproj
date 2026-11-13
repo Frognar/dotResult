@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>DotResult.PropertyTests</RootNamespace>
+    <!-- dotnet test -p:PropertyTestProfile=Nightly runs every property with 10 000 cases (see AssemblyInfo.cs). -->
+    <DefineConstants Condition="'$(PropertyTestProfile)' == 'Nightly'">$(DefineConstants);NIGHTLY</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FsCheck.Xunit.v3" />
+  </ItemGroup>
+
+</Project>

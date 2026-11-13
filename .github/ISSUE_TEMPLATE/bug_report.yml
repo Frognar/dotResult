@@ -1,0 +1,25 @@
+name: Bug report
+description: Something in dotResult does not behave as documented.
+labels: [bug]
+body:
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: The smallest code that shows the problem.
+      render: csharp
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: dotResult version and .NET SDK version (dotnet --version).
+    validations:
+      required: true

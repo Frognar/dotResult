@@ -1,0 +1,26 @@
+<Project>
+
+  <!-- Shared settings for every project in the repository. -->
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <Deterministic>true</Deterministic>
+
+    <!-- packages.lock.json in every project; CI restores with locked mode, so dependencies change only on purpose. -->
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+
+    <Authors>Frognar</Authors>
+    <Copyright>Copyright (c) Frognar</Copyright>
+    <RepositoryUrl>https://github.com/Frognar/dotResult</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+</Project>
+

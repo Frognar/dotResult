@@ -1,0 +1,83 @@
+name: Nightly
+
+# Every property with 10 000 generated cases on a fresh random seed.
+# A failure prints the seed; reproduce locally with [Property(Replay = "...")].
+# Mutation testing with Stryker.NET; the report is uploaded as an artifact.
+
+on:
+  schedule:
+    - cron: "23 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  properties:
+    name: Properties (10 000 cases)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET (version from global.json)
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Build with the nightly profile
+        run: dotnet build tests/DotResult.PropertyTests/DotResult.PropertyTests.csproj --configuration Release -p:PropertyTestProfile=Nightly -p:RestoreLockedMode=true
+
+      - name: Run properties
+        run: >-
+          dotnet test --project tests/DotResult.PropertyTests/DotResult.PropertyTests.csproj
+          --configuration Release --no-build
+          --results-directory artifacts/test-results
+          --report-xunit-trx
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: nightly-test-results
+          path: artifacts/test-results
+          if-no-files-found: ignore
+
+  mutation:
+    name: Mutation testing (Stryker.NET)
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET (version from global.json)
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Restore tools
+        run: dotnet tool restore
+
+      - name: Run Stryker (fails below the break threshold in stryker-config.json)
+        working-directory: tests/DotResult.PropertyTests
+        run: dotnet stryker
+
+      - name: Upload the mutation report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: mutation-report
+          path: tests/DotResult.PropertyTests/StrykerOutput
+          if-no-files-found: ignore

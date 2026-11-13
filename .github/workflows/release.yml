@@ -1,0 +1,106 @@
+name: Release
+
+# release-please keeps a release PR up to date on every push to main.
+# Merging that PR tags the release (v2.0.0-alpha.1, ...) and the publish job pushes the package to nuget.org.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  release-please:
+    name: Release PR and tag
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write # labels on the release PR
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+
+    steps:
+      - name: Run release-please
+        id: release
+        uses: googleapis/release-please-action@v5
+        with:
+          # A PR opened with GITHUB_TOKEN does not trigger CI, so required checks never report on it.
+          # Add a fine-grained token as RELEASE_PLEASE_TOKEN to fix that (see CONTRIBUTING.md).
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  publish:
+    name: Publish to nuget.org
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    runs-on: ubuntu-latest
+    environment: release # requires manual approval (repository settings)
+    permissions:
+      contents: write # attach packages to the GitHub release
+      id-token: write # NuGet Trusted Publishing (OIDC)
+
+    steps:
+      - name: Check out the release tag
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.release-please.outputs.tag_name }}
+          fetch-depth: 0
+
+      - name: Set up .NET (version from global.json)
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore dotResult.slnx --locked-mode
+
+      - name: Build
+        run: dotnet build dotResult.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test --solution dotResult.slnx --configuration Release --no-build
+
+      - name: Pack
+        run: dotnet pack src/DotResult/DotResult.csproj --configuration Release --no-build --output artifacts/packages
+
+      - name: Check that the package version matches the tag
+        env:
+          TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: |
+          expected="artifacts/packages/dotResult.${TAG#v}.nupkg"
+          if [ ! -f "$expected" ]; then
+            echo "::error::Expected $expected, found:"
+            ls artifacts/packages
+            exit 1
+          fi
+
+      - name: NuGet login (OIDC, short-lived API key)
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Push to nuget.org
+        run: >-
+          dotnet nuget push "artifacts/packages/*.nupkg"
+          --api-key "${{ steps.login.outputs.NUGET_API_KEY }}"
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate
+
+      - name: Attach packages to the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: gh release upload "$TAG" artifacts/packages/* --clobber

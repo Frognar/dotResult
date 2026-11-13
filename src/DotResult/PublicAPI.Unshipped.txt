@@ -1,0 +1,37 @@
+#nullable enable
+DotResult.Error<TError>
+DotResult.Error<TError>.Deconstruct(out TError value) -> void
+DotResult.Error<TError>.Equals(DotResult.Error<TError> other) -> bool
+DotResult.Error<TError>.Error() -> void
+DotResult.Error<TError>.Error(TError value) -> void
+DotResult.Error<TError>.Value.get -> TError
+DotResult.Ok<T>
+DotResult.Ok<T>.Deconstruct(out T value) -> void
+DotResult.Ok<T>.Equals(DotResult.Ok<T> other) -> bool
+DotResult.Ok<T>.Ok() -> void
+DotResult.Ok<T>.Ok(T value) -> void
+DotResult.Ok<T>.Value.get -> T
+DotResult.Prelude
+DotResult.Result<T, TError>
+DotResult.Result<T, TError>.Equals(DotResult.Result<T, TError> other) -> bool
+DotResult.Result<T, TError>.IUnionMembers
+DotResult.Result<T, TError>.IUnionMembers.Create(DotResult.Error<TError> value) -> DotResult.Result<T, TError>
+DotResult.Result<T, TError>.IUnionMembers.Create(DotResult.Ok<T> value) -> DotResult.Result<T, TError>
+DotResult.Result<T, TError>.IUnionMembers.TryGetValue(out DotResult.Error<TError> value) -> bool
+DotResult.Result<T, TError>.IUnionMembers.TryGetValue(out DotResult.Ok<T> value) -> bool
+DotResult.Result<T, TError>.IUnionMembers.Value.get -> object?
+DotResult.Result<T, TError>.Result() -> void
+override DotResult.Error<TError>.Equals(object? obj) -> bool
+override DotResult.Error<TError>.GetHashCode() -> int
+override DotResult.Ok<T>.Equals(object? obj) -> bool
+override DotResult.Ok<T>.GetHashCode() -> int
+override DotResult.Result<T, TError>.Equals(object? obj) -> bool
+override DotResult.Result<T, TError>.GetHashCode() -> int
+static DotResult.Error<TError>.operator !=(DotResult.Error<TError> left, DotResult.Error<TError> right) -> bool
+static DotResult.Error<TError>.operator ==(DotResult.Error<TError> left, DotResult.Error<TError> right) -> bool
+static DotResult.Ok<T>.operator !=(DotResult.Ok<T> left, DotResult.Ok<T> right) -> bool
+static DotResult.Ok<T>.operator ==(DotResult.Ok<T> left, DotResult.Ok<T> right) -> bool
+static DotResult.Prelude.error<TError>(TError value) -> DotResult.Error<TError>
+static DotResult.Prelude.ok<T>(T value) -> DotResult.Ok<T>
+static DotResult.Result<T, TError>.operator !=(DotResult.Result<T, TError> left, DotResult.Result<T, TError> right) -> bool
+static DotResult.Result<T, TError>.operator ==(DotResult.Result<T, TError> left, DotResult.Result<T, TError> right) -> bool

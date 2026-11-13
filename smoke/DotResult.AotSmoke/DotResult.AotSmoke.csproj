@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Native AOT smoke test, published and run by the "Native AOT" job in CI:
+      dotnet publish smoke/DotResult.AotSmoke -c Release -r linux-x64 -o artifacts/aot && artifacts/aot/DotResult.AotSmoke
+    Trimming and AOT warnings are errors here (TreatWarningsAsErrors), so reflection in the library fails the publish.
+    It is in dotResult.slnx, so every build compiles it, but it has no lock file: publishing restores it again for a
+    runtime identifier.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <PublishAot>true</PublishAot>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <RestorePackagesWithLockFile>false</RestorePackagesWithLockFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/DotResult/DotResult.csproj" />
+  </ItemGroup>
+
+</Project>
