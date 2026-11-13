@@ -64,6 +64,8 @@ public sealed class AllocationProperties
         Allocations.AssertNone("Map", () => _ = result.Map(static value => value + 1));
         Allocations.AssertNone("MapError", () => _ = result.MapError(static error => (long)error));
         Allocations.AssertNone("Bind", () => _ = result.Bind(static value => Half(value)));
+        Allocations.AssertNone("Ensure", () => _ = result.Ensure(static value => value > 0, -1));
+        Allocations.AssertNone("Ensure(factory)", () => _ = result.Ensure(static value => value > 0, static value => -value));
     }
 
     [Property(Skip = Allocations.SkipInDebug)]

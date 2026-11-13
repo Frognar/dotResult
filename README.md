@@ -27,7 +27,7 @@ var message = Parse("42") switch
 - **No invalid values.** `null` is never a value or an error, and there is no `.Value`, `IsOk` or other accessor
   that can throw: you get a value out through pattern matching or total functions.
 - **No allocations.** For value types, creating, matching and comparing results allocates nothing.
-- **Functional API.** `Match`, `OrDefault`, `Map`, `MapError` and `Bind` today; `Ensure`, query syntax, async
+- **Functional API.** `Match`, `OrDefault`, `Map`, `MapError`, `Bind` and `Ensure` today; query syntax, async
   pipelines, combinators, collections and JSON arrive through the 2.0.0 alphas.
 
 ## Usage
@@ -86,11 +86,13 @@ Result<int, string> Half(int value) => value % 2 == 0 ? ok(value / 2) : error("o
 var doubled = answer.Map(value => value * 2);               // Ok(84); an error passes through
 var halved = answer.Bind(Half);                             // a step that can fail; the first error wins
 var detailed = answer.MapError(error => $"lookup failed: {error}"); // translate the error, keep the value
+var small = answer.Ensure(value => value < 100, "too large"); // a failed check becomes the error
+var adult = answer.Ensure(value => value >= 18, value => $"{value} is under 18"); // the error can use the value
 ```
 
 `Map` and `MapError` change one side and leave the other alone; `Bind` continues a success with a step that returns a
-result with the same error type (line error types up with `MapError` first). A step runs only for a success, exactly
-once.
+result with the same error type (line error types up with `MapError` first); `Ensure` turns a success that fails a
+check into an error. A step runs only for a success, exactly once.
 
 Union conversions take no part in type inference, so a `Bind` lambda that returns `ok(...)` or `error(...)` needs the
 value type spelled out:

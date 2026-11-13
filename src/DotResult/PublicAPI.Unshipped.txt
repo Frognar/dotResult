@@ -14,6 +14,8 @@ DotResult.Ok<T>.Value.get -> T
 DotResult.Prelude
 DotResult.Result<T, TError>
 DotResult.Result<T, TError>.Bind<TResult>(System.Func<T, DotResult.Result<TResult, TError>>! bind) -> DotResult.Result<TResult, TError>
+DotResult.Result<T, TError>.Ensure(System.Func<T, bool>! predicate, System.Func<T, TError>! error) -> DotResult.Result<T, TError>
+DotResult.Result<T, TError>.Ensure(System.Func<T, bool>! predicate, TError error) -> DotResult.Result<T, TError>
 DotResult.Result<T, TError>.Equals(DotResult.Result<T, TError> other) -> bool
 DotResult.Result<T, TError>.IUnionMembers
 DotResult.Result<T, TError>.IUnionMembers.Create(DotResult.Error<TError> value) -> DotResult.Result<T, TError>

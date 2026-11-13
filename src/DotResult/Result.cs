@@ -266,6 +266,60 @@ public readonly partial struct Result<T, TError> : Result<T, TError>.IUnionMembe
     }
 
     /// <summary>
+    /// Keeps a success only when its value satisfies <paramref name="predicate"/>; otherwise the result becomes
+    /// <paramref name="error"/>. An error passes through unchanged.
+    /// </summary>
+    /// <remarks>
+    /// The result counterpart of a filter, and the replacement for <c>where</c> in query syntax, which has no error
+    /// to give. <paramref name="predicate"/> runs only for a success, exactly once.
+    /// </remarks>
+    /// <param name="predicate">The condition the value must satisfy.</param>
+    /// <param name="error">The error when the value does not satisfy <paramref name="predicate"/>.</param>
+    /// <returns>This result, or <paramref name="error"/> when the value does not satisfy the predicate.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="predicate"/> or <paramref name="error"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">The result is uninitialized (default).</exception>
+    public Result<T, TError> Ensure(Func<T, bool> predicate, TError error)
+    {
+        ArgumentNullException.ThrowIfNull(predicate);
+        ArgumentNullException.ThrowIfNull(error);
+        return _case switch
+        {
+            ResultCase.Ok => predicate(_ok.Value) ? this : new Result<T, TError>(new Error<TError>(error)),
+            ResultCase.Error => this,
+            _ => throw Uninitialized(),
+        };
+    }
+
+    /// <summary>
+    /// Keeps a success only when its value satisfies <paramref name="predicate"/>; otherwise the result becomes the
+    /// error that <paramref name="error"/> produces from the value. An error passes through unchanged.
+    /// </summary>
+    /// <remarks>
+    /// <paramref name="predicate"/> runs only for a success, exactly once; <paramref name="error"/> runs only when it
+    /// fails.
+    /// </remarks>
+    /// <param name="predicate">The condition the value must satisfy.</param>
+    /// <param name="error">Produces the error from the value that does not satisfy <paramref name="predicate"/>.</param>
+    /// <returns>This result, or the produced error when the value does not satisfy the predicate.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="predicate"/> or <paramref name="error"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">
+    /// The result is uninitialized (default), or <paramref name="error"/> returned <see langword="null"/>.
+    /// </exception>
+    public Result<T, TError> Ensure(Func<T, bool> predicate, Func<T, TError> error)
+    {
+        ArgumentNullException.ThrowIfNull(predicate);
+        ArgumentNullException.ThrowIfNull(error);
+        return _case switch
+        {
+            ResultCase.Ok => predicate(_ok.Value)
+                ? this
+                : new Result<T, TError>(new Error<TError>(Produced(error(_ok.Value), nameof(error)))),
+            ResultCase.Error => this,
+            _ => throw Uninitialized(),
+        };
+    }
+
+    /// <summary>
     /// Compares two results: both successes with equal values, both errors with equal errors, or both uninitialized.
     /// </summary>
     /// <param name="left">The first result.</param>
