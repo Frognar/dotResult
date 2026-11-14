@@ -100,8 +100,9 @@ git restore src/DotResult/packages.lock.json   # the AOT publish rewrites it for
   or neither property, unknown properties and writing an uninitialized result throw `JsonException`.
 - **R15 Quality gates:** AOT/trimming clean (`IsAotCompatible`), `AnalysisLevel latest-all` with
   `TreatWarningsAsErrors`; deliberate rule exceptions live in `.editorconfig` with their reasons. Every public API change
-  must be reflected in `PublicAPI.Unshipped.txt` (RS0016/RS0017 fail the build); shipped lines move to
-  `PublicAPI.Shipped.txt` at 2.0.0, and changing a shipped line is a breaking change. No runtime dependencies.
+  must be reflected in `PublicAPI.Unshipped.txt` (RS0016/RS0017 fail the build); lines move to `PublicAPI.Shipped.txt`
+  with each release (all of 2.0.0 is shipped), and changing a shipped line is a breaking change. No runtime
+  dependencies.
 
 ### Tests
 
@@ -131,8 +132,8 @@ git restore src/DotResult/packages.lock.json   # the AOT publish rewrites it for
 
 - Squash-merged PRs; the **PR title must be a Conventional Commit** (`feat:`, `fix:`, `test:`, `refactor:`,
   `docs:`, `build:`, `ci:`, `chore:`) — release-please derives the version and changelog from it. Versions come
-  from git tags via MinVer; don't edit version numbers by hand (prerelease phase changes go through `release-as` in
-  `release-please-config.json`).
+  from git tags via MinVer; don't edit version numbers by hand. To force a release without a `feat:`/`fix:`/`perf:`
+  commit, merge with a `Release-As:` footer (`gh pr merge --squash --body "Release-As: x.y.z"`); see CONTRIBUTING.
 - Work is planned in milestones made of cards; one card = one PR that is green on its own. The release PR is merged
   once per milestone.
 - Features are built test-first from "test packages" (`TP-nn`, branch `feat/tp-nn-<topic>`): failing tests plus API

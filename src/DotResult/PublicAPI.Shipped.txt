@@ -1,1 +1,140 @@
 #nullable enable
+DotResult.Error<TError>
+DotResult.Error<TError>.Deconstruct(out TError value) -> void
+DotResult.Error<TError>.Equals(DotResult.Error<TError> other) -> bool
+DotResult.Error<TError>.Error() -> void
+DotResult.Error<TError>.Error(TError value) -> void
+DotResult.Error<TError>.Value.get -> TError
+DotResult.Json.ResultJsonConverter<T, TError>
+DotResult.Json.ResultJsonConverter<T, TError>.ResultJsonConverter() -> void
+DotResult.Ok<T>
+DotResult.Ok<T>.Deconstruct(out T value) -> void
+DotResult.Ok<T>.Equals(DotResult.Ok<T> other) -> bool
+DotResult.Ok<T>.Ok() -> void
+DotResult.Ok<T>.Ok(T value) -> void
+DotResult.Ok<T>.Value.get -> T
+DotResult.Prelude
+DotResult.Result
+DotResult.Result<T, TError>
+DotResult.Result<T, TError>.Bind<TResult>(System.Func<T, DotResult.Result<TResult, TError>>! bind) -> DotResult.Result<TResult, TError>
+DotResult.Result<T, TError>.BindAsync<TResult>(System.Func<T, System.Threading.Tasks.Task<DotResult.Result<TResult, TError>>!>! bind) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
+DotResult.Result<T, TError>.CompareTo(DotResult.Result<T, TError> other) -> int
+DotResult.Result<T, TError>.Ensure(System.Func<T, bool>! predicate, System.Func<T, TError>! error) -> DotResult.Result<T, TError>
+DotResult.Result<T, TError>.Ensure(System.Func<T, bool>! predicate, TError error) -> DotResult.Result<T, TError>
+DotResult.Result<T, TError>.EnsureAsync(System.Func<T, System.Threading.Tasks.Task<bool>!>! predicate, System.Func<T, TError>! error) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>>
+DotResult.Result<T, TError>.EnsureAsync(System.Func<T, System.Threading.Tasks.Task<bool>!>! predicate, TError error) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>>
+DotResult.Result<T, TError>.Equals(DotResult.Result<T, TError> other) -> bool
+DotResult.Result<T, TError>.Fold<TState>(TState state, System.Func<TState, T, TState>! folder) -> TState
+DotResult.Result<T, TError>.Iter(System.Action<T>! action) -> void
+DotResult.Result<T, TError>.IUnionMembers
+DotResult.Result<T, TError>.IUnionMembers.Create(DotResult.Error<TError> value) -> DotResult.Result<T, TError>
+DotResult.Result<T, TError>.IUnionMembers.Create(DotResult.Ok<T> value) -> DotResult.Result<T, TError>
+DotResult.Result<T, TError>.IUnionMembers.TryGetValue(out DotResult.Error<TError> value) -> bool
+DotResult.Result<T, TError>.IUnionMembers.TryGetValue(out DotResult.Ok<T> value) -> bool
+DotResult.Result<T, TError>.IUnionMembers.Value.get -> object?
+DotResult.Result<T, TError>.Map<TResult>(System.Func<T, TResult>! map) -> DotResult.Result<TResult, TError>
+DotResult.Result<T, TError>.MapAsync<TResult>(System.Func<T, System.Threading.Tasks.Task<TResult>!>! map) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
+DotResult.Result<T, TError>.MapError<TNewError>(System.Func<TError, TNewError>! map) -> DotResult.Result<T, TNewError>
+DotResult.Result<T, TError>.MapErrorAsync<TNewError>(System.Func<TError, System.Threading.Tasks.Task<TNewError>!>! map) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TNewError>>
+DotResult.Result<T, TError>.Match<TResult>(System.Func<T, TResult>! ok, System.Func<TError, TResult>! error) -> TResult
+DotResult.Result<T, TError>.MatchAsync<TResult>(System.Func<T, System.Threading.Tasks.Task<TResult>!>! ok, System.Func<TError, System.Threading.Tasks.Task<TResult>!>! error) -> System.Threading.Tasks.ValueTask<TResult>
+DotResult.Result<T, TError>.MatchAsync<TResult>(System.Func<T, System.Threading.Tasks.Task<TResult>!>! ok, System.Func<TError, TResult>! error) -> System.Threading.Tasks.ValueTask<TResult>
+DotResult.Result<T, TError>.OrDefault(System.Func<TError, T>! fallback) -> T
+DotResult.Result<T, TError>.OrDefault(T fallback) -> T
+DotResult.Result<T, TError>.OrDefaultAsync(System.Func<TError, System.Threading.Tasks.Task<T>!>! fallback) -> System.Threading.Tasks.ValueTask<T>
+DotResult.Result<T, TError>.OrElse(DotResult.Result<T, TError> alternative) -> DotResult.Result<T, TError>
+DotResult.Result<T, TError>.OrElse<TNewError>(System.Func<TError, DotResult.Result<T, TNewError>>! alternative) -> DotResult.Result<T, TNewError>
+DotResult.Result<T, TError>.OrElseAsync<TNewError>(System.Func<TError, System.Threading.Tasks.Task<DotResult.Result<T, TNewError>>!>! alternative) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TNewError>>
+DotResult.Result<T, TError>.Result() -> void
+DotResult.Result<T, TError>.Select<TResult>(System.Func<T, TResult>! selector) -> DotResult.Result<TResult, TError>
+DotResult.Result<T, TError>.SelectMany<TIntermediate, TResult>(System.Func<T, DotResult.Result<TIntermediate, TError>>! selector, System.Func<T, TIntermediate, TResult>! resultSelector) -> DotResult.Result<TResult, TError>
+DotResult.Result<T, TError>.SelectMany<TResult>(System.Func<T, DotResult.Result<TResult, TError>>! selector) -> DotResult.Result<TResult, TError>
+DotResult.Result<T, TError>.Tap(System.Action<T>! action) -> DotResult.Result<T, TError>
+DotResult.Result<T, TError>.TapError(System.Action<TError>! action) -> DotResult.Result<T, TError>
+DotResult.Result<T, TError>.Zip<TOther, TResult>(DotResult.Result<TOther, TError> other, System.Func<T, TOther, TResult>! combine) -> DotResult.Result<TResult, TError>
+DotResult.Result<T, TError>.Zip<TOther>(DotResult.Result<TOther, TError> other) -> DotResult.Result<(T, TOther), TError>
+DotResult.ResultReferenceTypeExtensions
+DotResult.ResultTaskExtensions
+DotResult.ResultTaskQueryExtensions
+DotResult.ResultValueTypeExtensions
+override DotResult.Error<TError>.Equals(object? obj) -> bool
+override DotResult.Error<TError>.GetHashCode() -> int
+override DotResult.Error<TError>.ToString() -> string!
+override DotResult.Json.ResultJsonConverter<T, TError>.HandleNull.get -> bool
+override DotResult.Json.ResultJsonConverter<T, TError>.Read(ref System.Text.Json.Utf8JsonReader reader, System.Type! typeToConvert, System.Text.Json.JsonSerializerOptions! options) -> DotResult.Result<T, TError>
+override DotResult.Json.ResultJsonConverter<T, TError>.Write(System.Text.Json.Utf8JsonWriter! writer, DotResult.Result<T, TError> value, System.Text.Json.JsonSerializerOptions! options) -> void
+override DotResult.Ok<T>.Equals(object? obj) -> bool
+override DotResult.Ok<T>.GetHashCode() -> int
+override DotResult.Ok<T>.ToString() -> string!
+override DotResult.Result<T, TError>.Equals(object? obj) -> bool
+override DotResult.Result<T, TError>.GetHashCode() -> int
+override DotResult.Result<T, TError>.ToString() -> string!
+static DotResult.Error<TError>.operator !=(DotResult.Error<TError> left, DotResult.Error<TError> right) -> bool
+static DotResult.Error<TError>.operator ==(DotResult.Error<TError> left, DotResult.Error<TError> right) -> bool
+static DotResult.Ok<T>.operator !=(DotResult.Ok<T> left, DotResult.Ok<T> right) -> bool
+static DotResult.Ok<T>.operator ==(DotResult.Ok<T> left, DotResult.Ok<T> right) -> bool
+static DotResult.Prelude.error<TError>(TError value) -> DotResult.Error<TError>
+static DotResult.Prelude.ok<T>(T value) -> DotResult.Ok<T>
+static DotResult.Result.Errors<T, TError>(this System.Collections.Generic.IEnumerable<DotResult.Result<T, TError>>! source) -> System.Collections.Generic.IEnumerable<TError>!
+static DotResult.Result.Flatten<T, TError>(this DotResult.Result<DotResult.Result<T, TError>, TError> nested) -> DotResult.Result<T, TError>
+static DotResult.Result.FromNullable<T, TError>(T? value, System.Func<TError>! error) -> DotResult.Result<T!, TError>
+static DotResult.Result.FromNullable<T, TError>(T? value, System.Func<TError>! error) -> DotResult.Result<T, TError>
+static DotResult.Result.FromNullable<T, TError>(T? value, TError error) -> DotResult.Result<T!, TError>
+static DotResult.Result.FromNullable<T, TError>(T? value, TError error) -> DotResult.Result<T, TError>
+static DotResult.Result.Partition<T, TError>(this System.Collections.Generic.IEnumerable<DotResult.Result<T, TError>>! source) -> (System.Collections.Generic.IReadOnlyList<T>! Values, System.Collections.Generic.IReadOnlyList<TError>! Errors)
+static DotResult.Result.Sequence<T, TError>(this System.Collections.Generic.IEnumerable<DotResult.Result<T, TError>>! source) -> DotResult.Result<System.Collections.Generic.IReadOnlyList<T>!, TError>
+static DotResult.Result.Traverse<T, TResult, TError>(this System.Collections.Generic.IEnumerable<T>! source, System.Func<T, DotResult.Result<TResult, TError>>! selector) -> DotResult.Result<System.Collections.Generic.IReadOnlyList<TResult>!, TError>
+static DotResult.Result.Try<T, TError>(System.Func<T>! operation, System.Func<System.Exception!, TError>! error) -> DotResult.Result<T, TError>
+static DotResult.Result.Try<T>(System.Func<T>! operation) -> DotResult.Result<T, System.Exception!>
+static DotResult.Result.TryAsync<T, TError>(System.Func<System.Threading.Tasks.Task<T>!>! operation, System.Func<System.Exception!, TError>! error) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>>
+static DotResult.Result.TryAsync<T>(System.Func<System.Threading.Tasks.Task<T>!>! operation) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, System.Exception!>>
+static DotResult.Result.Values<T, TError>(this System.Collections.Generic.IEnumerable<DotResult.Result<T, TError>>! source) -> System.Collections.Generic.IEnumerable<T>!
+static DotResult.Result<T, TError>.operator !=(DotResult.Result<T, TError> left, DotResult.Result<T, TError> right) -> bool
+static DotResult.Result<T, TError>.operator ==(DotResult.Result<T, TError> left, DotResult.Result<T, TError> right) -> bool
+static DotResult.ResultReferenceTypeExtensions.ToNullable<T, TError>(this DotResult.Result<T!, TError> result) -> T?
+static DotResult.ResultTaskExtensions.BindAsync<T, TError, TResult>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<T, DotResult.Result<TResult, TError>>! bind) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
+static DotResult.ResultTaskExtensions.BindAsync<T, TError, TResult>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<T, System.Threading.Tasks.Task<DotResult.Result<TResult, TError>>!>! bind) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
+static DotResult.ResultTaskExtensions.BindAsync<T, TError, TResult>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<T, DotResult.Result<TResult, TError>>! bind) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
+static DotResult.ResultTaskExtensions.BindAsync<T, TError, TResult>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<T, System.Threading.Tasks.Task<DotResult.Result<TResult, TError>>!>! bind) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
+static DotResult.ResultTaskExtensions.EnsureAsync<T, TError>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<T, bool>! predicate, System.Func<T, TError>! error) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>>
+static DotResult.ResultTaskExtensions.EnsureAsync<T, TError>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<T, bool>! predicate, TError error) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>>
+static DotResult.ResultTaskExtensions.EnsureAsync<T, TError>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<T, System.Threading.Tasks.Task<bool>!>! predicate, System.Func<T, TError>! error) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>>
+static DotResult.ResultTaskExtensions.EnsureAsync<T, TError>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<T, System.Threading.Tasks.Task<bool>!>! predicate, TError error) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>>
+static DotResult.ResultTaskExtensions.EnsureAsync<T, TError>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<T, bool>! predicate, System.Func<T, TError>! error) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>>
+static DotResult.ResultTaskExtensions.EnsureAsync<T, TError>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<T, bool>! predicate, TError error) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>>
+static DotResult.ResultTaskExtensions.EnsureAsync<T, TError>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<T, System.Threading.Tasks.Task<bool>!>! predicate, System.Func<T, TError>! error) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>>
+static DotResult.ResultTaskExtensions.EnsureAsync<T, TError>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<T, System.Threading.Tasks.Task<bool>!>! predicate, TError error) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>>
+static DotResult.ResultTaskExtensions.MapAsync<T, TError, TResult>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<T, System.Threading.Tasks.Task<TResult>!>! map) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
+static DotResult.ResultTaskExtensions.MapAsync<T, TError, TResult>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<T, TResult>! map) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
+static DotResult.ResultTaskExtensions.MapAsync<T, TError, TResult>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<T, System.Threading.Tasks.Task<TResult>!>! map) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
+static DotResult.ResultTaskExtensions.MapAsync<T, TError, TResult>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<T, TResult>! map) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
+static DotResult.ResultTaskExtensions.MapErrorAsync<T, TError, TNewError>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<TError, System.Threading.Tasks.Task<TNewError>!>! map) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TNewError>>
+static DotResult.ResultTaskExtensions.MapErrorAsync<T, TError, TNewError>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<TError, TNewError>! map) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TNewError>>
+static DotResult.ResultTaskExtensions.MapErrorAsync<T, TError, TNewError>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<TError, System.Threading.Tasks.Task<TNewError>!>! map) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TNewError>>
+static DotResult.ResultTaskExtensions.MapErrorAsync<T, TError, TNewError>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<TError, TNewError>! map) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TNewError>>
+static DotResult.ResultTaskExtensions.MatchAsync<T, TError, TResult>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<T, System.Threading.Tasks.Task<TResult>!>! ok, System.Func<TError, System.Threading.Tasks.Task<TResult>!>! error) -> System.Threading.Tasks.ValueTask<TResult>
+static DotResult.ResultTaskExtensions.MatchAsync<T, TError, TResult>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<T, System.Threading.Tasks.Task<TResult>!>! ok, System.Func<TError, TResult>! error) -> System.Threading.Tasks.ValueTask<TResult>
+static DotResult.ResultTaskExtensions.MatchAsync<T, TError, TResult>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<T, TResult>! ok, System.Func<TError, TResult>! error) -> System.Threading.Tasks.ValueTask<TResult>
+static DotResult.ResultTaskExtensions.MatchAsync<T, TError, TResult>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<T, System.Threading.Tasks.Task<TResult>!>! ok, System.Func<TError, System.Threading.Tasks.Task<TResult>!>! error) -> System.Threading.Tasks.ValueTask<TResult>
+static DotResult.ResultTaskExtensions.MatchAsync<T, TError, TResult>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<T, System.Threading.Tasks.Task<TResult>!>! ok, System.Func<TError, TResult>! error) -> System.Threading.Tasks.ValueTask<TResult>
+static DotResult.ResultTaskExtensions.MatchAsync<T, TError, TResult>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<T, TResult>! ok, System.Func<TError, TResult>! error) -> System.Threading.Tasks.ValueTask<TResult>
+static DotResult.ResultTaskExtensions.OrDefaultAsync<T, TError>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<TError, System.Threading.Tasks.Task<T>!>! fallback) -> System.Threading.Tasks.ValueTask<T>
+static DotResult.ResultTaskExtensions.OrDefaultAsync<T, TError>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<TError, T>! fallback) -> System.Threading.Tasks.ValueTask<T>
+static DotResult.ResultTaskExtensions.OrDefaultAsync<T, TError>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, T fallback) -> System.Threading.Tasks.ValueTask<T>
+static DotResult.ResultTaskExtensions.OrDefaultAsync<T, TError>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<TError, System.Threading.Tasks.Task<T>!>! fallback) -> System.Threading.Tasks.ValueTask<T>
+static DotResult.ResultTaskExtensions.OrDefaultAsync<T, TError>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<TError, T>! fallback) -> System.Threading.Tasks.ValueTask<T>
+static DotResult.ResultTaskExtensions.OrDefaultAsync<T, TError>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, T fallback) -> System.Threading.Tasks.ValueTask<T>
+static DotResult.ResultTaskExtensions.OrElseAsync<T, TError, TNewError>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<TError, DotResult.Result<T, TNewError>>! alternative) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TNewError>>
+static DotResult.ResultTaskExtensions.OrElseAsync<T, TError, TNewError>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<TError, System.Threading.Tasks.Task<DotResult.Result<T, TNewError>>!>! alternative) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TNewError>>
+static DotResult.ResultTaskExtensions.OrElseAsync<T, TError, TNewError>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<TError, DotResult.Result<T, TNewError>>! alternative) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TNewError>>
+static DotResult.ResultTaskExtensions.OrElseAsync<T, TError, TNewError>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<TError, System.Threading.Tasks.Task<DotResult.Result<T, TNewError>>!>! alternative) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TNewError>>
+static DotResult.ResultTaskExtensions.OrElseAsync<T, TError>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, DotResult.Result<T, TError> alternative) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>>
+static DotResult.ResultTaskExtensions.OrElseAsync<T, TError>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, DotResult.Result<T, TError> alternative) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>>
+static DotResult.ResultTaskQueryExtensions.Select<T, TError, TResult>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<T, TResult>! selector) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
+static DotResult.ResultTaskQueryExtensions.Select<T, TError, TResult>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<T, TResult>! selector) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
+static DotResult.ResultTaskQueryExtensions.SelectMany<T, TError, TIntermediate, TResult>(this DotResult.Result<T, TError> source, System.Func<T, System.Threading.Tasks.Task<DotResult.Result<TIntermediate, TError>>!>! selector, System.Func<T, TIntermediate, TResult>! resultSelector) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
+static DotResult.ResultTaskQueryExtensions.SelectMany<T, TError, TIntermediate, TResult>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<T, DotResult.Result<TIntermediate, TError>>! selector, System.Func<T, TIntermediate, TResult>! resultSelector) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
+static DotResult.ResultTaskQueryExtensions.SelectMany<T, TError, TIntermediate, TResult>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<T, System.Threading.Tasks.Task<DotResult.Result<TIntermediate, TError>>!>! selector, System.Func<T, TIntermediate, TResult>! resultSelector) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
+static DotResult.ResultTaskQueryExtensions.SelectMany<T, TError, TIntermediate, TResult>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<T, DotResult.Result<TIntermediate, TError>>! selector, System.Func<T, TIntermediate, TResult>! resultSelector) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
+static DotResult.ResultTaskQueryExtensions.SelectMany<T, TError, TIntermediate, TResult>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<T, System.Threading.Tasks.Task<DotResult.Result<TIntermediate, TError>>!>! selector, System.Func<T, TIntermediate, TResult>! resultSelector) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
+static DotResult.ResultValueTypeExtensions.ToNullable<T, TError>(this DotResult.Result<T, TError> result) -> T?
