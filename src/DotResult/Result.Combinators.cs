@@ -210,6 +210,23 @@ public readonly partial struct Result<T, TError>
             _ => throw Uninitialized(),
         };
 
+    // The collection functions (Result.Collections.cs) read results through this: the value of a success or the error
+    // (R3: an uninitialized result throws).
+    internal bool IsOk(out T value, out TError error)
+    {
+        switch (_case)
+        {
+            case ResultCase.Ok:
+                (value, error) = (_ok.Value, default!);
+                return true;
+            case ResultCase.Error:
+                (value, error) = (default!, _error.Value);
+                return false;
+            default:
+                throw Uninitialized();
+        }
+    }
+
     // An argument that is itself a result must be initialized (R3); checked without boxing, unlike `is null`.
     internal static void RejectUninitialized(Result<T, TError> result, string parameterName)
     {

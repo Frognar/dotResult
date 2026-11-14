@@ -41,14 +41,14 @@ public readonly partial struct Result<T, TError> : Result<T, TError>.IUnionMembe
     private readonly Error<TError> _error;
     private readonly ResultCase _case;
 
-    private Result(Ok<T> ok)
+    internal Result(Ok<T> ok)
     {
         _ok = ok;
         _error = default;
         _case = ResultCase.Ok;
     }
 
-    private Result(Error<TError> error)
+    internal Result(Error<TError> error)
     {
         _ok = default;
         _error = error;
@@ -466,7 +466,7 @@ public readonly partial struct Result<T, TError> : Result<T, TError>.IUnionMembe
         };
 
     // R3: no operation produces an uninitialized result, even when a delegate returns one.
-    private static Result<TResult, TError> Initialized<TResult>(Result<TResult, TError> result, string producer)
+    internal static Result<TResult, TError> Initialized<TResult>(Result<TResult, TError> result, string producer)
         where TResult : notnull =>
         result._case == ResultCase.Uninitialized
             ? throw new InvalidOperationException($"'{producer}' returned an uninitialized (default) result.")

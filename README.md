@@ -133,6 +133,21 @@ answer.Iter(value => Console.WriteLine(value));             // a side effect tha
 `Zip` combines independent results and, like `Bind`, stops at the first error: errors are never accumulated.
 Collecting every error is validation, an applicative rather than a monad, and does not belong in `Result`.
 
+### Collections and interop
+
+```csharp
+Result<IReadOnlyList<int>, string> all = texts.Traverse(Parse);     // every number, or the first error
+Result<IReadOnlyList<int>, string> both = new[] { a, b }.Sequence(); // Result<int, string>[] -> all values, or the first error
+
+IEnumerable<int> valid = results.Values();                           // the values, lazily; errors are skipped
+IEnumerable<string> problems = results.Errors();                     // the errors, lazily
+var (values, errors) = results.Partition();                          // both sides, in one pass
+```
+
+`Sequence` and `Traverse` fail fast like `Bind`: they stop reading at the first error and return it. To see every
+error, use `Errors()` or `Partition()`, which never stop. As with `Bind`, a `Traverse` lambda that returns `ok(...)` or
+`error(...)` needs its return type spelled out: `texts.Traverse(Result<int, string> (text) => ...)`.
+
 ### Query syntax
 
 ```csharp

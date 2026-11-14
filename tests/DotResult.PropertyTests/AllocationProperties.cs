@@ -13,6 +13,8 @@ namespace DotResult.PropertyTests;
 /// Not covered on purpose: <c>Equals(object)</c> (boxes its argument), and <c>result is null</c> /
 /// <c>result is not null</c> on an initialized result: the compiler reads the union's <c>Value</c>, which boxes the case.
 /// Use type patterns or <c>switch</c> instead; they go through <c>TryGetValue</c>.
+/// Sequences (<c>Sequence</c>, <c>Traverse</c>, <c>Values</c>, <c>Errors</c>, <c>Partition</c>) are not covered either:
+/// like LINQ they allocate enumerators and the lists they return (see <c>CollectionBenchmarks</c>).
 /// </remarks>
 public sealed class AllocationProperties
 {

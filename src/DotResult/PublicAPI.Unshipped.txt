@@ -67,7 +67,12 @@ static DotResult.Ok<T>.operator !=(DotResult.Ok<T> left, DotResult.Ok<T> right) 
 static DotResult.Ok<T>.operator ==(DotResult.Ok<T> left, DotResult.Ok<T> right) -> bool
 static DotResult.Prelude.error<TError>(TError value) -> DotResult.Error<TError>
 static DotResult.Prelude.ok<T>(T value) -> DotResult.Ok<T>
+static DotResult.Result.Errors<T, TError>(this System.Collections.Generic.IEnumerable<DotResult.Result<T, TError>>! source) -> System.Collections.Generic.IEnumerable<TError>!
 static DotResult.Result.Flatten<T, TError>(this DotResult.Result<DotResult.Result<T, TError>, TError> nested) -> DotResult.Result<T, TError>
+static DotResult.Result.Partition<T, TError>(this System.Collections.Generic.IEnumerable<DotResult.Result<T, TError>>! source) -> (System.Collections.Generic.IReadOnlyList<T>! Values, System.Collections.Generic.IReadOnlyList<TError>! Errors)
+static DotResult.Result.Sequence<T, TError>(this System.Collections.Generic.IEnumerable<DotResult.Result<T, TError>>! source) -> DotResult.Result<System.Collections.Generic.IReadOnlyList<T>!, TError>
+static DotResult.Result.Traverse<T, TResult, TError>(this System.Collections.Generic.IEnumerable<T>! source, System.Func<T, DotResult.Result<TResult, TError>>! selector) -> DotResult.Result<System.Collections.Generic.IReadOnlyList<TResult>!, TError>
+static DotResult.Result.Values<T, TError>(this System.Collections.Generic.IEnumerable<DotResult.Result<T, TError>>! source) -> System.Collections.Generic.IEnumerable<T>!
 static DotResult.Result<T, TError>.operator !=(DotResult.Result<T, TError> left, DotResult.Result<T, TError> right) -> bool
 static DotResult.Result<T, TError>.operator ==(DotResult.Result<T, TError> left, DotResult.Result<T, TError> right) -> bool
 static DotResult.ResultTaskExtensions.BindAsync<T, TError, TResult>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<T, DotResult.Result<TResult, TError>>! bind) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
