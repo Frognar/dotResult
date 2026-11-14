@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.0-beta.2](https://github.com/Frognar/dotResult/compare/v2.0.0-beta.1...v2.0.0-beta.2) (2026-11-14)
+
+
+### Miscellaneous Chores
+
+* release 2.0.0-beta.2 ([#96](https://github.com/Frognar/dotResult/issues/96)) ([9c9d44b](https://github.com/Frognar/dotResult/commit/9c9d44b4c6a4703732726beb984dde0edc9c0285))
+
 ## [2.0.0-beta.1](https://github.com/Frognar/dotResult/compare/v2.0.0-alpha.8...v2.0.0-beta.1) (2026-11-14)
 
 
