@@ -5,8 +5,8 @@
 A `Result<T, TError>` for C# 15 built on union types: two explicit cases, exhaustive pattern matching, and no hidden
 exceptions.
 
-> **Status:** 2.0 is a ground-up rewrite for .NET 11 and C# 15 unions, under active development. The 1.x line is
-> retired.
+> **Status:** 2.0 is a ground-up rewrite for .NET 11 and C# 15 unions, now in beta: the API is complete. The 1.x line
+> is retired; see [Migrating from 1.x](#migrating-from-1x).
 
 ```csharp
 using DotResult;
@@ -28,8 +28,8 @@ var message = Parse("42") switch
   that can throw: you get a value out through pattern matching or total functions.
 - **No allocations.** For value types, creating, matching and comparing results allocates nothing.
 - **Functional API.** `Match`, `OrDefault`, `Map`, `MapError`, `Bind`, `Ensure`, `OrElse`, `Zip`, `Fold`, `Flatten`,
-  `Iter`, `Tap`, `TapError`, query syntax and async pipelines today; collections and JSON arrive through the 2.0.0
-  alphas.
+  `Iter`, `Tap`, `TapError`, query syntax, async pipelines, collections, nullable interop, `Try` for code that throws,
+  ordering and JSON.
 
 ## Usage
 
@@ -263,6 +263,43 @@ results travel further: an exception is not data, it does not round-trip through
 case: a `switch` over both cases throws `SwitchExpressionException`, and every operation that reads it throws
 `InvalidOperationException`. Equality, hashing and `ToString()` (`Uninitialized`) still work, and
 `result is null` is `true` only for an uninitialized result. Always create results with `ok` or `error`.
+
+### Using it next to ASP.NET Core
+
+ASP.NET Core has its own `Microsoft.AspNetCore.Http.HttpResults.Ok<TValue>`. In a file that imports both
+`DotResult` and `Microsoft.AspNetCore.Http.HttpResults`, the name `Ok<T>` is ambiguous (CS0104). Import the HTTP
+results under an alias instead:
+
+```csharp
+using DotResult;
+using Http = Microsoft.AspNetCore.Http.HttpResults;
+
+static Http.Results<Http.Ok<User>, Http.NotFound> Show(Result<User, string> found) =>
+    found switch
+    {
+        Ok<User>(var user) => TypedResults.Ok(user),
+        Error<string> => TypedResults.NotFound(),
+    };
+```
+
+`ok(...)` and `error(...)` from the Prelude never clash, and the implicit usings of a web project do not import
+`HttpResults`.
+
+## Migrating from 1.x
+
+2.0 is a new library with the same name, not an upgrade in place: 1.x lives on in the
+[`archive/1.2`](https://github.com/Frognar/dotResult/tree/archive/1.2) branch and its packages. The main differences:
+
+| 1.x | 2.0 |
+|---|---|
+| `Result<T>` with a list of `Failure`s (`Failure.Fatal`, `Failure.Validation`, …) | `Result<T, TError>` with an error type of your own (a record, an enum, a string) |
+| `Success.From(value)`, `value.ToResult()`, implicit conversion from `T` | `ok(value)` |
+| `Fail.OfType<T>(failure)`, `failure.ToResult<T>()`, implicit conversion from `Failure` | `error(failure)` |
+| `IsSuccess` / `IsFailure` | pattern matching: `result is Ok<T>`, a `switch` over `Ok<T>` and `Error<TError>` |
+| `Match(failure, success)` | `Match(ok, error)`: the value comes first |
+| `Result.Map2` / `Result.Map3` | `Zip(other, combine)` or query syntax with several `from` clauses |
+| several failures collected in one result | not in `Result`: it stops at the first error; `Partition()` splits a list of results |
+| `MatchAsync`, `MapAsync`, `BindAsync` returning `Task` | the same names returning `ValueTask`, on results and on `Task`/`ValueTask` of results |
 
 ## Requirements
 
