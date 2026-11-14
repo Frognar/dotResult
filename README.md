@@ -5,8 +5,8 @@
 A `Result<T, TError>` for C# 15 built on union types: two explicit cases, exhaustive pattern matching, and no hidden
 exceptions.
 
-> **Status:** 2.0 is a ground-up rewrite for .NET 11 and C# 15 unions, now in beta: the API is complete. The 1.x line
-> is retired; see [Migrating from 1.x](#migrating-from-1x).
+> **Status:** 2.0 is a ground-up rewrite for .NET 11 and C# 15 unions. The 1.x line is retired; see
+> [Migrating from 1.x](#migrating-from-1x).
 
 ```csharp
 using DotResult;

@@ -45,18 +45,17 @@ passed, restart the window on the policy list, then merge.
 The release PR is opened by `GITHUB_TOKEN`, so CI does not run on it and its required checks never report.
 Merge it with the ruleset bypass (see below), or set up `RELEASE_PLEASE_TOKEN` instead.
 
-Moving to the next pre-release phase or to the final release: pull requests are squash-merged with the title as the
-commit message, so a `Release-As:` footer would be lost. Set the version in `release-please-config.json` instead:
+Forcing a version: `"release-as"` in `release-please-config.json` sets the version of the next release PR, but
+release-please opens one only when there is a user-facing commit (`feat:`, `fix:`, `perf:`). Without one, force the
+release with a `Release-As:` footer in the commit body. Pull requests are squash-merged with the title as the commit
+message, so the GitHub UI drops footers; merge from the command line instead:
 
-```json
-"prerelease-type": "beta",
-"packages": { ".": { "changelog-path": "CHANGELOG.md", "release-as": "2.0.0-beta.1" } }
+```bash
+gh pr merge <number> --squash --subject "chore: release 2.1.0 (#<number>)" --body "Release-As: 2.1.0"
 ```
 
-After that release is published, remove `release-as` in a follow-up PR; later versions then count up on their own
-(`2.0.0-beta.2`, ...). For `2.0.0` itself, set `"release-as": "2.0.0"` and `"prerelease": false`, and drop
-`"versioning": "prerelease"` and `"prerelease-type"`, so that later versions follow plain semantic versioning
-(`fix:` → 2.0.1, `feat:` → 2.1.0, a breaking change → 3.0.0).
+Since 2.0.0 the configuration has no pre-release settings: versions follow plain semantic versioning (`fix:` → 2.0.1,
+`feat:` → 2.1.0, a breaking change → 3.0.0).
 
 ## Public API
 
