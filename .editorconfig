@@ -57,3 +57,8 @@ dotnet_diagnostic.CA1716.severity = none
 # R8: the async helpers catch every exception from a delegate and hand it back through the ValueTask.
 [src/DotResult/Result.Async.cs]
 dotnet_diagnostic.CA1031.severity = none
+
+# R13: Try/TryAsync turn every exception from the operation into an error, on purpose. The `when` filter (a requested
+# cancellation propagates) already keeps CA1031 quiet; this keeps the catch-all legal here and nowhere else.
+[src/DotResult/Result.Try.cs]
+dotnet_diagnostic.CA1031.severity = none
