@@ -28,21 +28,40 @@ internal static class Allocations
 
     private const int WarmUps = 4;
     private const int Repetitions = 64;
+    private const int Attempts = 3;
 
+    /// <summary>
+    /// Fails when every one of <see cref="Attempts"/> measurements of <see cref="Repetitions"/> calls allocates.
+    /// </summary>
+    /// <remarks>
+    /// A measurement that allocates is repeated after another warm-up: while it moves a freshly used generic method to
+    /// optimized code (tiered compilation), the runtime itself may allocate once on the calling thread, which is not
+    /// what R7 is about. The nightly run with 10 000 cases hit that in the pipeline properties. Code that allocates on
+    /// every call fails every attempt (see <c>AllocationsTests</c>).
+    /// </remarks>
     public static void AssertNone(string what, Action action)
     {
-        for (var i = 0; i < WarmUps; i++)
+        long allocated = 0;
+        for (var attempt = 0; attempt < Attempts; attempt++)
         {
-            action();
+            for (var i = 0; i < WarmUps; i++)
+            {
+                action();
+            }
+
+            var before = GC.GetAllocatedBytesForCurrentThread();
+            for (var i = 0; i < Repetitions; i++)
+            {
+                action();
+            }
+
+            allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+            if (allocated == 0)
+            {
+                return;
+            }
         }
 
-        var before = GC.GetAllocatedBytesForCurrentThread();
-        for (var i = 0; i < Repetitions; i++)
-        {
-            action();
-        }
-
-        var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
-        Assert.True(allocated == 0, $"{what} allocated {allocated} bytes in {Repetitions} calls.");
+        Assert.Fail($"{what} allocated {allocated} bytes in {Repetitions} calls, in each of {Attempts} attempts.");
     }
 }
