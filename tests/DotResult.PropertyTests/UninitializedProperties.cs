@@ -226,6 +226,14 @@ public sealed class UninitializedProperties
     }
 
     [Fact]
+    public void Writing_it_as_JSON_throws()
+    {
+        Assert.Throws<System.Text.Json.JsonException>(() => System.Text.Json.JsonSerializer.Serialize(Uninitialized));
+        Assert.Throws<System.Text.Json.JsonException>(
+            () => System.Text.Json.JsonSerializer.Serialize(new Order("a", default)));
+    }
+
+    [Fact]
     public void ToNullable_throws()
     {
         Assert.Throws<InvalidOperationException>(() => Uninitialized.ToNullable());

@@ -168,6 +168,24 @@ error, each with `Comparer<T>.Default`. So `Order()`, `Min()`, `Max()`, `List.So
 the box. There are no `<` or `>` operators on purpose: `a < b` would read like a comparison of values while it also
 puts every success before every error.
 
+### JSON
+
+```csharp
+record Order(string Id, Result<int, string> Quantity);
+
+JsonSerializer.Serialize(new Order("A-1", ok(3)));       // {"Id":"A-1","Quantity":{"ok":3}}
+JsonSerializer.Serialize(new Order("A-2", error("out"))); // {"Id":"A-2","Quantity":{"error":"out"}}
+```
+
+A result is an object with exactly one property, `ok` or `error`, and nothing needs to be registered. The names are
+fixed (naming policies apply only inside the value and the error); reading ignores their case when
+`PropertyNameCaseInsensitive` is set. The value and the error use the options of the call, including source-generated
+contexts, so it works with trimming and Native AOT: list the value and error types in the context too.
+
+Reading throws `JsonException` for `null`, anything but an object, an object without exactly one of the two
+properties, an unknown property, and a `null` value or error. Writing an uninitialized result throws as well. A result
+property missing from the JSON stays uninitialized: mark it `required` to reject such documents.
+
 ### Query syntax
 
 ```csharp
