@@ -5,10 +5,11 @@
   "include-component-in-tag": false,
   "versioning": "prerelease",
   "prerelease": true,
-  "prerelease-type": "alpha",
+  "prerelease-type": "beta",
   "packages": {
     ".": {
-      "changelog-path": "CHANGELOG.md"
+      "changelog-path": "CHANGELOG.md",
+      "release-as": "2.0.0-beta.1"
     }
   }
 }
