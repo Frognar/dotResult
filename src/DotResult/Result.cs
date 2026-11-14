@@ -446,7 +446,7 @@ public readonly partial struct Result<T, TError> : Result<T, TError>.IUnionMembe
         new("The result is uninitialized (default). Create results with ok(value) or error(value).");
 
     // R4: a delegate never smuggles a null into a result.
-    private static TValue Produced<TValue>(TValue value, string producer) =>
+    internal static TValue Produced<TValue>(TValue value, string producer) =>
         value is null ? throw new InvalidOperationException($"'{producer}' returned null, which a result cannot hold.") : value;
 
     // The second half of a query-syntax SelectMany: project the value with the value of the next step, or pass the

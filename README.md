@@ -142,11 +142,18 @@ Result<IReadOnlyList<int>, string> both = new[] { a, b }.Sequence(); // Result<i
 IEnumerable<int> valid = results.Values();                           // the values, lazily; errors are skipped
 IEnumerable<string> problems = results.Errors();                     // the errors, lazily
 var (values, errors) = results.Partition();                          // both sides, in one pass
+
+Result<int, string> port = Result.FromNullable(nullablePort, "no port");         // int? -> Result<int, string>
+Result<User, string> user = Result.FromNullable(FindUser(id), () => $"no {id}"); // User? -> Result<User, string>
+int? backToNullable = port.ToNullable();                                         // an error becomes null
 ```
 
 `Sequence` and `Traverse` fail fast like `Bind`: they stop reading at the first error and return it. To see every
 error, use `Errors()` or `Partition()`, which never stop. As with `Bind`, a `Traverse` lambda that returns `ok(...)` or
 `error(...)` needs its return type spelled out: `texts.Traverse(Result<int, string> (text) => ...)`.
+
+`FromNullable` turns `null` into the error you give (or produce lazily); `ToNullable` goes the other way and drops the
+error. Both work for value types (`int?`) and references (`string?`).
 
 ### Query syntax
 
