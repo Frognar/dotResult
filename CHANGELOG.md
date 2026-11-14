@@ -2,6 +2,26 @@
 
 ## [2.0.0](https://github.com/Frognar/dotResult/compare/v2.0.0-beta.2...v2.0.0) (2026-11-14)
 
+### Highlights
+
+A ground-up rewrite for .NET 11 and C# 15 unions. The 1.x line is retired; the README has a migration table.
+
+- `Result<T, TError>` is a C# 15 union with exactly two cases, `Ok<T>` and `Error<TError>`: `ok(...)` and
+  `error(...)` convert implicitly, a `switch` over both is exhaustive, and `Result<string, string>` is never ambiguous.
+- No invalid values: `null` is never a value or an error, there is no `.Value`, `IsOk` or any other throwing accessor,
+  and every operation rejects the uninitialized `default` loudly.
+- Functional API: `Match`, `OrDefault`, `Map`, `MapError`, `Bind`, `Ensure`, `OrElse`, `Zip`, `Fold`, `Flatten`,
+  `Iter`, `Tap`, `TapError`, and query syntax (`from`, `let`, `select`; `Ensure` instead of `where`).
+- Fail fast: `Zip`, `Sequence`, `Traverse` and queries stop at the first error; errors are never accumulated.
+- Collections and interop: `Sequence`, `Traverse`, `Values`, `Errors`, `Partition`, `Result.FromNullable`,
+  `ToNullable`, and `Result.Try`/`TryAsync` for code that throws.
+- Ordering like `Result` in F# (successes before errors), with no `<`/`>` operators on purpose.
+- `System.Text.Json` without configuration: `{"ok": value}` or `{"error": error}`, strict about malformed input, and
+  works with source-generated contexts.
+- Async: `*Async` counterparts returning `ValueTask`, plus pipelines and query syntax over `Task<Result<…>>` and
+  `ValueTask<Result<…>>` with a single `await`.
+- Zero allocations for value-type `T` and `TError` (checked on every build); trimming and Native AOT compatible.
+- Requires .NET 11.
 
 ### Build System
 
