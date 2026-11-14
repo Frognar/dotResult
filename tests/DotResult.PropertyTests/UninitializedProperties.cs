@@ -216,6 +216,15 @@ public sealed class UninitializedProperties
         Assert.Equal(2, calls);
     }
 
+    [Property]
+    public void Comparing_does_not_throw_and_puts_it_first(Result<int, string> result)
+    {
+        Assert.Equal(0, Uninitialized.CompareTo(default));
+        Assert.True(Uninitialized.CompareTo(result) < 0);
+        Assert.True(result.CompareTo(Uninitialized) > 0);
+        Assert.True(((IComparable)Uninitialized).CompareTo(null) > 0);
+    }
+
     [Fact]
     public void ToNullable_throws()
     {

@@ -16,6 +16,7 @@ DotResult.Result
 DotResult.Result<T, TError>
 DotResult.Result<T, TError>.Bind<TResult>(System.Func<T, DotResult.Result<TResult, TError>>! bind) -> DotResult.Result<TResult, TError>
 DotResult.Result<T, TError>.BindAsync<TResult>(System.Func<T, System.Threading.Tasks.Task<DotResult.Result<TResult, TError>>!>! bind) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
+DotResult.Result<T, TError>.CompareTo(DotResult.Result<T, TError> other) -> int
 DotResult.Result<T, TError>.Ensure(System.Func<T, bool>! predicate, System.Func<T, TError>! error) -> DotResult.Result<T, TError>
 DotResult.Result<T, TError>.Ensure(System.Func<T, bool>! predicate, TError error) -> DotResult.Result<T, TError>
 DotResult.Result<T, TError>.EnsureAsync(System.Func<T, System.Threading.Tasks.Task<bool>!>! predicate, System.Func<T, TError>! error) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>>

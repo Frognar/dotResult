@@ -10,8 +10,9 @@ namespace DotResult.PropertyTests;
 /// </summary>
 /// <remarks>
 /// Skipped in Debug builds (see <see cref="Allocations.SkipInDebug"/>); CI runs them in Release.
-/// Not covered on purpose: <c>Equals(object)</c> (boxes its argument), and <c>result is null</c> /
-/// <c>result is not null</c> on an initialized result: the compiler reads the union's <c>Value</c>, which boxes the case.
+/// Not covered on purpose: <c>Equals(object)</c> and <c>IComparable.CompareTo(object)</c> (they box their argument),
+/// and <c>result is null</c> / <c>result is not null</c> on an initialized result: the compiler reads the union's
+/// <c>Value</c>, which boxes the case.
 /// Use type patterns or <c>switch</c> instead; they go through <c>TryGetValue</c>.
 /// Sequences (<c>Sequence</c>, <c>Traverse</c>, <c>Values</c>, <c>Errors</c>, <c>Partition</c>) are not covered either:
 /// like LINQ they allocate enumerators and the lists they return (see <c>CollectionBenchmarks</c>).
@@ -237,6 +238,8 @@ public sealed class AllocationProperties
         Allocations.AssertNone("==", () => _ = result == other);
         Allocations.AssertNone("!=", () => _ = result != other);
         Allocations.AssertNone("GetHashCode", () => _ = result.GetHashCode());
+        Allocations.AssertNone("CompareTo", () => _ = result.CompareTo(other));
+        Allocations.AssertNone("Comparer<Result>.Default", () => _ = Comparer<Result<int, int>>.Default.Compare(result, other));
         Allocations.AssertNone("Ok ==", () => _ = new Ok<int>(1) == new Ok<int>(2));
         Allocations.AssertNone("Error GetHashCode", () => _ = new Error<int>(1).GetHashCode());
     }

@@ -155,6 +155,19 @@ error, use `Errors()` or `Partition()`, which never stop. As with `Bind`, a `Tra
 `FromNullable` turns `null` into the error you give (or produce lazily); `ToNullable` goes the other way and drops the
 error. Both work for value types (`int?`) and references (`string?`).
 
+### Ordering
+
+```csharp
+Result<int, string>[] results = [error("b"), ok(2), error("a"), ok(1)];
+Array.Sort(results);                         // [Ok(1), Ok(2), Error(a), Error(b)]
+var first = results.Min();                   // Ok(1)
+```
+
+Results compare like `Result` in F#: every success comes before every error, successes compare by value and errors by
+error, each with `Comparer<T>.Default`. So `Order()`, `Min()`, `Max()`, `List.Sort()` and sorted collections work out of
+the box. There are no `<` or `>` operators on purpose: `a < b` would read like a comparison of values while it also
+puts every success before every error.
+
 ### Query syntax
 
 ```csharp
