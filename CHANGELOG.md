@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.0-alpha.8](https://github.com/Frognar/dotResult/compare/v2.0.0-alpha.7...v2.0.0-alpha.8) (2026-11-14)
+
+
+### Features
+
+* add ordering for results ([#84](https://github.com/Frognar/dotResult/issues/84)) ([3d04a51](https://github.com/Frognar/dotResult/commit/3d04a517b6fae95871252fea0e918ef8c789f45a))
+
 ## [2.0.0-alpha.7](https://github.com/Frognar/dotResult/compare/v2.0.0-alpha.6...v2.0.0-alpha.7) (2026-11-14)
 
 
