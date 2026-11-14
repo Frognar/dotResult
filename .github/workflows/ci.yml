@@ -75,6 +75,13 @@ jobs:
           path: artifacts/test-results
           if-no-files-found: ignore
 
+      # Stryker's bundled Roslyn still treats unions as a preview feature (CS8652): a union conversion or pattern in
+      # src/ makes every mutated build fail. Building the library as C# 14 finds them first. Runs last: it rebuilds
+      # the library with other settings.
+      - name: Check the library builds without union conversions (for Stryker)
+        if: runner.os == 'Linux'
+        run: dotnet build src/DotResult/DotResult.csproj --configuration Release --no-restore -p:LangVersion=14
+
   native-aot:
     name: Native AOT smoke test
     runs-on: ubuntu-latest
