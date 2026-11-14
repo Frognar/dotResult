@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.0](https://github.com/Frognar/dotResult/compare/v2.0.0-beta.2...v2.0.0) (2026-11-14)
+
+
+### Build System
+
+* prepare the 2.0.0 release ([#98](https://github.com/Frognar/dotResult/issues/98)) ([53145e6](https://github.com/Frognar/dotResult/commit/53145e64a51bcd6f5f4dd84f3cf3a61db57c738e))
+
 ## [2.0.0-beta.2](https://github.com/Frognar/dotResult/compare/v2.0.0-beta.1...v2.0.0-beta.2) (2026-11-14)
 
 
