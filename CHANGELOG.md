@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.0-beta.1](https://github.com/Frognar/dotResult/compare/v2.0.0-alpha.8...v2.0.0-beta.1) (2026-11-14)
+
+
+### Features
+
+* add System.Text.Json support for results ([#87](https://github.com/Frognar/dotResult/issues/87)) ([0050ed6](https://github.com/Frognar/dotResult/commit/0050ed68ca78b9cb7293b198d792abb753f39a8d))
+
 ## [2.0.0-alpha.8](https://github.com/Frognar/dotResult/compare/v2.0.0-alpha.7...v2.0.0-alpha.8) (2026-11-14)
 
 
