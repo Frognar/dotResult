@@ -107,7 +107,11 @@ NotRecognized`). Drop it once a BenchmarkDotNet release supports .NET 11.
 
 - **Mutation testing** (nightly job *Mutation testing*): Stryker.NET mutates the library and runs the property tests
   on Microsoft Testing Platform. Below the `break` threshold in `tests/DotResult.PropertyTests/stryker-config.json`
-  the job fails; the HTML report is attached to the run. Locally:
+  the job fails; the HTML report is attached to the run. Two rules keep Stryker working with C# unions: library code
+  builds results with the internal constructors, never with union conversions or patterns (Stryker's compiler treats
+  unions as a preview feature; CI builds the library as C# 14 to catch them), and test types that hold results in
+  fields, such as JSON models, are `internal` (xUnit loads public types before Stryker swaps in the mutated library).
+  Locally:
 
   ```bash
   dotnet tool restore
