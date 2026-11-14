@@ -119,6 +119,12 @@ var failedToLoad = await Result.TryAsync<int, string>(
     },
     static exception => exception.Message);
 Check(loaded is Ok<int>(7) && failedToLoad == error("unavailable"), "TryAsync");
+Result<int, string>[] unsorted = [error("b"), ok(2), default, error("a"), ok(1)];
+Array.Sort(unsorted);
+Check(
+    unsorted is [var uninitialized, Ok<int>(1), Ok<int>(2), Error<string>("a"), Error<string>("b")] && uninitialized is null,
+    "Array.Sort");
+Check(new[] { failed, answer, Parse("7") }.Min() == ok(7) && Comparer<Result<int, string>>.Default.Compare(answer, failed) < 0, "ordering");
 using (var cancellation = new CancellationTokenSource())
 {
     await cancellation.CancelAsync();
