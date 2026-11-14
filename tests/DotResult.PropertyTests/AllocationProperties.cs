@@ -208,6 +208,16 @@ public sealed class AllocationProperties
     }
 
     [Property(Skip = Allocations.SkipInDebug)]
+    public void Converting_nullables_allocates_nothing(int? value, Result<int, int> result, Result<string, int> text)
+    {
+        Allocations.AssertNone("FromNullable", () => _ = Result.FromNullable(value, -1));
+        Allocations.AssertNone("FromNullable(factory)", () => _ = Result.FromNullable(value, static () => -1));
+        Allocations.AssertNone("FromNullable (reference)", () => _ = Result.FromNullable(Text, -1));
+        Allocations.AssertNone("ToNullable", () => _ = result.ToNullable());
+        Allocations.AssertNone("ToNullable (reference)", () => _ = text.ToNullable());
+    }
+
+    [Property(Skip = Allocations.SkipInDebug)]
     public void Comparing_allocates_nothing(Result<int, int> result, Result<int, int> other)
     {
         Allocations.AssertNone("Equals", () => _ = result.Equals(other));
@@ -223,6 +233,7 @@ public sealed class AllocationProperties
     private static readonly Task<bool> CompletedTrue = Task.FromResult(true);
     private static readonly Task<bool> CompletedFalse = Task.FromResult(false);
     private static readonly Task<Result<int, int>> CompletedOkOne = Task.FromResult(Results.Ok<int, int>(1));
+    private const string? Text = "text";
 
     private static Result<int, int> Half(int value) => value % 2 == 0 ? ok(value / 2) : error(value);
 

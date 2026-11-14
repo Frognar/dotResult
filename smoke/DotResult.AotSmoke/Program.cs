@@ -95,6 +95,12 @@ Check(mixed.Sequence().Map(static numbers => numbers.Count) == error("boom"), "S
 Check(mixed.Values().Sum() == 49 && string.Join(",", mixed.Errors()) == "boom,not a number", "Values and Errors");
 var (passed, problems) = mixed.Partition();
 Check(passed is [42, 7] && problems is ["boom", "not a number"], "Partition");
+Check(
+    Result.FromNullable((int?)42, "missing") == answer && Result.FromNullable((string?)null, static () => 0) == error(0),
+    "FromNullable");
+Result<string, int> text = ok("text");
+Check(answer.ToNullable() == 42 && failed.ToNullable() is null && text.ToNullable() == "text", "ToNullable");
+Check(Result.FromNullable(text.ToNullable(), 1) == text, "nullable round trip");
 
 if (failures.Count > 0)
 {

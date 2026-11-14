@@ -210,8 +210,8 @@ public readonly partial struct Result<T, TError>
             _ => throw Uninitialized(),
         };
 
-    // The collection functions (Result.Collections.cs) read results through this: the value of a success or the error
-    // (R3: an uninitialized result throws).
+    // Functions outside the struct (Result.Collections.cs, ToNullable) read results through this: the value of a success
+    // or the error (R3: an uninitialized result throws).
     internal bool IsOk(out T value, out TError error)
     {
         switch (_case)

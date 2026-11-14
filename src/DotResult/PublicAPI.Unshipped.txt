@@ -50,8 +50,10 @@ DotResult.Result<T, TError>.Tap(System.Action<T>! action) -> DotResult.Result<T,
 DotResult.Result<T, TError>.TapError(System.Action<TError>! action) -> DotResult.Result<T, TError>
 DotResult.Result<T, TError>.Zip<TOther, TResult>(DotResult.Result<TOther, TError> other, System.Func<T, TOther, TResult>! combine) -> DotResult.Result<TResult, TError>
 DotResult.Result<T, TError>.Zip<TOther>(DotResult.Result<TOther, TError> other) -> DotResult.Result<(T, TOther), TError>
+DotResult.ResultReferenceTypeExtensions
 DotResult.ResultTaskExtensions
 DotResult.ResultTaskQueryExtensions
+DotResult.ResultValueTypeExtensions
 override DotResult.Error<TError>.Equals(object? obj) -> bool
 override DotResult.Error<TError>.GetHashCode() -> int
 override DotResult.Error<TError>.ToString() -> string!
@@ -69,12 +71,17 @@ static DotResult.Prelude.error<TError>(TError value) -> DotResult.Error<TError>
 static DotResult.Prelude.ok<T>(T value) -> DotResult.Ok<T>
 static DotResult.Result.Errors<T, TError>(this System.Collections.Generic.IEnumerable<DotResult.Result<T, TError>>! source) -> System.Collections.Generic.IEnumerable<TError>!
 static DotResult.Result.Flatten<T, TError>(this DotResult.Result<DotResult.Result<T, TError>, TError> nested) -> DotResult.Result<T, TError>
+static DotResult.Result.FromNullable<T, TError>(T? value, System.Func<TError>! error) -> DotResult.Result<T!, TError>
+static DotResult.Result.FromNullable<T, TError>(T? value, System.Func<TError>! error) -> DotResult.Result<T, TError>
+static DotResult.Result.FromNullable<T, TError>(T? value, TError error) -> DotResult.Result<T!, TError>
+static DotResult.Result.FromNullable<T, TError>(T? value, TError error) -> DotResult.Result<T, TError>
 static DotResult.Result.Partition<T, TError>(this System.Collections.Generic.IEnumerable<DotResult.Result<T, TError>>! source) -> (System.Collections.Generic.IReadOnlyList<T>! Values, System.Collections.Generic.IReadOnlyList<TError>! Errors)
 static DotResult.Result.Sequence<T, TError>(this System.Collections.Generic.IEnumerable<DotResult.Result<T, TError>>! source) -> DotResult.Result<System.Collections.Generic.IReadOnlyList<T>!, TError>
 static DotResult.Result.Traverse<T, TResult, TError>(this System.Collections.Generic.IEnumerable<T>! source, System.Func<T, DotResult.Result<TResult, TError>>! selector) -> DotResult.Result<System.Collections.Generic.IReadOnlyList<TResult>!, TError>
 static DotResult.Result.Values<T, TError>(this System.Collections.Generic.IEnumerable<DotResult.Result<T, TError>>! source) -> System.Collections.Generic.IEnumerable<T>!
 static DotResult.Result<T, TError>.operator !=(DotResult.Result<T, TError> left, DotResult.Result<T, TError> right) -> bool
 static DotResult.Result<T, TError>.operator ==(DotResult.Result<T, TError> left, DotResult.Result<T, TError> right) -> bool
+static DotResult.ResultReferenceTypeExtensions.ToNullable<T, TError>(this DotResult.Result<T!, TError> result) -> T?
 static DotResult.ResultTaskExtensions.BindAsync<T, TError, TResult>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<T, DotResult.Result<TResult, TError>>! bind) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
 static DotResult.ResultTaskExtensions.BindAsync<T, TError, TResult>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<T, System.Threading.Tasks.Task<DotResult.Result<TResult, TError>>!>! bind) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
 static DotResult.ResultTaskExtensions.BindAsync<T, TError, TResult>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<T, DotResult.Result<TResult, TError>>! bind) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
@@ -120,3 +127,4 @@ static DotResult.ResultTaskQueryExtensions.SelectMany<T, TError, TIntermediate, 
 static DotResult.ResultTaskQueryExtensions.SelectMany<T, TError, TIntermediate, TResult>(this System.Threading.Tasks.Task<DotResult.Result<T, TError>>! source, System.Func<T, System.Threading.Tasks.Task<DotResult.Result<TIntermediate, TError>>!>! selector, System.Func<T, TIntermediate, TResult>! resultSelector) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
 static DotResult.ResultTaskQueryExtensions.SelectMany<T, TError, TIntermediate, TResult>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<T, DotResult.Result<TIntermediate, TError>>! selector, System.Func<T, TIntermediate, TResult>! resultSelector) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
 static DotResult.ResultTaskQueryExtensions.SelectMany<T, TError, TIntermediate, TResult>(this System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>> source, System.Func<T, System.Threading.Tasks.Task<DotResult.Result<TIntermediate, TError>>!>! selector, System.Func<T, TIntermediate, TResult>! resultSelector) -> System.Threading.Tasks.ValueTask<DotResult.Result<TResult, TError>>
+static DotResult.ResultValueTypeExtensions.ToNullable<T, TError>(this DotResult.Result<T, TError> result) -> T?

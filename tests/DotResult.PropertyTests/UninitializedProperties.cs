@@ -217,6 +217,13 @@ public sealed class UninitializedProperties
     }
 
     [Fact]
+    public void ToNullable_throws()
+    {
+        Assert.Throws<InvalidOperationException>(() => Uninitialized.ToNullable());
+        Assert.Throws<InvalidOperationException>(() => default(Result<string, int>).ToNullable());
+    }
+
+    [Fact]
     public void The_union_members_report_no_case()
     {
         Result<int, string>.IUnionMembers members = Uninitialized;
