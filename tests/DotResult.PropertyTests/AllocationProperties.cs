@@ -10,7 +10,8 @@ namespace DotResult.PropertyTests;
 /// </summary>
 /// <remarks>
 /// Skipped in Debug builds (see <see cref="Allocations.SkipInDebug"/>); CI runs them in Release.
-/// Not covered on purpose: <c>Equals(object)</c> and <c>IComparable.CompareTo(object)</c> (they box their argument),
+/// Not covered on purpose: <c>ToString</c> (it builds a string), <c>Equals(object)</c> and
+/// <c>IComparable.CompareTo(object)</c> (they box their argument),
 /// and <c>result is null</c> / <c>result is not null</c> on an initialized result: the compiler reads the union's
 /// <c>Value</c>, which boxes the case.
 /// Use type patterns or <c>switch</c> instead; they go through <c>TryGetValue</c>.
@@ -119,47 +120,93 @@ public sealed class AllocationProperties
             () => _ = result.EnsureAsync(static _ => CompletedFalse, static value => -value).IsCompleted);
     }
 
+    // Every overload in ResultTaskExtensions and ResultTaskQueryExtensions, once per kind of source (R7 audit, M10).
     [Property(Skip = Allocations.SkipInDebug)]
-    public void Pipelines_on_completed_sources_with_synchronous_steps_allocate_nothing(Result<int, int> result)
+    public void Every_pipeline_step_on_a_completed_ValueTask_allocates_nothing(Result<int, int> result, Result<int, int> alternative)
     {
-        var fromValueTask = ValueTask.FromResult(result);
-        var fromTask = Task.FromResult(result);
+        var source = ValueTask.FromResult(result);
+        const string kind = "ValueTask";
 
+        Allocations.AssertNone($"MapAsync(sync) ({kind})", () => _ = source.MapAsync(static value => value + 1).IsCompleted);
+        Allocations.AssertNone($"MapAsync(async) ({kind})", () => _ = source.MapAsync(static _ => CompletedOne).IsCompleted);
+        Allocations.AssertNone($"MapErrorAsync(sync) ({kind})", () => _ = source.MapErrorAsync(static error => error - 1).IsCompleted);
+        Allocations.AssertNone($"MapErrorAsync(async) ({kind})", () => _ = source.MapErrorAsync(static _ => CompletedOne).IsCompleted);
+        Allocations.AssertNone($"BindAsync(sync) ({kind})", () => _ = source.BindAsync(static value => Half(value)).IsCompleted);
+        Allocations.AssertNone($"BindAsync(async) ({kind})", () => _ = source.BindAsync(static _ => CompletedOkOne).IsCompleted);
+        Allocations.AssertNone($"EnsureAsync(sync) ({kind})", () => _ = source.EnsureAsync(static value => value > 0, -1).IsCompleted);
         Allocations.AssertNone(
-            "chain on ValueTask",
-            () => _ = fromValueTask
-                .MapAsync(static value => value + 1)
-                .BindAsync(static value => Half(value))
-                .EnsureAsync(static value => value > 0, -1)
-                .MapErrorAsync(static error => error - 1)
-                .OrDefaultAsync(0)
-                .IsCompleted);
+            $"EnsureAsync(sync, factory) ({kind})",
+            () => _ = source.EnsureAsync(static value => value > 0, static value => -value).IsCompleted);
+        Allocations.AssertNone($"EnsureAsync(async) ({kind})", () => _ = source.EnsureAsync(static _ => CompletedTrue, -1).IsCompleted);
         Allocations.AssertNone(
-            "chain on Task",
-            () => _ = fromTask.MapAsync(static value => value + 1).MatchAsync(static value => value, static error => -error).IsCompleted);
-        Allocations.AssertNone("OrDefaultAsync(factory) (Task)", () => _ = fromTask.OrDefaultAsync(static error => -error).IsCompleted);
+            $"EnsureAsync(async, factory) ({kind})",
+            () => _ = source.EnsureAsync(static _ => CompletedFalse, static value => -value).IsCompleted);
         Allocations.AssertNone(
-            "EnsureAsync(factory) (Task)",
-            () => _ = fromTask.EnsureAsync(static value => value > 0, static value => -value).IsCompleted);
+            $"MatchAsync(sync, sync) ({kind})",
+            () => _ = source.MatchAsync(static value => value, static error => -error).IsCompleted);
+        Allocations.AssertNone(
+            $"MatchAsync(async, sync) ({kind})",
+            () => _ = source.MatchAsync(static _ => CompletedOne, static error => error).IsCompleted);
+        Allocations.AssertNone(
+            $"MatchAsync(async, async) ({kind})",
+            () => _ = source.MatchAsync(static _ => CompletedOne, static _ => CompletedOne).IsCompleted);
+        Allocations.AssertNone($"OrDefaultAsync(value) ({kind})", () => _ = source.OrDefaultAsync(0).IsCompleted);
+        Allocations.AssertNone($"OrDefaultAsync(sync) ({kind})", () => _ = source.OrDefaultAsync(static error => -error).IsCompleted);
+        Allocations.AssertNone($"OrDefaultAsync(async) ({kind})", () => _ = source.OrDefaultAsync(static _ => CompletedOne).IsCompleted);
+        Allocations.AssertNone($"OrElseAsync(alternative) ({kind})", () => _ = source.OrElseAsync(alternative).IsCompleted);
+        Allocations.AssertNone($"OrElseAsync(sync) ({kind})", () => _ = source.OrElseAsync(static error => Half(error)).IsCompleted);
+        Allocations.AssertNone($"OrElseAsync(async) ({kind})", () => _ = source.OrElseAsync(static _ => CompletedOkOne).IsCompleted);
+        Allocations.AssertNone($"Select ({kind})", () => _ = source.Select(static value => value + 1).IsCompleted);
+        Allocations.AssertNone(
+            $"SelectMany(sync) ({kind})",
+            () => _ = source.SelectMany(static value => Half(value), static (value, half) => value + half).IsCompleted);
+        Allocations.AssertNone(
+            $"SelectMany(async) ({kind})",
+            () => _ = source.SelectMany(static _ => CompletedOkOne, static (value, one) => value + one).IsCompleted);
     }
 
     [Property(Skip = Allocations.SkipInDebug)]
-    public void Pipelines_on_completed_sources_with_completed_tasks_allocate_nothing(Result<int, int> result)
+    public void Every_pipeline_step_on_a_completed_Task_allocates_nothing(Result<int, int> result, Result<int, int> alternative)
     {
-        var fromValueTask = ValueTask.FromResult(result);
-        var fromTask = Task.FromResult(result);
+        var source = Task.FromResult(result);
+        const string kind = "Task";
 
-        Allocations.AssertNone("MapAsync", () => _ = fromValueTask.MapAsync(static _ => CompletedOne).IsCompleted);
-        Allocations.AssertNone("MapErrorAsync", () => _ = fromTask.MapErrorAsync(static _ => CompletedOne).IsCompleted);
-        Allocations.AssertNone("BindAsync", () => _ = fromValueTask.BindAsync(static _ => CompletedOkOne).IsCompleted);
-        Allocations.AssertNone("EnsureAsync", () => _ = fromTask.EnsureAsync(static _ => CompletedTrue, -1).IsCompleted);
+        Allocations.AssertNone($"MapAsync(sync) ({kind})", () => _ = source.MapAsync(static value => value + 1).IsCompleted);
+        Allocations.AssertNone($"MapAsync(async) ({kind})", () => _ = source.MapAsync(static _ => CompletedOne).IsCompleted);
+        Allocations.AssertNone($"MapErrorAsync(sync) ({kind})", () => _ = source.MapErrorAsync(static error => error - 1).IsCompleted);
+        Allocations.AssertNone($"MapErrorAsync(async) ({kind})", () => _ = source.MapErrorAsync(static _ => CompletedOne).IsCompleted);
+        Allocations.AssertNone($"BindAsync(sync) ({kind})", () => _ = source.BindAsync(static value => Half(value)).IsCompleted);
+        Allocations.AssertNone($"BindAsync(async) ({kind})", () => _ = source.BindAsync(static _ => CompletedOkOne).IsCompleted);
+        Allocations.AssertNone($"EnsureAsync(sync) ({kind})", () => _ = source.EnsureAsync(static value => value > 0, -1).IsCompleted);
         Allocations.AssertNone(
-            "MatchAsync(async, async)",
-            () => _ = fromValueTask.MatchAsync(static _ => CompletedOne, static _ => CompletedOne).IsCompleted);
+            $"EnsureAsync(sync, factory) ({kind})",
+            () => _ = source.EnsureAsync(static value => value > 0, static value => -value).IsCompleted);
+        Allocations.AssertNone($"EnsureAsync(async) ({kind})", () => _ = source.EnsureAsync(static _ => CompletedTrue, -1).IsCompleted);
         Allocations.AssertNone(
-            "MatchAsync(async, sync)",
-            () => _ = fromTask.MatchAsync(static _ => CompletedOne, static error => error).IsCompleted);
-        Allocations.AssertNone("OrDefaultAsync(async)", () => _ = fromValueTask.OrDefaultAsync(static _ => CompletedOne).IsCompleted);
+            $"EnsureAsync(async, factory) ({kind})",
+            () => _ = source.EnsureAsync(static _ => CompletedFalse, static value => -value).IsCompleted);
+        Allocations.AssertNone(
+            $"MatchAsync(sync, sync) ({kind})",
+            () => _ = source.MatchAsync(static value => value, static error => -error).IsCompleted);
+        Allocations.AssertNone(
+            $"MatchAsync(async, sync) ({kind})",
+            () => _ = source.MatchAsync(static _ => CompletedOne, static error => error).IsCompleted);
+        Allocations.AssertNone(
+            $"MatchAsync(async, async) ({kind})",
+            () => _ = source.MatchAsync(static _ => CompletedOne, static _ => CompletedOne).IsCompleted);
+        Allocations.AssertNone($"OrDefaultAsync(value) ({kind})", () => _ = source.OrDefaultAsync(0).IsCompleted);
+        Allocations.AssertNone($"OrDefaultAsync(sync) ({kind})", () => _ = source.OrDefaultAsync(static error => -error).IsCompleted);
+        Allocations.AssertNone($"OrDefaultAsync(async) ({kind})", () => _ = source.OrDefaultAsync(static _ => CompletedOne).IsCompleted);
+        Allocations.AssertNone($"OrElseAsync(alternative) ({kind})", () => _ = source.OrElseAsync(alternative).IsCompleted);
+        Allocations.AssertNone($"OrElseAsync(sync) ({kind})", () => _ = source.OrElseAsync(static error => Half(error)).IsCompleted);
+        Allocations.AssertNone($"OrElseAsync(async) ({kind})", () => _ = source.OrElseAsync(static _ => CompletedOkOne).IsCompleted);
+        Allocations.AssertNone($"Select ({kind})", () => _ = source.Select(static value => value + 1).IsCompleted);
+        Allocations.AssertNone(
+            $"SelectMany(sync) ({kind})",
+            () => _ = source.SelectMany(static value => Half(value), static (value, half) => value + half).IsCompleted);
+        Allocations.AssertNone(
+            $"SelectMany(async) ({kind})",
+            () => _ = source.SelectMany(static _ => CompletedOkOne, static (value, one) => value + one).IsCompleted);
     }
 
     [Property(Skip = Allocations.SkipInDebug)]
@@ -216,6 +263,7 @@ public sealed class AllocationProperties
         Allocations.AssertNone("FromNullable", () => _ = Result.FromNullable(value, -1));
         Allocations.AssertNone("FromNullable(factory)", () => _ = Result.FromNullable(value, static () => -1));
         Allocations.AssertNone("FromNullable (reference)", () => _ = Result.FromNullable(Text, -1));
+        Allocations.AssertNone("FromNullable(factory) (reference)", () => _ = Result.FromNullable(Text, static () => -1));
         Allocations.AssertNone("ToNullable", () => _ = result.ToNullable());
         Allocations.AssertNone("ToNullable (reference)", () => _ = text.ToNullable());
     }
@@ -240,7 +288,15 @@ public sealed class AllocationProperties
         Allocations.AssertNone("GetHashCode", () => _ = result.GetHashCode());
         Allocations.AssertNone("CompareTo", () => _ = result.CompareTo(other));
         Allocations.AssertNone("Comparer<Result>.Default", () => _ = Comparer<Result<int, int>>.Default.Compare(result, other));
+        Allocations.AssertNone("new Ok", () => _ = new Ok<int>(1));
+        Allocations.AssertNone("new Error", () => _ = new Error<int>(1));
         Allocations.AssertNone("Ok ==", () => _ = new Ok<int>(1) == new Ok<int>(2));
+        Allocations.AssertNone("Ok !=", () => _ = new Ok<int>(1) != new Ok<int>(2));
+        Allocations.AssertNone("Ok Equals", () => _ = new Ok<int>(1).Equals(new Ok<int>(2)));
+        Allocations.AssertNone("Ok GetHashCode", () => _ = new Ok<int>(1).GetHashCode());
+        Allocations.AssertNone("Error ==", () => _ = new Error<int>(1) == new Error<int>(2));
+        Allocations.AssertNone("Error !=", () => _ = new Error<int>(1) != new Error<int>(2));
+        Allocations.AssertNone("Error Equals", () => _ = new Error<int>(1).Equals(new Error<int>(2)));
         Allocations.AssertNone("Error GetHashCode", () => _ = new Error<int>(1).GetHashCode());
     }
 
