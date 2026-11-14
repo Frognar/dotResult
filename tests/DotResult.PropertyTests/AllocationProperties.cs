@@ -17,7 +17,7 @@ namespace DotResult.PropertyTests;
 /// Sequences (<c>Sequence</c>, <c>Traverse</c>, <c>Values</c>, <c>Errors</c>, <c>Partition</c>) are not covered either:
 /// like LINQ they allocate enumerators and the lists they return (see <c>CollectionBenchmarks</c>).
 /// <c>Try</c> and <c>TryAsync</c> are covered only for an operation that succeeds: a failure allocates the exception
-/// before the library sees it.
+/// before the library sees it. JSON is not covered: the serializer allocates the text and the reader state.
 /// </remarks>
 public sealed class AllocationProperties
 {

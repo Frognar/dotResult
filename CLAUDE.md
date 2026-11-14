@@ -122,6 +122,10 @@ git restore src/DotResult/packages.lock.json   # the AOT publish rewrites it for
   conversions (`ok(...)`/`error(...)` to a result) or union patterns: Stryker's bundled Roslyn still treats unions as a
   preview feature (CS8652), fails to compile the mutated file and reports a 0 % score. CI checks it by building the
   library as C# 14 (`dotnet build src/DotResult/DotResult.csproj -c Release -p:LangVersion=14`).
+- Test types that hold the library's structs in fields (JSON models such as `record Order(..., Result<int, string>
+  Quantity)`) must be `internal`: xUnit's discovery loads every public type of the test assembly, which loads the
+  library before Stryker's runner can resolve the mutated one, and every test host crashes (`FileNotFoundException`
+  for `DotResult, Version=2.0.0.0`; Stryker then cannot calculate a score).
 
 ## Workflow
 

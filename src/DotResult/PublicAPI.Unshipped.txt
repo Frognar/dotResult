@@ -5,6 +5,8 @@ DotResult.Error<TError>.Equals(DotResult.Error<TError> other) -> bool
 DotResult.Error<TError>.Error() -> void
 DotResult.Error<TError>.Error(TError value) -> void
 DotResult.Error<TError>.Value.get -> TError
+DotResult.Json.ResultJsonConverter<T, TError>
+DotResult.Json.ResultJsonConverter<T, TError>.ResultJsonConverter() -> void
 DotResult.Ok<T>
 DotResult.Ok<T>.Deconstruct(out T value) -> void
 DotResult.Ok<T>.Equals(DotResult.Ok<T> other) -> bool
@@ -58,6 +60,9 @@ DotResult.ResultValueTypeExtensions
 override DotResult.Error<TError>.Equals(object? obj) -> bool
 override DotResult.Error<TError>.GetHashCode() -> int
 override DotResult.Error<TError>.ToString() -> string!
+override DotResult.Json.ResultJsonConverter<T, TError>.HandleNull.get -> bool
+override DotResult.Json.ResultJsonConverter<T, TError>.Read(ref System.Text.Json.Utf8JsonReader reader, System.Type! typeToConvert, System.Text.Json.JsonSerializerOptions! options) -> DotResult.Result<T, TError>
+override DotResult.Json.ResultJsonConverter<T, TError>.Write(System.Text.Json.Utf8JsonWriter! writer, DotResult.Result<T, TError> value, System.Text.Json.JsonSerializerOptions! options) -> void
 override DotResult.Ok<T>.Equals(object? obj) -> bool
 override DotResult.Ok<T>.GetHashCode() -> int
 override DotResult.Ok<T>.ToString() -> string!

@@ -1,4 +1,6 @@
+using System.Text.Json;
 using DotResult;
+using DotResult.AotSmoke;
 using static DotResult.Prelude;
 
 // Exercises the public API in a Native AOT binary. Every milestone adds checks for what it ships: generics over value
@@ -125,6 +127,20 @@ Check(
     unsorted is [var uninitialized, Ok<int>(1), Ok<int>(2), Error<string>("a"), Error<string>("b")] && uninitialized is null,
     "Array.Sort");
 Check(new[] { failed, answer, Parse("7") }.Min() == ok(7) && Comparer<Result<int, string>>.Default.Compare(answer, failed) < 0, "ordering");
+var order = new Order("A-1", ok(3));
+var orderJson = JsonSerializer.Serialize(order, SmokeJsonContext.Default.Order);
+Check(orderJson == """{"Id":"A-1","Quantity":{"ok":3}}""", "JSON format");
+Check(JsonSerializer.Deserialize(orderJson, SmokeJsonContext.Default.Order) == order, "JSON round trip");
+Result<Result<int, string>, string> nestedResult = ok(Result<int, string>.IUnionMembers.Create(error("inner")));
+Check(
+    JsonSerializer.Deserialize(
+        JsonSerializer.Serialize(nestedResult, SmokeJsonContext.Default.ResultResultInt32StringString),
+        SmokeJsonContext.Default.ResultResultInt32StringString) == nestedResult,
+    "JSON nested round trip");
+Check(
+    ThrowsJson(static () => JsonSerializer.Deserialize("""{"ok":1,"error":"x"}""", SmokeJsonContext.Default.ResultInt32String))
+    && ThrowsJson(static () => JsonSerializer.Serialize(default(Result<int, string>), SmokeJsonContext.Default.ResultInt32String)),
+    "JSON rejects both properties and the uninitialized result");
 using (var cancellation = new CancellationTokenSource())
 {
     await cancellation.CancelAsync();
@@ -179,6 +195,8 @@ static bool Throws<TException>(Action action)
         return true;
     }
 }
+
+static bool ThrowsJson(Action action) => Throws<JsonException>(action);
 
 static async Task<bool> ThrowsAsync<TException>(Task task)
     where TException : Exception
