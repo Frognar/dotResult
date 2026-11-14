@@ -7,6 +7,7 @@
 
 * add nullable interop ([#81](https://github.com/Frognar/dotResult/issues/81)) ([386be87](https://github.com/Frognar/dotResult/commit/386be872263c2812ac4dc598d1ac380d1bf7e733))
 * add Sequence, Traverse and Partition ([#79](https://github.com/Frognar/dotResult/issues/79)) ([30a0b78](https://github.com/Frognar/dotResult/commit/30a0b782a8234ca7938e9b5155279d7b418781e2))
+* add Try and TryAsync for code that throws ([#82](https://github.com/Frognar/dotResult/issues/82)) ([3332ea0](https://github.com/Frognar/dotResult/commit/3332ea03a2eb371b2fd486a752bb11780f98db21))
 
 ## [2.0.0-alpha.6](https://github.com/Frognar/dotResult/compare/v2.0.0-alpha.5...v2.0.0-alpha.6) (2026-11-13)
 
