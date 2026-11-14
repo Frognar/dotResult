@@ -194,6 +194,29 @@ public sealed class UninitializedProperties
     }
 
     [Fact]
+    public void Collections_throw_when_they_read_one()
+    {
+        Result<int, string>[] results = [Results.Ok<int, string>(1), Uninitialized];
+        var values = results.Values();
+        var errors = results.Errors();
+
+        Assert.Throws<InvalidOperationException>(() => results.Sequence());
+        Assert.Throws<InvalidOperationException>(() => results.Partition());
+        Assert.Throws<InvalidOperationException>(() => values.ToList());
+        Assert.Throws<InvalidOperationException>(() => errors.ToList());
+    }
+
+    [Fact]
+    public void Traverse_rejects_a_selector_that_returns_one()
+    {
+        var calls = 0;
+
+        Assert.Throws<InvalidOperationException>(
+            () => new[] { 1, 2, 3 }.Traverse(_ => ++calls == 2 ? Uninitialized : Results.Ok<int, string>(calls)));
+        Assert.Equal(2, calls);
+    }
+
+    [Fact]
     public void The_union_members_report_no_case()
     {
         Result<int, string>.IUnionMembers members = Uninitialized;

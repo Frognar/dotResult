@@ -118,6 +118,9 @@ git restore src/DotResult/packages.lock.json   # the AOT publish rewrites it for
   line, an allocation line (or a documented exclusion), and a contract where compiler behavior matters.
 - Test method names are sentence-like with underscores (CA1707 disabled under `tests/`).
 - `src/` changes are mutation-tested nightly; a surviving mutant means a missing property.
+- Library code builds results with the internal `Result` constructors (`new(new Ok<T>(value))`), never with union
+  conversions (`ok(...)`/`error(...)` to a result) or union patterns: Stryker's bundled Roslyn still treats unions as a
+  preview feature (CS8652), fails to compile the mutated file and reports a 0 % score.
 
 ## Workflow
 

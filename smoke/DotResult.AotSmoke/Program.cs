@@ -86,6 +86,15 @@ Check(
     && failed.Tap(value => sideEffects.Add($"tap {value}")).TapError(sideEffects.Add) == failed
     && string.Join(",", sideEffects) == "iter 42,tap 42,boom",
     "Iter, Tap, TapError");
+string[] texts = ["1", "2", "x", "3"];
+Check(
+    texts.Traverse(Parse) == error("not a number") && texts[..2].Traverse(Parse).Map(static numbers => numbers.Sum()) == ok(3),
+    "Traverse");
+Result<int, string>[] mixed = [answer, failed, Parse("7"), Parse("x")];
+Check(mixed.Sequence().Map(static numbers => numbers.Count) == error("boom"), "Sequence");
+Check(mixed.Values().Sum() == 49 && string.Join(",", mixed.Errors()) == "boom,not a number", "Values and Errors");
+var (passed, problems) = mixed.Partition();
+Check(passed is [42, 7] && problems is ["boom", "not a number"], "Partition");
 
 if (failures.Count > 0)
 {
