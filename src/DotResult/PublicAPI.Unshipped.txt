@@ -78,6 +78,10 @@ static DotResult.Result.FromNullable<T, TError>(T? value, TError error) -> DotRe
 static DotResult.Result.Partition<T, TError>(this System.Collections.Generic.IEnumerable<DotResult.Result<T, TError>>! source) -> (System.Collections.Generic.IReadOnlyList<T>! Values, System.Collections.Generic.IReadOnlyList<TError>! Errors)
 static DotResult.Result.Sequence<T, TError>(this System.Collections.Generic.IEnumerable<DotResult.Result<T, TError>>! source) -> DotResult.Result<System.Collections.Generic.IReadOnlyList<T>!, TError>
 static DotResult.Result.Traverse<T, TResult, TError>(this System.Collections.Generic.IEnumerable<T>! source, System.Func<T, DotResult.Result<TResult, TError>>! selector) -> DotResult.Result<System.Collections.Generic.IReadOnlyList<TResult>!, TError>
+static DotResult.Result.Try<T, TError>(System.Func<T>! operation, System.Func<System.Exception!, TError>! error) -> DotResult.Result<T, TError>
+static DotResult.Result.Try<T>(System.Func<T>! operation) -> DotResult.Result<T, System.Exception!>
+static DotResult.Result.TryAsync<T, TError>(System.Func<System.Threading.Tasks.Task<T>!>! operation, System.Func<System.Exception!, TError>! error) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, TError>>
+static DotResult.Result.TryAsync<T>(System.Func<System.Threading.Tasks.Task<T>!>! operation) -> System.Threading.Tasks.ValueTask<DotResult.Result<T, System.Exception!>>
 static DotResult.Result.Values<T, TError>(this System.Collections.Generic.IEnumerable<DotResult.Result<T, TError>>! source) -> System.Collections.Generic.IEnumerable<T>!
 static DotResult.Result<T, TError>.operator !=(DotResult.Result<T, TError> left, DotResult.Result<T, TError> right) -> bool
 static DotResult.Result<T, TError>.operator ==(DotResult.Result<T, TError> left, DotResult.Result<T, TError> right) -> bool

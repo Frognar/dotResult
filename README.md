@@ -208,6 +208,24 @@ allocation-free) when there is nothing to wait for. Arguments are checked immedi
 comes out when the result is awaited, and an `OperationCanceledException` for a requested token gives a canceled
 result. To cancel, pass the token through the lambda.
 
+### Exceptions
+
+```csharp
+Result<int, Exception> parsed = Result.Try(() => int.Parse(text));
+Result<int, string> port = Result.Try(() => int.Parse(text), exception => exception.Message);
+
+Result<string, Exception> page = await Result.TryAsync(() => http.GetStringAsync(url, token));
+Result<Config, string> config = await Result.TryAsync(() => LoadConfigAsync(path), exception => $"no config: {exception.Message}");
+```
+
+`Try` runs the code once and turns an exception into an error: the exception itself, or what the mapping makes of it.
+`TryAsync` does the same for async code, whether it throws before returning a task or the task fails; use it rather
+than `Try(async () => ...)`, which would only capture the task. An `OperationCanceledException` for a requested token
+is not an error: `Try` lets it propagate and `TryAsync` gives a canceled task, so cancellation keeps working.
+
+Keep `Result<T, Exception>` at the edges of a program and map the exception to an error type of your own before
+results travel further: an exception is not data, it does not round-trip through JSON and rarely compares equal.
+
 ### The uninitialized result
 
 `Result<T, TError>` is a struct, so `default(Result<T, TError>)` exists, for example in a new array. It is neither

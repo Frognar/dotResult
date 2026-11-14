@@ -101,6 +101,30 @@ Check(
 Result<string, int> text = ok("text");
 Check(answer.ToNullable() == 42 && failed.ToNullable() is null && text.ToNullable() == "text", "ToNullable");
 Check(Result.FromNullable(text.ToNullable(), 1) == text, "nullable round trip");
+Check(
+    Result.Try(static () => int.Parse("12")) is Ok<int>(12)
+    && Result.Try(static () => int.Parse("twelve")) is Error<Exception>(FormatException),
+    "Try");
+Check(Result.Try(static () => int.Parse("twelve"), static exception => exception.GetType().Name) == error("FormatException"), "Try(error)");
+var loaded = await Result.TryAsync(static async () =>
+{
+    await Task.Yield();
+    return 7;
+});
+var failedToLoad = await Result.TryAsync<int, string>(
+    static async () =>
+    {
+        await Task.Yield();
+        throw new InvalidOperationException("unavailable");
+    },
+    static exception => exception.Message);
+Check(loaded is Ok<int>(7) && failedToLoad == error("unavailable"), "TryAsync");
+using (var cancellation = new CancellationTokenSource())
+{
+    await cancellation.CancelAsync();
+    var canceled = Result.TryAsync(() => Task.FromCanceled<int>(cancellation.Token)).AsTask();
+    Check(await ThrowsAsync<OperationCanceledException>(canceled) && canceled.IsCanceled, "TryAsync cancellation");
+}
 
 if (failures.Count > 0)
 {
@@ -142,6 +166,20 @@ static bool Throws<TException>(Action action)
     try
     {
         action();
+        return false;
+    }
+    catch (TException)
+    {
+        return true;
+    }
+}
+
+static async Task<bool> ThrowsAsync<TException>(Task task)
+    where TException : Exception
+{
+    try
+    {
+        await task;
         return false;
     }
     catch (TException)

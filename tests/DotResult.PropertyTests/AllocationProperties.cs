@@ -15,6 +15,8 @@ namespace DotResult.PropertyTests;
 /// Use type patterns or <c>switch</c> instead; they go through <c>TryGetValue</c>.
 /// Sequences (<c>Sequence</c>, <c>Traverse</c>, <c>Values</c>, <c>Errors</c>, <c>Partition</c>) are not covered either:
 /// like LINQ they allocate enumerators and the lists they return (see <c>CollectionBenchmarks</c>).
+/// <c>Try</c> and <c>TryAsync</c> are covered only for an operation that succeeds: a failure allocates the exception
+/// before the library sees it.
 /// </remarks>
 public sealed class AllocationProperties
 {
@@ -215,6 +217,17 @@ public sealed class AllocationProperties
         Allocations.AssertNone("FromNullable (reference)", () => _ = Result.FromNullable(Text, -1));
         Allocations.AssertNone("ToNullable", () => _ = result.ToNullable());
         Allocations.AssertNone("ToNullable (reference)", () => _ = text.ToNullable());
+    }
+
+    [Fact(Skip = Allocations.SkipInDebug)]
+    public void Trying_what_succeeds_allocates_nothing()
+    {
+        Allocations.AssertNone("Try", () => _ = Result.Try(static () => 1));
+        Allocations.AssertNone("Try(error)", () => _ = Result.Try(static () => 1, static exception => exception.HResult));
+        Allocations.AssertNone("TryAsync", () => _ = Result.TryAsync(static () => CompletedOne).IsCompleted);
+        Allocations.AssertNone(
+            "TryAsync(error)",
+            () => _ = Result.TryAsync(static () => CompletedOne, static exception => exception.HResult).IsCompleted);
     }
 
     [Property(Skip = Allocations.SkipInDebug)]
